@@ -29,15 +29,21 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe
+      title: locale === 'de'
+        ? 'Partner für Shopify-Entwicklung und technisches SEO | CartShift Studio'
+        : isHe
         ? 'שותף ל-Shopify ול-SEO טכני | CartShift Studio'
         : 'Shopify Development and SEO Partner | CartShift Studio',
-      description: isHe
+      description: locale === 'de'
+        ? 'CartShift Studio unterstützt E-Commerce-Teams mit Shopify-Entwicklung, technischem SEO, Migrationen, Performance-Optimierung und conversionorientierter Umsetzung auf Deutsch, Englisch und Hebräisch.'
+        : isHe
         ? 'CartShift Studio עוזרת לצוותי ecommerce לצמוח דרך פיתוח Shopify, SEO טכני, מיגרציות, שיפור מהירות ואופטימיזציה ממוקדת המרות בעברית ובאנגלית.'
         : 'CartShift Studio helps ecommerce teams grow through Shopify development, technical SEO, migration support, speed optimization, and conversion-focused implementation in English and Hebrew.',
       url: '/',
       keywords: [
-        ...(isHe
+        ...(locale === 'de'
+          ? ['Shopify-Entwicklung', 'technisches Shopify-SEO', 'Shopify-Migration', 'E-Commerce-Optimierung']
+          : isHe
           ? [
               'קידום אתרי שופיפיי',
               'פיתוח שופיפיי',
@@ -57,14 +63,14 @@ export async function generateMetadata({
             ]),
       ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
-  const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
+  const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he' | 'de');
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
   const latestPosts = posts.slice(0, 4);
@@ -95,7 +101,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <ServicesOverview />
       <Process />
       <WhyChoose />
-      <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he'} />
+      <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he' | 'de'} />
       <Testimonials />
       <StoreAnalyzerTeaser />
       <PortalTeaser />
