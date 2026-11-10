@@ -17,8 +17,10 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe ? 'תמיכה ותחזוקה לחנויות Shopify | CartShift Studio' : 'Shopify Support & Maintenance Plans | CartShift Studio',
-      description: isHe
+      title: locale === 'de' ? 'Shopify-Support und Wartung | CartShift Studio' : isHe ? 'תמיכה ותחזוקה לחנויות Shopify | CartShift Studio' : 'Shopify Support & Maintenance Plans | CartShift Studio',
+      description: locale === 'de'
+        ? 'Shopify-Wartung und Support mit vereinbarten Shop-Prüfungen, laufenden Verbesserungen und Entwicklungsunterstützung.'
+        : isHe
         ? 'תוכניות תחזוקה ותמיכה לחנויות Shopify: בדיקות תקופתיות, פיתוח ושיפור שוטף לפי היקף מוסכם.'
         : 'Shopify maintenance and support plans covering agreed store checks, ongoing improvements and development support.',
       url: '/maintenance',
@@ -32,22 +34,22 @@ export async function generateMetadata({
         'monthly support',
       ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 
 export default async function MaintenancePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
-  const t = await getTranslations({ locale: locale as 'en' | 'he' });
+  setRequestLocale(locale as 'en' | 'he' | 'de');
+  const t = await getTranslations({ locale: locale as 'en' | 'he' | 'de' });
   const maintenanceFaqs = t.raw('maintenance.faq.items') as { question: string; answer: string }[];
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
       { name: t('navigation.home'), url: '/' },
       { name: t('maintenance.hero.title'), url: '/maintenance' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const faqSchema = generateFAQPageSchema(maintenanceFaqs);
