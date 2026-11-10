@@ -94,7 +94,6 @@ try {
   if (!btn) failures.push('Shared language-switcher button missing');
   else {
     await btn.click();
-    const de = await nav.$x?.("//div[@role='menuitem'][contains(.,'Deutsch')]") ?? [];
     const count = await nav.evaluate(() => Array.from(document.querySelectorAll('[role="menuitem"]')).filter(x => x.textContent.includes('Deutsch')).length);
     if (count < 1) failures.push('German language option missing from active-QA switcher');
     console.log('Desktop language switcher German choice:', count);
