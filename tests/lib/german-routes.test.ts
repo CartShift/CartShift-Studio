@@ -35,13 +35,15 @@ describe('German marketing route allowlist', () => {
     expect(isGermanMarketingPath('/solutions/seo')).toBe(true);
   });
 
-  it('requires both explicit readiness and enablement switches', () => {
+  it('requires translation, legal review and public launch approval switches', () => {
     const oldEnabled = process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
     const oldReady = process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
+    const oldLegal = process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED;
     const oldEnv = process.env.NEXT_PUBLIC_VERCEL_ENV;
     try {
       delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
       delete process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
+      delete process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED;
       process.env.NEXT_PUBLIC_VERCEL_ENV = 'preview';
       expect(germanMarketingEnabled()).toBe(false);
       process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
@@ -50,12 +52,16 @@ describe('German marketing route allowlist', () => {
       process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
       expect(germanMarketingEnabled()).toBe(false);
       process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
+      expect(germanMarketingEnabled()).toBe(false);
+      process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = 'true';
       expect(germanMarketingEnabled()).toBe(true);
     } finally {
       if (oldEnabled === undefined) delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
       else process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = oldEnabled;
       if (oldReady === undefined) delete process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
       else process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = oldReady;
+      if (oldLegal === undefined) delete process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED;
+      else process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = oldLegal;
       if (oldEnv === undefined) delete process.env.NEXT_PUBLIC_VERCEL_ENV;
       else process.env.NEXT_PUBLIC_VERCEL_ENV = oldEnv;
     }
