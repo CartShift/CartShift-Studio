@@ -13,24 +13,24 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe ? 'תנאי שימוש | CartShift Studio' : 'Terms of Service | CartShift Studio',
-      description: isHe ? 'תנאי השימוש באתר ובשירותי CartShift Studio.' : 'Terms for using the CartShift Studio website and services.',
+      title: locale === 'de' ? 'Nutzungsbedingungen | CartShift Studio' : isHe ? 'תנאי שימוש | CartShift Studio' : 'Terms of Service | CartShift Studio',
+      description: locale === 'de' ? 'Nutzungsbedingungen für die Website und die Leistungen von CartShift Studio.' : isHe ? 'תנאי השימוש באתר ובשירותי CartShift Studio.' : 'Terms for using the CartShift Studio website and services.',
       url: '/terms',
       keywords: ['terms of service', 'terms and conditions', 'legal', 'user agreement'],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
-      { name: locale === 'he' ? 'תנאי שימוש' : 'Terms of Service', url: '/terms' },
+      { name: locale === 'he' ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'תנאי שימוש' : locale === 'de' ? 'Nutzungsbedingungen' : 'Terms of Service', url: '/terms' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   return (
