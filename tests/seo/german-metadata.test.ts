@@ -3,18 +3,22 @@ import { generateMetadata } from '@/lib/seo';
 
 const previousFlag = process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
 const previousReadiness = process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
+const previousLegal = process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED;
 const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 afterEach(() => {
   if (previousFlag === undefined) delete process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED;
   else process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = previousFlag;
   if (previousReadiness === undefined) delete process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED;
   else process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = previousReadiness;
+  if (previousLegal === undefined) delete process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED;
+  else process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = previousLegal;
 });
 
 describe('German SEO metadata', () => {
   it('uses German canonical URLs, OG language and hreflang for approved pages', () => {
     process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
     process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
+    process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = 'true';
     const data = generateMetadata({
       title: 'Shopify Agentur | CartShift Studio',
       description: 'Shopify Shops und individuelle Entwicklung.',
@@ -33,6 +37,7 @@ describe('German SEO metadata', () => {
   it('advertises German editorials only once the full-site launch gate is enabled', () => {
     process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
     process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
+    process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = 'true';
     const data = generateMetadata({
       title: 'Shopify technical audit',
       description: 'An article in English.',
@@ -44,6 +49,7 @@ describe('German SEO metadata', () => {
   it('never advertises private analytics URLs in German', () => {
     process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED = 'true';
     process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED = 'true';
+    process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED = 'true';
     const data = generateMetadata({
       title: 'Private report',
       description: 'Not public',
