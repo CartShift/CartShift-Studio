@@ -52,6 +52,18 @@ function extractPage({ path, variable }) {
   }
   visit(file);
   if (!found) throw new Error('Missing variable ' + variable + ' in ' + path);
+  // The subscriptions object can now include a German JSON import. Inspect
+  // only the original English literal instead of evaluating unrelated values.
+  if (variable === 'copy') {
+    const root = ts.isAsExpression(found) || ts.isSatisfiesExpression(found)
+      ? found.expression : found;
+    if (!ts.isObjectLiteralExpression(root)) throw new Error('Expected copy object literal');
+    const english = root.properties.find(property =>
+      ts.isPropertyAssignment(property) && property.name.getText(file) === 'en'
+    );
+    if (!english) throw new Error('Missing English subscriptions copy');
+    return parseLiteral(english.initializer);
+  }
   const result = parseLiteral(found);
   if (variable === 'services') {
     const out = {};
@@ -61,8 +73,7 @@ function extractPage({ path, variable }) {
     }
     return out;
   }
-  if (!result.en || !result.he) throw new Error('Missing English/Hebrew subscriptions copy');
-  return result.en;
+  throw new Error('Unexpected inline variable: ' + variable);
 }
 
 const extracted = Object.fromEntries(Object.entries(pages).map(([name, page]) => [name, extractPage(page)]));
