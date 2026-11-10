@@ -79,6 +79,17 @@ describe('POST /api/store-review-requests',()=>{
     expect(stored).not.toHaveProperty('overallScore');
   });
 
+  it('accepts a German review request, stores locale and forwards it to CRM',async()=>{
+    const response=await POST(req({...input,locale:'de',email:'hallo@beispiel.de'}));
+    expect(response.status).toBe(201);
+    const result=await response.json();
+    const stored=state.docs.get('human_review_requests/'+result.requestId)!;
+    expect(stored).toMatchObject({locale:'de',reviewVisibility:'private',status:'requested'});
+    expect(captureMarketingLead).toHaveBeenCalledWith(expect.objectContaining({
+      locale:'de',email:'hallo@beispiel.de',
+    }));
+  });
+
   it('deduplicates on normalized domain+email even across different submission ids',async()=>{
     const first=await (await POST(req(input))).json();
     const secondResponse=await POST(req({...input,storeUrl:'brand.co.il',submissionId:
