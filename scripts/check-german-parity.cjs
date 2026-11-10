@@ -90,6 +90,24 @@ for (const rel of relPaths) {
   }
 }
 
+const serviceSource = path.join(root, 'scripts', 'i18n', 'extract-inline-service-copies.mjs');
+const serviceDraft = path.join(root, 'content', 'i18n', 'inline-service-de.json');
+if (fs.existsSync(serviceSource)) {
+  if (!fs.existsSync(serviceDraft)) {
+    errors.push('missing German inline Shopify services and subscriptions copy');
+  } else {
+    // Parse original English TSX literals as syntax trees, never execute TSX.
+    const { execFileSync } = require('node:child_process');
+    const englishServices = JSON.parse(execFileSync(process.execPath, [serviceSource], {
+      cwd: root,
+      encoding: 'utf8',
+      timeout: 12000,
+    }));
+    const germanServices = readJson(serviceDraft);
+    check(englishServices, germanServices, 'inline-services');
+  }
+}
+
 const blogDir = path.join(root, 'content', 'blog');
 const posts = fs.existsSync(blogDir) ? fs.readdirSync(blogDir).filter(x => x.endsWith('.md')) : [];
 for (const file of posts) {
