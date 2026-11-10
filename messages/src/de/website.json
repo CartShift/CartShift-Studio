@@ -23,9 +23,9 @@
   },
   "hero": {
     "tag": "Shopify-Entwicklung und Shop-Optimierung",
-    "titleLine1": "Mach deinen Shopify-Shop",
+    "titleLine1": "Machen Sie Ihren Shopify-Shop",
     "titleLine2": "noch besser",
-    "description": "Produktseiten bleiben hinter den Erwartungen zurück? Dein Shop ist langsam? Die Lagerverwaltung braucht ständig manuelle Eingriffe? Wir finden die Hindernisse, priorisieren Lösungen und setzen sie ohne unnötigen Neuaufbau um.",
+    "description": "Produktseiten bleiben hinter den Erwartungen zurück? Ihr Shop lädt langsam? Die Lagerverwaltung braucht ständig manuelle Eingriffe? Wir analysieren die Hindernisse, priorisieren Verbesserungen und setzen sie ohne unnötigen Neuaufbau um.",
     "primaryCta": "Kennenlerngespräch vereinbaren",
     "secondaryCta": "Unsere Projekte ansehen",
     "analyzerCta": "Kostenlose Expertenanalyse",
@@ -48,7 +48,7 @@
         }
       },
       "paragraphs": [
-        "Nicht jedes Shop-Problem erfordert ein Redesign oder eine weitere App. Manchmal braucht eine Produktseite eine gezielte Anpassung, manchmal erschwert eine Integration die täglichen Abläufe. Wir beginnen mit dem, was für dein Unternehmen wirklich wichtig ist.",
+        "Nicht jedes Shop-Problem erfordert ein Redesign oder eine weitere App. Manchmal braucht eine Produktseite eine gezielte Anpassung, manchmal erschwert eine Integration die täglichen Abläufe. Wir beginnen mit dem, was für Ihr Unternehmen wirklich wichtig ist.",
         "Wir betrachten Kaufprozesse, verfügbare Daten und technische Abläufe. Anschließend erklären wir Möglichkeiten, Einschränkungen und Prioritäten, bevor wir gemeinsam den Leistungsumfang festlegen.",
         "Unsere Spezialität ist Shopify: Themes, Einkaufserlebnis, technisches SEO, B2B und Integrationen. Wir entwickeln auch WordPress- und individuelle Weblösungen, wenn sie zur Aufgabe passen."
       ]
@@ -65,18 +65,18 @@
   },
   "heroForm": {
     "title": "Kostenlose Beratung anfragen",
-    "subtitle": "Erzähl uns von deinem Projekt. Wir melden uns persönlich, je nach Verfügbarkeit.",
+    "subtitle": "Erzählen Sie uns von Ihrem Projekt. Wir melden uns persönlich, je nach Verfügbarkeit.",
     "successTitle": "Vielen Dank!",
-    "successText": "Wir haben deine Anfrage erhalten und melden uns entsprechend unserer Verfügbarkeit.",
+    "successText": "Wir haben Ihre Anfrage erhalten und melden uns entsprechend unserer Verfügbarkeit.",
     "fields": {
       "name": "Name",
-      "namePlaceholder": "Dein Name",
-      "nameRequired": "Bitte gib deinen Namen an",
+      "namePlaceholder": "Ihr Name",
+      "nameRequired": "Bitte geben Sie Ihren Namen an.",
       "email": "E-Mail",
-      "emailPlaceholder": "deine@email.de",
-      "emailRequired": "Bitte gib deine E-Mail-Adresse an",
+      "emailPlaceholder": "ihre@email.de",
+      "emailRequired": "Bitte geben Sie Ihre E-Mail-Adresse an.",
       "emailInvalid": "Ungültige E-Mail-Adresse",
-      "interest": "Was möchtest du umsetzen?",
+      "interest": "Was möchten Sie umsetzen?",
       "interestRequired": "Bitte wähle eine Option",
       "selectOption": "Option auswählen",
       "options": {
@@ -178,7 +178,7 @@
           "description": "Klare Prioritäten, der richtige Plan und die richtigen Apps basierend auf Ihren Zielen, nicht auf Hype."
         },
         {
-          "title": "Ladendesign",
+          "title": "Shop-Design",
           "description": "Ein Premium-Look, der zu Ihrer Marke passt und den Kunden den Kauf erleichtert."
         },
         {
@@ -612,7 +612,7 @@
     },
     "storeAnalyzerCta": {
       "badge": "Kostenlose Expertenbewertung",
-      "title": "Ich frage mich, was Ihr Geschäft ist",
+      "title": "Sie fragen sich, was Ihren Shop zurückhält?",
       "titleSpan": "Sollte sich zuerst verbessern?",
       "description": "Ein CartShift-Spezialist prüft Ihre Anfrage und die öffentlich zugänglichen Store-Journeys, bevor er mit priorisierten Ergebnissen weitergeht. Dies ist kein automatischer Sofortbericht.",
       "button": "Fordern Sie eine kostenlose Expertenbewertung an",
@@ -996,7 +996,7 @@
   "contact": {
     "hero": {
       "title": "Sagen Sie uns, was besser funktionieren muss.",
-      "subtitle": "Haben Sie ein Filialproblem oder ein neues Projekt?",
+      "subtitle": "Probleme mit Ihrem Shop oder ein neues Projekt?",
       "description": "Teilen Sie uns die Details mit und wir werden je nach unserer Verfügbarkeit und der Art Ihrer Anfrage antworten.",
       "badge": "Lass uns reden"
     },
@@ -1015,7 +1015,7 @@
     "form": {
       "title": "Senden Sie uns eine Nachricht",
       "nameLabel": "Name",
-      "namePlaceholder": "Dein Name",
+      "namePlaceholder": "Ihr Name",
       "nameRequired": "Name ist erforderlich",
       "emailLabel": "E-Mail",
       "emailPlaceholder": "your@email.com",
@@ -1405,7 +1405,7 @@
     "items": [
       {
         "title": "Direkt mit den Entwicklern arbeiten",
-        "description": "Du arbeitest direkt mit den Menschen zusammen, die die Lösung planen und umsetzen.",
+        "description": "Sie arbeiten direkt mit den Menschen zusammen, die die Lösung planen und umsetzen.",
         "icon": "target"
       },
       {
@@ -1431,7 +1431,7 @@
     ]
   },
   "servicesOverview": {
-    "title": "Was könnte in deinem Shop besser funktionieren?",
+    "title": "Was könnte in Ihrem Shop besser funktionieren?",
     "subtitle": "Erst das Geschäftsproblem verstehen, dann die technische Lösung wählen.",
     "shopify": {
       "title": "Shopify-Entwicklung und -Optimierung",
@@ -1466,9 +1466,9 @@
   },
   "ctaBanner": {
     "badge": "Mit einer Analyse beginnen",
-    "titlePart1": "Könnte in deinem Shop",
+    "titlePart1": "Könnte in Ihrem Shop",
     "titlePart2": "etwas besser laufen?",
-    "description": "Sag uns, wo es in deinem Shop hakt. Wir prüfen deine Anfrage und melden uns mit ersten priorisierten Erkenntnissen und praktischen Möglichkeiten – unverbindlich.",
+    "description": "Sagen Sie uns, wo es in Ihrem Shop hakt. Wir prüfen Ihre Anfrage und melden uns mit ersten priorisierten Erkenntnissen und praktischen Möglichkeiten – unverbindlich.",
     "button": "Kostenlose Expertenanalyse anfragen"
   },
   "footer": {
