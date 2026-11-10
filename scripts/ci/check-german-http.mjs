@@ -32,6 +32,18 @@ const cases = [
   '/de/work',
   '/de/contact',
   '/de/blog',
+  '/de/free-store-review',
+  '/de/tools',
+  '/de/tools/client-portal',
+  '/de/services/shopify-conversion-optimization',
+  '/de/services/shopify-b2b-integrations',
+  '/de/services/shopify-performance-seo',
+  '/de/services/shopify-subscriptions',
+  '/de/services/wordpress-security',
+  '/de/industries/fashion',
+  '/de/industries/local',
+  '/de/pricing',
+  '/de/maintenance',
   '/de/privacy',
   '/de/terms',
   '/de/blog/abandoned-cart-recovery-strategies-2026',
@@ -39,7 +51,20 @@ const cases = [
 ];
 const original = await checkPage('/en', { lang: 'en' });
 const translated = await checkPage('/de', { lang: 'de' });
-for (const path of cases.slice(1)) await checkPage(path);
+const expectedGermanCopy = {
+  '/de/services/shopify-conversion-optimization': 'Conversion-Rate',
+  '/de/services/shopify-b2b-integrations': 'Integrationen',
+  '/de/services/shopify-performance-seo': 'Performance',
+  '/de/services/shopify-subscriptions': 'Ihre Kunden',
+  '/de/industries/local': 'lokale Unternehmen',
+  '/de/tools': 'E-Commerce-Tools',
+};
+for (const path of cases.slice(1)) {
+  const html = await checkPage(path);
+  if (expectedGermanCopy[path]) {
+    assert(html.includes(expectedGermanCopy[path]), path + ' is missing expected German content');
+  }
+}
 const sections = text => (text.match(/<section(?:\\s|>)/g) || []).length;
 assert(sections(translated) === sections(original), 'German homepage has different section count: ' + sections(translated) + ' vs ' + sections(original));
 assert(translated.includes('Shopify'), 'German page is missing Shopify content');
