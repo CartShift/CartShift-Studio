@@ -128,7 +128,7 @@ export const LanguageSwitcher = ({ compact = false }: { compact?: boolean }) => 
       <DropdownMenu.Trigger asChild>
         <button
           className={cn(triggerVariants({ isOpen }), compact && 'px-2 py-2')}
-          aria-label="Select Language"
+          aria-label={locale === 'de' ? 'Sprache wählen' : locale === 'he' ? 'בחירת שפה' : 'Select Language'}
         >
           {currentLanguage === 'en' ? <USFlag /> : currentLanguage === 'he' ? <ILFlag /> : <DEFlag />}
           {!compact ? (
