@@ -22,7 +22,7 @@ export function NewsletterSignupForm({
   buttonClassName,
 }: NewsletterSignupFormProps) {
   const t = useTranslations();
-  const locale = useLocale() as 'en' | 'he';
+  const locale = useLocale() as 'en' | 'he' | 'de';
   const isFooter = source === 'newsletter_footer';
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
