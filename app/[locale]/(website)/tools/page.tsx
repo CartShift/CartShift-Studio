@@ -19,36 +19,43 @@ export async function generateMetadata({
 
   return genMeta(
     {
-      title: isHe ? 'כלים לעסקים אונליין' : 'E-Commerce Tools',
-      description: isHe
+      title: locale === 'de' ? 'E-Commerce-Tools' : isHe ? 'כלים לעסקים אונליין' : 'E-Commerce Tools',
+      description: locale === 'de'
+        ? 'CartShift Studio bietet Werkzeuge für Shop-Analysen, Projekttransparenz und effizientere E-Commerce-Abläufe.'
+        : isHe
         ? 'כלים של CartShift Studio לאבחון חנויות, ניהול פרויקטים ושיפור תהליכי ecommerce.'
         : 'CartShift Studio tools for store audits, project visibility, and sharper ecommerce operations.',
       url: '/tools',
       keywords: ['ecommerce tools', 'expert store review', 'client portal', 'shopify audit'],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function ToolsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const validLocale = locale as 'en' | 'he';
+  const validLocale = locale as 'en' | 'he' | 'de' | 'de';
+  const isDe = validLocale === 'de';
   const isHe = validLocale === 'he';
 
   setRequestLocale(validLocale);
 
   const tools = [
     {
-      title: isHe ? 'סקירה מקצועית בחינם' : 'Free Expert Store Review',
-      description: isHe
+      title: isDe ? 'Kostenlose Expertenanalyse Ihres Shops' : isHe ? 'סקירה מקצועית בחינם' : 'Free Expert Store Review',
+      description: isDe
+        ? 'Eine persönliche Analyse Ihres Onlineshops mit praktischen, nachvollziehbaren Empfehlungen.'
+        : isHe
         ? 'סקירה אישית של חנות האונליין, עם ממצאים אמיתיים והמלצות מעשיות.'
         : 'A personal review of your online store with practical, evidence-backed recommendations.',
       href: '/free-store-review',
       Icon: ClipboardCheck,
     },
     {
-      title: isHe ? 'פורטל לקוחות' : 'Client Portal',
-      description: isHe
+      title: isDe ? 'Kundenportal' : isHe ? 'פורטל לקוחות' : 'Client Portal',
+      description: isDe
+        ? 'Ein zentraler Arbeitsbereich für Anfragen, Dateien, Projektfortschritt und die Prüfung von Ergebnissen.'
+        : isHe
         ? 'מרחב עבודה מסודר למעקב אחרי בקשות, קבצים, משימות ותוצרים.'
         : 'A dedicated workspace for requests, files, project progress, and deliverable reviews.',
       href: '/tools/client-portal',
@@ -58,15 +65,17 @@ export default async function ToolsPage({ params }: { params: Promise<{ locale: 
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: isHe ? 'בית' : 'Home', url: '/' },
-      { name: isHe ? 'כלים' : 'Tools', url: '/tools' },
+      { name: isHe ? 'בית' : isDe ? 'Startseite' : 'Home', url: '/' },
+      { name: isHe ? 'כלים' : isDe ? 'Tools' : 'Tools', url: '/tools' },
     ],
     validLocale
   );
 
   const collectionSchema = generateCollectionPageSchema({
-    name: isHe ? 'כלים לעסקים אונליין' : 'E-Commerce Tools',
-    description: isHe
+    name: isDe ? 'E-Commerce-Tools' : isHe ? 'כלים לעסקים אונליין' : 'E-Commerce Tools',
+    description: isDe
+      ? 'CartShift Studio Tools für Shop-Analysen und transparente Projektarbeit.'
+      : isHe
       ? 'כלים של CartShift Studio לאבחון חנויות וניהול פרויקטים.'
       : 'CartShift Studio tools for ecommerce audits and project visibility.',
     url: '/tools',
@@ -98,10 +107,12 @@ export default async function ToolsPage({ params }: { params: Promise<{ locale: 
                 CartShift Studio
               </p>
               <h1 className="font-display text-4xl font-black leading-tight tracking-tight text-surface-950 dark:text-white sm:text-5xl lg:text-6xl">
-                {isHe ? 'כלים שמחדדים את העבודה הדיגיטלית' : 'Tools for sharper ecommerce work'}
+                {isDe ? 'Tools für effizientere E-Commerce-Arbeit' : isHe ? 'כלים שמחדדים את העבודה הדיגיטלית' : 'Tools for sharper ecommerce work'}
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-surface-600 dark:text-surface-300">
-                {isHe
+                {isDe
+                  ? 'Analyse, Transparenz und operative Abläufe an einem Ort – damit aus Website-Problemen klare nächste Schritte werden.'
+                  : isHe
                   ? 'אבחון, שקיפות ותפעול במקום אחד, כדי להפוך בעיות באתר להזדמנויות ברורות לפעולה.'
                   : 'Audit, visibility, and operations in one place, turning site problems into clear next actions.'}
               </p>
