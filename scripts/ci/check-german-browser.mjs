@@ -45,7 +45,8 @@ async function collect(page, path, lang) {
   // Yield for React hydration without waiting for background analytics/network polling.
   await new Promise(resolve => setTimeout(resolve, 250));
   const route = '/' + lang + path;
-  if (!response || response.status() !== 200) failures.push(route + ' returned ' + response?.status());
+  // Repeated navigation may legitimately use HTTP conditional cache validation.
+  if (!response || ![200, 304].includes(response.status())) failures.push(route + ' returned ' + response?.status());
   const metrics = await page.evaluate(() => ({
     lang: document.documentElement.lang,
     dir: document.documentElement.dir,
