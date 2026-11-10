@@ -110,7 +110,7 @@ export const ContactPageContent: React.FC = () => {
       setError(
         error instanceof Error
           ? error.message
-          : 'Something went wrong. Please try again or contact us directly.'
+          : locale === 'de' ? 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.' : 'Something went wrong. Please try again or contact us directly.'
       );
     } finally {
       setLoading(false);
@@ -270,7 +270,7 @@ export const ContactPageContent: React.FC = () => {
                     />
                     {errors.email && (
                       <p id="contact-email-error" role="alert" className="mt-2 ps-2 text-sm text-red-600 dark:text-red-400">
-                        {isRtl ? 'אנא הזינו אימייל תקין' : 'Please enter a valid email'}
+                        {isRtl ? 'אנא הזינו אימייל תקין' : locale === 'de' ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : 'Please enter a valid email'}
                       </p>
                     )}
                   </div>
