@@ -32,7 +32,7 @@ export function validateContactForm(
 
 export const newsletterSubscriptionSchema = z.object({
   email: z.string().email('Invalid email address'),
-  locale: z.enum(['en', 'he']).optional(),
+  locale: z.enum(['en', 'he', 'de']).optional(),
   source: z.string().optional(),
 });
 
