@@ -1,0 +1,52 @@
+name: German inline services draft (one time)
+
+on:
+  push:
+    branches:
+      - feat/german-market-launch-20261109
+    paths:
+      - .github/workflows/generate-inline-services-de.yml
+      - scripts/i18n/extract-inline-service-copies.mjs
+      - scripts/i18n/generate-service-de.py
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cartshift-german-inline-copy
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'CartShift/CartShift-Studio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: true
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: '1'
+      - name: Extract literal public English service texts without executing TSX
+        run: node scripts/i18n/extract-inline-service-copies.mjs > /tmp/cartshift-services-en.json
+      - name: Generate German draft preserving exact page structures and numbers
+        run: python scripts/i18n/generate-service-de.py /tmp/cartshift-services-en.json
+      - name: Commit draft only on this feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add content/i18n/inline-service-de.json
+          git diff --cached --check
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(de): draft shared Shopify service and subscription copy [machine review required]'
+          git fetch origin feat/german-market-launch-20261109
+          git rebase origin/feat/german-market-launch-20261109
+          git push origin "HEAD:refs/heads/feat/german-market-launch-20261109"
