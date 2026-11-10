@@ -2,89 +2,89 @@
   "shopify": {
     "shopify-conversion-optimization": {
       "title": "Optimierung der Shopify-Conversion-Rate | CartShift Studio",
-      "description": "Reibungspunkte im Shopify-Kaufprozess erkennen und beheben: gezielte Verbesserungen an Produktseiten, mobilen Ansichten, Warenkorb und Vertrauenssignalen – auf Basis nachvollziehbarer Erkenntnisse statt pauschaler Bewertungen.",
-      "eyebrow": "SHOPIFY-CONVERSION-OPTIMIERUNG",
-      "introduction": "Mehr Besucher bedeuten nicht automatisch mehr Bestellungen. Wir untersuchen den Weg von der Produktsuche bis zum Kauf, identifizieren nachprüfbare Hindernisse und leiten daraus einen konkreten Umsetzungsplan ab. Bevor Sie ein umfassendes Redesign beauftragen, beginnen wir mit einer Analyse.",
-      "problemsHeading": "Wann eine Conversion-Analyse sinnvoll ist",
+      "description": "Finden und beheben Sie Reibungspunkte in Ihrem Shopify-Kaufprozess. Praktische Produktseiten-, Mobil-, Warenkorb- und Vertrauensverbesserungen basierend auf Beweisen, nicht auf generischen Bewertungen.",
+      "eyebrow": "SHOPIFY CONVERSION OPTIMIZATION",
+      "introduction": "Mehr Traffic bedeutet nicht automatisch mehr Bestellungen. Wir untersuchen den Weg von der Produktentdeckung bis zum Kauf, identifizieren tatsächlich erkennbare Hindernisse und wandeln die Erkenntnisse in einen zielgerichteten Umsetzungsplan um. Beginnen Sie mit einer Überprüfung, bevor Sie sich zu einer größeren Neugestaltung verpflichten.",
+      "problemsHeading": "Wann eine Conversion-Überprüfung sinnvoll ist",
       "problems": [
         "Käufer besuchen Produktseiten, haben jedoch Schwierigkeiten, Varianten, Größen, Versand oder Verfügbarkeit zu verstehen.",
-        "Auf mobilen Produktseiten ist die Schaltfläche „In den Warenkorb“ schlecht erreichbar oder wichtige Produktinformationen sind schwer zu finden.",
-        "Im Warenkorb entstehen unerwartete Kosten, unklare Rückmeldungen oder unnötige Schritte vor dem Checkout.",
-        "Ihr Shop erhält Besucher, aber es ist unklar, welche UX-Probleme zuerst behoben werden sollten."
+        "Mobile Produktseiten erschweren die Aktion „In den Warenkorb legen“ oder erschweren das Auffinden wichtiger Produktinformationen.",
+        "Der Warenkorb führt zu Überraschungen, unklarem Feedback oder unnötigen Schritten vor dem Bezahlen.",
+        "Sie haben Datenverkehr, können aber nicht sagen, welche UX-Probleme es wert sind, zuerst behoben zu werden."
       ],
       "workHeading": "Was wir prüfen und verbessern können",
       "work": [
-        "Informationshierarchie auf Produktseiten, Kaufbedienelemente und Variantenauswahl.",
-        "Mobile Navigation, Produktpräsentation, Barrierefreiheit und Verständlichkeit des Kaufprozesses.",
-        "Warenkorbinteraktionen und der öffentlich einsehbare Übergang zum Checkout. Änderungen am Checkout hängen von den Shopify-Funktionen und Einschränkungen des gewählten Tarifs ab.",
-        "Nachvollziehbare Prioritäten, klarer Umsetzungsumfang und Überprüfung anhand verfügbarer Analysedaten."
+        "Hierarchie der Produktseiteninformationen, Kaufkontrollen und Variantenauswahl.",
+        "Mobile Navigation, Merchandising, Barrierefreiheitssignale und klare Kaufabläufe.",
+        "Warenkorbinteraktionen und öffentlich beobachtbare Kassenübergabe. Änderungen an der Kasse hängen von den Shopify-Funktionen und Planeinschränkungen ab.",
+        "Evidenzgestützte Prioritäten, Implementierungsumfang und Validierung mit verfügbaren Analysen."
       ],
-      "processHeading": "So läuft die Zusammenarbeit ab",
+      "processHeading": "Wie eine Verlobung funktioniert",
       "process": [
         {
-          "title": "Den tatsächlichen Kaufprozess prüfen",
-          "text": "Wir prüfen beispielhafte Produkte und Kaufwege auf Desktop und Mobilgeräten. Bereiche, die zusätzliche Zugriffsrechte erfordern, kennzeichnen wir ausdrücklich, statt Vermutungen anzustellen."
+          "title": "Lassen Sie sich die wahre Reise noch einmal Revue passieren",
+          "text": "Wir prüfen repräsentative Produkte und Wege auf Desktop und Mobil. Alle Bereiche, die einen privilegierten Zugriff erfordern, werden markiert und nicht erraten."
         },
         {
-          "title": "Wirksame Verbesserungen priorisieren",
-          "text": "Wir trennen überprüfte Erkenntnisse von Hypothesen und schätzen den Umsetzungsaufwand, bevor wir Änderungen am Shop vornehmen."
+          "title": "Priorisieren Sie praktische Lösungen",
+          "text": "Wir trennen verifizierte Beobachtungen von Hypothesen und schätzen den Implementierungsaufwand ab, bevor wir den Shop ändern."
         },
         {
-          "title": "Umsetzen und überprüfen",
-          "text": "Nach der Freigabe setzen wir gezielte Verbesserungen um und überprüfen sie mit geeigneten UX-Tests und den verfügbaren Conversion-Daten."
+          "title": "Erstellen und validieren",
+          "text": "Nach der Freigabe implementieren wir zielgerichtete Verbesserungen und bewerten das Ergebnis anhand geeigneter UX-Checks und verfügbarer Conversion-Daten."
         }
       ],
       "faqHeading": "Häufige Fragen",
       "faq": [
         {
           "question": "Können Sie eine Conversion-Steigerung garantieren?",
-          "answer": "Nein. Die Conversion-Rate hängt unter anderem von der Qualität der Besucher, dem Angebot und den Preisen ab. Wir können Hindernisse erkennen, Verbesserungen umsetzen und Ergebnisse messen, sofern aussagekräftige Daten verfügbar sind."
+          "answer": "Nein. Die Conversion wird von der Verkehrsqualität, dem Angebot, der Preisgestaltung und vielen anderen Faktoren beeinflusst. Wir können Reibungsverluste erkennen, Verbesserungen umsetzen und Ergebnisse messen, wenn verwertbare Daten vorhanden sind."
         },
         {
           "question": "Benötigen Sie für die erste Bewertung Shopify-Administratorzugriff?",
           "answer": "Nein. Für die erste Überprüfung werden öffentliche Seiten verwendet. Wir fordern den Zugriff nur dann an, wenn eine tiefergehende Untersuchung oder Implementierung dies erfordert."
         },
         {
-          "question": "Brauchen wir ein neues Theme?",
-          "answer": "Nicht unbedingt. Wenn gezielte, wartbare Anpassungen das Problem lösen, ziehen wir sie einem unnötigen Neuaufbau vor."
+          "question": "Brauchen wir ein neues Thema?",
+          "answer": "Nicht unbedingt. Wir bevorzugen gezielte, wartbare Änderungen, wenn sie das Problem ohne unnötigen Neuaufbau beheben."
         }
       ],
-      "ctaHeading": "Zuerst die wichtigsten Kaufhindernisse erkennen",
-      "ctaDescription": "Erzählen Sie uns von Ihrem Shop. Wir prüfen den öffentlich zugänglichen Kaufprozess und melden uns mit einigen priorisierten Beobachtungen.",
-      "ctaLabel": "Kostenlose Expertenanalyse anfragen",
-      "backLabel": "Shopify-Leistungen entdecken"
+      "ctaHeading": "Finden Sie zuerst die Reibung mit der höchsten Auswirkung",
+      "ctaDescription": "Erzählen Sie uns von Ihrem Geschäft. Wir werden die öffentliche Customer Journey überprüfen und mit einer kleinen Anzahl priorisierter Beobachtungen antworten.",
+      "ctaLabel": "Fordern Sie eine kostenlose Expertenbewertung an",
+      "backLabel": "Entdecken Sie die Shopify-Dienste"
     },
     "shopify-b2b-integrations": {
-      "title": "Shopify B2B und individuelle Integrationen | CartShift Studio",
-      "description": "Praktische Shopify-B2B-Prozesse, Bestandssynchronisation und individuelle Integrationen – abgestimmt auf tatsächliche betriebliche Anforderungen und langfristige Wartbarkeit.",
+      "title": "Shopify B2B- und benutzerdefinierte Integrationen | CartShift Studio",
+      "description": "Praktische Shopify B2B-Workflows, Bestandssynchronisierung und benutzerdefinierte Integrationen, die auf reale betriebliche Einschränkungen und Wartbarkeit ausgelegt sind.",
       "eyebrow": "SHOPIFY B2B & INTEGRATIONEN",
       "introduction": "Großhandels-, Lagerbestands- und Fulfillment-Anforderungen passen selten in eine einheitliche App. Wir beginnen mit Ihrem betrieblichen Prozess und den Funktionen Ihres Shopify-Plans und bewerten dann in dieser Reihenfolge native Funktionen, vertrauenswürdige Apps und kleine benutzerdefinierte Integrationen.",
-      "problemsHeading": "Betriebliche Probleme, die wir lösen können",
+      "problemsHeading": "Operative Probleme, die es wert sind, gelöst zu werden",
       "problems": [
         "Großhandelskunden benötigen Preise, Kataloge oder Zugangsregeln, die über die Standard-Storefront hinausgehen.",
         "Die Lagerbestände müssen bei Shopify und einem externen Lager- oder Logistikpartner übereinstimmen.",
-        "Bestellungen erfordern Weiterleitungen, Statusaktualisierungen oder Fulfillment-Schritte, die derzeit manuell erledigt werden.",
-        "Ein Geflecht aus Apps und manuellen Behelfslösungen wird zunehmend schwer zu überwachen und zu pflegen."
+        "Bestellungen erfordern Routing, Statusaktualisierungen oder Erfüllungsschritte, die derzeit von manueller Arbeit abhängen.",
+        "Eine Sammlung von Apps und manuellen Problemumgehungen wird immer schwieriger zu überwachen und zu warten."
       ],
       "workHeading": "Unsere Umsetzungsgrundsätze",
       "work": [
-        "Datenhoheit, Zuständigkeiten, Datenflüsse und Fehlerfälle klären, bevor wir ein Werkzeug auswählen.",
-        "Unterstützte Shopify-Funktionen und klare Plattformgrenzen haben Vorrang vor fragilen Theme-Hacks.",
-        "Bei Integrationen Wiederholungsversuche, Idempotenz, Abgleich und Benachrichtigungen für tatsächliche Fehlerfälle einplanen.",
-        "Betriebliche Übergabe, laufende Kosten und notwendige manuelle Eingriffe dokumentieren."
+        "Ordnen Sie die Eigentümerschaft, Rollen, Datenflüsse und Fehlerszenarien der Quelle der Wahrheit zu, bevor Sie ein Tool auswählen.",
+        "Bevorzugen Sie unterstützte Shopify-Funktionen und klare Plattformbeschränkungen gegenüber brüchigen Theme-Hacks.",
+        "Für Integrationen, Entwurfswiederholungen, Idempotenz, Abgleich und Warnungen bei realen Fehlern.",
+        "Dokumentieren Sie die Betriebsübergabe, die erwarteten laufenden Kosten und wo manuelle Eingriffe weiterhin erforderlich sind."
       ],
       "processHeading": "Von den Anforderungen bis zum zuverlässigen Workflow",
       "process": [
         {
-          "title": "Den Prozess erfassen",
-          "text": "Wir dokumentieren, wie Bestellungen, Kundenkonten, Preise und Bestände tatsächlich zwischen den Systemen fließen."
+          "title": "Entdecken Sie den Prozess",
+          "text": "Wir dokumentieren, wie sich Bestellungen, Konten, Preise und Lagerbestände tatsächlich zwischen den Systemen bewegen."
         },
         {
-          "title": "Die einfachste zuverlässige Lösung wählen",
+          "title": "Wählen Sie den einfachsten und zuverlässigsten Ansatz",
           "text": "Wir vergleichen native Shopify-Funktionen, vorhandene Integrationsplattformen und benutzerdefinierten Code, bevor wir uns auf eine Architektur festlegen."
         },
         {
-          "title": "Fehlerfälle prüfen und sauber übergeben",
+          "title": "Fehlerpfade testen und übergeben",
           "text": "Wir validieren repräsentative Szenarien, definieren die Überwachung und dokumentieren, was das Team tun soll, wenn die Daten nicht übereinstimmen."
         }
       ],
@@ -92,54 +92,54 @@
       "faq": [
         {
           "question": "Brauchen wir Shopify Plus für B2B?",
-          "answer": "Bestimmte native B2B-Funktionen hängen vom Shopify-Tarif ab. Wir prüfen Ihre genauen Anforderungen und Ihren Tarif, bevor wir eine Vorgehensweise empfehlen."
+          "answer": "Einige native B2B-Funktionen hängen von der Berechtigung zum Shopify-Plan ab. Wir überprüfen Ihre genauen Anforderungen und Ihren Plan, bevor wir eine Vorgehensweise vorschlagen."
         },
         {
           "question": "Kann Make oder eine andere Automatisierungsplattform ausreichen?",
-          "answer": "Manchmal. Entscheidend sind Bestellvolumen, Anforderungen an die Datenkonsistenz, Fehlerbehandlung und laufende Kosten. Eine Automatisierungs-Behelfslösung stellen wir nicht als gleichwertig mit einer nativen Plattformfunktion dar."
+          "answer": "Manchmal. Die richtige Wahl hängt vom Auftragsvolumen, den Konsistenzanforderungen, der Fehlerbehebung und den Abonnementkosten ab. Wir werden keinen Automatisierungs-Workaround als Garantie für eine native Plattform anbieten."
         },
         {
-          "question": "Können Sie garantieren, dass die Lagerbestände immer übereinstimmen?",
-          "answer": "Nein. Externe Ausfälle und widersprüchliche Änderungen können jedes System betreffen. Gute Integrationen sehen deshalb Abgleich, Überwachung und klare Zuständigkeiten für Ausnahmefälle vor."
+          "question": "Können Sie versprechen, dass der Lagerbestand niemals schwankt?",
+          "answer": "Kein System ist immun gegen Upstream-Ausfälle und widersprüchliche Änderungen. Zu guten Integrationen gehören Abgleich, Überwachung und explizite Eigentümerschaft für Ausnahmen."
         }
       ],
-      "ctaHeading": "Beschreiben Sie den Prozess, der Sie ausbremst",
-      "ctaDescription": "Teilen Sie uns Ihren Shop und die betriebliche Herausforderung mit. Wir klären zuerst die relevanten Fragen, bevor wir eine technische Lösung vorschlagen.",
-      "ctaLabel": "Kostenlose Expertenanalyse anfragen",
-      "backLabel": "Shopify-Leistungen entdecken"
+      "ctaHeading": "Beschreiben Sie den Arbeitsablauf, der Sie verlangsamt",
+      "ctaDescription": "Teilen Sie Ihr Geschäft und Ihre betriebliche Herausforderung. Wir identifizieren die zu klärenden Fragen, bevor wir eine technische Lösung vorschlagen.",
+      "ctaLabel": "Fordern Sie eine kostenlose Expertenbewertung an",
+      "backLabel": "Entdecken Sie die Shopify-Dienste"
     },
     "shopify-performance-seo": {
-      "title": "Technisches Shopify-SEO und Performance | CartShift Studio",
-      "description": "Technische Shopify-SEO- und Performance-Analysen zu Indexierbarkeit, Canonical-URLs, strukturierten Daten, mobiler Nutzung und den Auswirkungen schwergewichtiger Themes und Apps.",
-      "eyebrow": "TECHNISCHES SHOPIFY-SEO & PERFORMANCE",
+      "title": "Shopify Technisches SEO und Leistung | CartShift Studio",
+      "description": "Technische Shopify-SEO- und Leistungsüberprüfungen zu Indexierbarkeit, kanonischen URLs, strukturierten Daten, mobiler Erfahrung und den Kosten umfangreicher Themes und Apps.",
+      "eyebrow": "SHOPIFY TECHNISCHES SEO & PERFORMANCE",
       "introduction": "Suchsichtbarkeit und Storefront-Geschwindigkeit haben eine wichtige Grundlage gemeinsam: Seiten müssen auffindbar, verständlich und nutzbar sein. Wir priorisieren technische Probleme, die sich auf die tatsächliche Customer Journey auswirken, bevor wir teure Umbauten oder vage Geschwindigkeitsversprechen empfehlen.",
       "problemsHeading": "Signale, die eine Untersuchung verdienen",
       "problems": [
-        "Wichtige Produkt- oder Kategorieseiten fehlen in Google oder erscheinen unter der falschen Canonical-URL.",
-        "Varianten, Filter, Sprachversionen oder Weiterleitungen erzeugen widersprüchliche Signale zu doppelten URLs.",
+        "Wichtige Produkt- und Sammlungs-URLs fehlen bei Google oder erscheinen unter der falschen kanonischen URL.",
+        "Varianten, Filter, Sprachpfade oder Weiterleitungen erzeugen verwirrende doppelte URL-Signale.",
         "Apps und Skripte von Drittanbietern verlangsamen mobile Interaktionen oder beeinträchtigen die Benutzerfreundlichkeit der Produktseite.",
-        "Es häufen sich SEO-Empfehlungen, ohne dass jemand geprüft hat, welche Probleme tatsächlich bestehen."
+        "Es häufen sich SEO-Empfehlungen, aber niemand hat überprüft, welche wirklichen Probleme vorliegen."
       ],
       "workHeading": "Was eine gezielte technische Überprüfung abdeckt",
       "work": [
-        "Crawlbarkeit, Indexierbarkeit, Canonicals, gegebenenfalls Hreflang, Sitemaps und wichtige Weiterleitungen.",
+        "Crawlbarkeit, Indexierbarkeit, Canonicals, ggf. Hreflang, Sitemaps und wichtige Weiterleitungen.",
         "Strukturierte Daten, die sichtbaren Inhalten entsprechen und durch aktuelle Suchhilfen unterstützt werden.",
-        "Core Web Vitals und Ladeverhalten, wobei echte Nutzungsdaten von Labortests unterschieden werden.",
-        "Priorisierte Korrekturen und Regressionstests, die bestehende Rankings und Kaufprozesse schützen."
+        "Core Web Vitals und Ladeverhalten, wobei Felddaten von Laborsimulationen unterschieden werden.",
+        "Priorisierte Korrekturen und Regressionsprüfungen, die bestehende Rankings und Einkaufsströme bewahren."
       ],
       "processHeading": "Ein messbarer technischer Ansatz",
       "process": [
         {
-          "title": "Nachvollziehbare Daten sammeln",
-          "text": "Wir kombinieren beobachtbares Seitenverhalten mit Search Console, Analytics und Performance-Daten, sofern Sie den nötigen Zugriff bereitstellen können."
+          "title": "Sammeln Sie Beweise",
+          "text": "Wir kombinieren beobachtbares Seitenverhalten mit Search Console, Analysen und Leistungsdaten, sofern Sie Zugriff gewähren können."
         },
         {
-          "title": "Wichtiges von Nebensächlichem trennen",
-          "text": "Wir unterscheiden Probleme, die die Indexierung verhindern, von kleineren Warnungen und behandeln nicht jede automatische Bewertung als geschäftliche Priorität."
+          "title": "Trennen Sie Aufprall und Lärm",
+          "text": "Wir unterscheiden Indexblockierungsprobleme von geringfügigen Warnungen und vermeiden es, jede automatisierte Bewertung als Geschäftspriorität zu behandeln."
         },
         {
-          "title": "Verbessern und überwachen",
-          "text": "Wir setzen vereinbarte Verbesserungen um, überprüfen die URLs und beobachten Suchsichtbarkeit und Performance im Zeitverlauf."
+          "title": "Reparieren und überwachen",
+          "text": "Wir implementieren vereinbarte Verbesserungen, validieren die URLs und überwachen die Sichtbarkeit und Leistung der Suche im Laufe der Zeit."
         }
       ],
       "faqHeading": "Häufige Fragen",
@@ -150,159 +150,159 @@
         },
         {
           "question": "Sollten wir eine andere SEO-App installieren?",
-          "answer": "Nur, wenn die App ein nachgewiesenes Problem löst. Viele Probleme mit Canonicals, Indexierung und strukturierten Daten lassen sich besser im Theme oder in der Website-Architektur beheben."
+          "answer": "Nur wenn es ein verifiziertes Problem löst. Viele kanonische, indexierende und strukturierte Datenprobleme lassen sich besser in der Theme- oder Site-Architektur angehen."
         },
         {
           "question": "Können Sie ohne Zugriff auf die Search Console arbeiten?",
           "answer": "Wir können zuerst öffentliche Seiten überprüfen, aber Impressionen, Abfragen, Indexierungsdetails und Ergebnisse sind mit verifiziertem Zugriff auf die Search Console viel klarer."
         }
       ],
-      "ctaHeading": "Erst prüfen, was verbessert werden muss – dann in weitere Tools investieren",
-      "ctaDescription": "Fordern Sie eine gezielte Shop-Analyse an. Wir ermitteln die sinnvollsten nächsten technischen Prüfungen.",
-      "ctaLabel": "Kostenlose Expertenanalyse anfragen",
-      "backLabel": "Shopify-Leistungen entdecken"
+      "ctaHeading": "Informieren Sie sich, was zu reparieren ist, bevor Sie weitere Werkzeuge kaufen",
+      "ctaDescription": "Fordern Sie eine gezielte Store-Bewertung an und wir ermitteln die nützlichsten nächsten technischen Überprüfungen.",
+      "ctaLabel": "Fordern Sie eine kostenlose Expertenbewertung an",
+      "backLabel": "Entdecken Sie die Shopify-Dienste"
     }
   },
   "subscriptions": {
     "seoTitle": "Einrichtung von Shopify-Abonnements und wiederkehrenden Bestellungen | CartShift",
     "seoDescription": "Abonnementpläne, wiederholte Lieferung und „Abonnieren und Sparen“ für Shopify-Shops. Strategie, Zahlungsberechtigung, Kundenerlebnis, Integration und Implementierung.",
-    "eyebrow": "SHOPIFY-ABONNEMENTS · KUNDENBINDUNG",
-    "headline": "Ihre Kunden brauchen das Produkt wieder.",
-    "headlineAccent": "Ihr Shop sollte dafür bereit sein.",
+    "eyebrow": "SHOPIFY-ABONNEMENTS · AUFBEWAHRUNG",
+    "headline": "Ihre Kunden brauchen es wieder.",
+    "headlineAccent": "Sorgen Sie für eine mühelose Rückkehr.",
     "intro": "Verwandeln Sie einmalige Einkäufe in eine dauerhafte Beziehung mit flexiblen Lieferplänen und einem Einkaufserlebnis, das auf Stammkunden zugeschnitten ist. Wir entwerfen den Ansatz rund um Ihr Geschäft, Ihre Zahlungen und Ihren Betrieb.",
-    "primaryCta": "Kostenlose Prüfung für Ihren Shop anfragen",
+    "primaryCta": "Holen Sie sich eine kostenlose Abonnement-Fit-Bewertung",
     "secondaryCta": "Wie es funktioniert",
     "trust": [
-      "Zuerst die Machbarkeit prüfen",
+      "Machbarkeit zuerst",
       "Entwickelt für Shopify",
-      "Betriebliche Abläufe mitgedacht"
+      "Operationen inklusive"
     ],
-    "visualTop": "Beispiel für einen wiederkehrenden Kauf",
+    "visualTop": "Ein Beispiel für ein Wiederholungskauferlebnis",
     "visualProduct": "Ein Produkt, das Kunden lieben",
     "visualOneTime": "Einmaliger Kauf",
-    "visualRepeat": "Regelmäßige Lieferung",
+    "visualRepeat": "Lieferung wiederholen",
     "visualFrequency": "Alle 4 Wochen",
     "visualFlex": "Flexibler Zeitplan · Kundenkontrolle · Klare Preise",
     "visualNote": "Nur zur Veranschaulichung. Die tatsächliche Abrechnung hängt von der Berechtigung des Zahlungsanbieters ab.",
     "painEyebrow": "Warum Abonnements?",
-    "painTitle": "Weniger an Nachbestellungen denken. Mehr Gründe wiederzukommen.",
+    "painTitle": "Weniger merkbare Nachbestellungen. Weitere Gründe zur Rückkehr.",
     "painIntro": "Bei Produkten, die Kunden regelmäßig benötigen, sollte sich der erneute Kauf einfach anfühlen. Ein gut gestaltetes Abonnement macht wiederholten Aufwand überflüssig, ohne die Auswahlmöglichkeiten des Kunden zu beeinträchtigen.",
     "benefits": [
       {
-        "title": "Bequeme Nachbestellung",
+        "title": "Einfacher Wiederholungskauf",
         "text": "Kunden wählen einen Zeitplan, der zu ihrer Nutzung passt, anstatt jedes Mal bei Null anzufangen."
       },
       {
-        "title": "Langfristige Kundenbeziehungen",
+        "title": "Langfristige Beziehungen",
         "text": "Klare Kommunikation während des gesamten Abonnementlebenszyklus und Kontrolle über Änderungen."
       },
       {
-        "title": "Bessere Planbarkeit",
+        "title": "Eine fundiertere Planung",
         "text": "Wenn Daten verfügbar sind, können Wiederholungskaufmuster in die Bestands- und Kampagnenplanung einfließen."
       }
     ],
-    "whoTitle": "Besonders geeignet für regelmäßig benötigte Produkte",
+    "whoTitle": "Eine gute Lösung für häufig nachgefüllte Produkte",
     "who": [
       "Tiernahrung und Zubehör",
       "Kaffee und Verbrauchsmaterialien",
       "Schönheit und Körperpflege",
-      "Nahrungsergänzungsmittel und andere Verbrauchsprodukte"
+      "Ergänzungen und Essentials"
     ],
-    "modesEyebrow": "Nicht jedes Geschäft braucht dasselbe Modell",
+    "modesEyebrow": "Ein Modell passt nicht in jedes Geschäft",
     "modesTitle": "Wählen Sie das Abonnementmodell, das zu Ihrem Unternehmen passt.",
-    "modesIntro": "Wir prüfen zunächst Zahlungsanbieter, Lagerbestand und Versandabläufe. Erst dann entscheiden wir, ob automatische Abbuchungen oder ein einfacherer Prozess für wiederkehrende Bestellungen sinnvoll sind.",
+    "modesIntro": "Wir prüfen zunächst Zahlungen, Lagerbestand und Erfüllung und entscheiden dann, ob eine automatische Abrechnung oder ein einfacherer Workflow für wiederkehrende Bestellungen die richtige Wahl ist.",
     "autoLabel": "OPTION 01",
-    "autoTitle": "Abonnements mit automatischer Abbuchung",
+    "autoTitle": "Automatisch abgerechnete Abonnements",
     "autoText": "Kunden wählen einen Zeitplan aus und genehmigen zukünftige Gebühren. Erfolgreiche Abrechnungszyklen führen zu neuen Bestellungen durch eine kompatible Abonnementlösung.",
     "autoPoints": [
-      "Automatische Verlängerung ohne erneuten Checkout",
-      "Aussetzen, überspringen oder kündigen – sofern unterstützt",
+      "Automatisierte Verlängerung ohne erneuten Checkout",
+      "Überspringen, pausieren und brechen Sie Steuerelemente ab, sofern dies unterstützt wird",
       "Erfordert ein geeignetes Zahlungsgateway und eine Genehmigung"
     ],
     "reminderLabel": "OPTION 02",
-    "reminderTitle": "Wiederkehrende Bestellungen mit Zahlungserinnerung",
-    "reminderText": "Kunden wählen einen wiederkehrenden Lieferplan und erhalten bei jedem Zyklus einen Zahlungslink. Das kann sinnvoll sein, wenn automatische Abbuchungen nicht verfügbar oder nicht erforderlich sind.",
+    "reminderTitle": "Wiederholen Sie Bestellungen mit Zahlungserinnerungen",
+    "reminderText": "Kunden schließen sich einem Wiederholungslieferplan an und erhalten für jeden Zyklus einen Zahlungslink. Nützlich, wenn die automatische Abrechnung nicht verfügbar oder unnötig ist.",
     "reminderPoints": [
-      "Nutzt den vorhandenen Checkout",
+      "Verwendet den vorhandenen Checkout",
       "Keine automatische wiederkehrende Zahlungsverpflichtung",
-      "Jede Verlängerung erfordert eine Zahlung durch den Kunden"
+      "Für jede Verlängerung ist eine Zahlung durch den Kunden erforderlich"
     ],
     "scopeEyebrow": "Was wir liefern",
-    "scopeTitle": "Mehr als nur eine App installieren: Wir verbinden den gesamten Abo-Prozess.",
+    "scopeTitle": "Mehr als die Installation einer App. Wir verbinden die gesamte Abonnement-Reise.",
     "scope": [
       {
         "title": "Angebot und Geschäftsmodell",
         "text": "Produkte, Zeitplan, Anreize und Erfolgskennzahlen."
       },
       {
-        "title": "Zahlungen und technische Voraussetzungen",
-        "text": "Bestehenden Zahlungsanbieter, Anforderungen an wiederkehrende Zahlungen und Plattformgrenzen prüfen."
+        "title": "Zahlungen und Berechtigung",
+        "text": "Überprüfen Sie bestehende Anbieter, wiederkehrende Abrechnungsanforderungen und Plattformbeschränkungen."
       },
       {
         "title": "Kundenerlebnis",
-        "text": "Klare Auswahlmöglichkeiten auf Produktseiten, Mobilgeräten und im Checkout."
+        "text": "Klare Auswahlmöglichkeiten auf Produktseiten, Mobilgeräten und an der Kasse."
       },
       {
-        "title": "Lagerbestand und Bestellabläufe",
-        "text": "Wiederkehrende Bestellungen mit Kommissionierung, Versand und Integrationen abstimmen."
+        "title": "Bestands- und Auftragsfluss",
+        "text": "Ordnen Sie Erneuerungsaufträge der Auftragsabwicklung, dem Versand und den Integrationen zu."
       },
       {
-        "title": "Automatisierungen und Kommunikation",
-        "text": "Erinnerungen, Benachrichtigungen und die Behandlung von Änderungen oder fehlgeschlagenen Zahlungen nach Bedarf."
+        "title": "Automatisierungen und Nachrichten",
+        "text": "Erinnerungen, Benachrichtigungen, Änderungen und Bearbeitung fehlgeschlagener Zahlungen nach Bedarf."
       },
       {
-        "title": "Tests und Übergabe",
-        "text": "Verlängerung, Kündigung und Fehlerfälle prüfen und das Team einweisen."
+        "title": "Qualitätssicherung und Übergabe",
+        "text": "Verlängerung, Stornierung und Ausfallprüfung mit Teamschulung."
       }
     ],
     "processTitle": "Drei gezielte Schritte, keine unnötige Entwicklung",
     "process": [
       {
-        "title": "Ihren Shop kennenlernen",
-        "text": "Produkte, Kaufprozess, Zahlungssystem und Versandabläufe prüfen."
+        "title": "Verstehen Sie Ihren Shop",
+        "text": "Überprüfen Sie Ihre Produkte, die Customer Journey, die Zahlungseinrichtung und den Versandprozess."
       },
       {
-        "title": "Das passende Modell empfehlen",
-        "text": "Unterscheiden, was bereits unterstützt wird, was eine Genehmigung des Anbieters braucht und was individuell entwickelt werden muss."
+        "title": "Empfehlen Sie das richtige Modell",
+        "text": "Trennen Sie, was heute unterstützt wird, was die Genehmigung des Anbieters benötigt und was eine individuelle Entwicklung erfordert."
       },
       {
-        "title": "Umsetzen, testen und übergeben",
-        "text": "Den freigegebenen Umfang umsetzen, einen vollständigen Bestellzyklus prüfen und die Abläufe dokumentieren."
+        "title": "Bauen, testen und übergeben",
+        "text": "Implementieren Sie einen genehmigten Umfang, validieren Sie einen End-to-End-Zyklus und dokumentieren Sie Vorgänge."
       }
     ],
     "techTitle": "Funktioniert mit Ihren bestehenden Abläufen",
-    "techText": "Ein Abonnement ist mehr als eine Schaltfläche auf der Produktseite. Wir berücksichtigen wiederkehrende Zahlungen, Bestellungen, Versandwege, Bestandsaktualisierungen und Kundenbenachrichtigungen, damit die Lösung nicht an anderer Stelle zusätzlichen manuellen Aufwand verursacht.",
-    "eligibilityTitle": "Wichtig: Voraussetzungen für automatische Abbuchungen",
-    "eligibilityText": "Für Shopify-Abonnements mit automatischen Abbuchungen ist ein unterstützter Zahlungsanbieter erforderlich. Ein Anbieter, der Einmalzahlungen ermöglicht, unterstützt nicht zwangsläufig auch Shopify-Abonnements. Wir prüfen die Voraussetzungen, bevor wir automatische Zahlungen zusagen.",
+    "techText": "Ein Abonnement ist mehr als eine Schaltfläche auf der Produktseite. Wir berücksichtigen wiederkehrende Zahlungen, Bestellungen, Routen, Bestandsaktualisierungen und Kundenbenachrichtigungen, sodass die Lösung an anderer Stelle keine manuelle Arbeit verursacht.",
+    "eligibilityTitle": "Wichtig: Berechtigung zur automatischen Abrechnung",
+    "eligibilityText": "Shopify erfordert ein unterstütztes Zahlungsgateway für Abonnements mit automatischer Abrechnung. Ein Anbieter, der einmalige Zahlungen unterstützt, unterstützt nicht unbedingt die Abrechnung von Shopify-Abonnements. Wir prüfen die Berechtigung, bevor wir automatische Gebühren versprechen.",
     "eligibilityLink": "Shopify-Abonnementanforderungen",
     "faqTitle": "Häufig gestellte Fragen",
     "faq": [
       {
         "question": "Muss ich meinen Zahlungsanbieter ersetzen?",
-        "answer": "Nicht unbedingt. Für automatisch abgerechnete Shopify-Abonnements sind ein geeigneter Zahlungsanbieter und entsprechende Freigaben erforderlich. Ein erinnerungsbasierter Nachbestellprozess kann häufig den vorhandenen Checkout weiterverwenden."
+        "answer": "Nicht unbedingt. Für automatisch abgerechnete Shopify-Abonnements ist ein berechtigtes Gateway und eine Genehmigung erforderlich. Ein erinnerungsbasierter Nachbestellungsplan kann häufig Ihren bestehenden Checkout weiter nutzen."
       },
       {
         "question": "Können wir Abonnentenrabatte anbieten?",
         "answer": "Ja, abhängig von der gewählten Lösung. Wir überprüfen Marge, Versandkosten und Gebühren, bevor wir einen Anreiz empfehlen."
       },
       {
-        "question": "Eignen sich Abonnements nur für Tiernahrung?",
+        "question": "Gibt es Abonnements nur für Tiernahrung?",
         "answer": "Nein. Sie eignen sich für häufig nachgefüllte Waren wie Kaffee, Körperpflegeprodukte, Verbrauchsmaterialien und andere Wiederholungskäufe."
       },
       {
         "question": "Was passiert, wenn Kunden überspringen oder stornieren müssen?",
-        "answer": "Bei automatisch abgerechneten Modellen wählen wir eine Lösung mit geeigneten Kundenfunktionen und klaren Regeln. Der genaue Funktionsumfang hängt von der App und dem Zahlungsanbieter ab."
+        "answer": "Für automatische Pläne wählen wir eine Lösung mit entsprechenden Kundenkontrollen und klaren Richtlinien. Die genauen Funktionen hängen von der App und dem Gateway ab."
       },
       {
         "question": "Wie viel kostet die Einrichtung?",
-        "answer": "Das hängt unter anderem von den Zahlungsbedingungen, dem Produktkatalog, UI-Anpassungen und Integrationen ab. Wir beginnen mit einer Prüfung der Shop-Eignung und erstellen danach ein Angebot mit klarem Leistungsumfang."
+        "answer": "Dies hängt von der Zahlungsberechtigung, dem Produktkatalog, der Anpassung der Benutzeroberfläche und den Integrationen ab. Wir beginnen mit einer Überprüfung der Ladentauglichkeit und unterbreiten dann einen umfassenden Vorschlag."
       }
     ],
-    "ctaEyebrow": "Beginnen wir mit Ihrem Shop",
+    "ctaEyebrow": "Beginnen Sie mit Ihrem Geschäft",
     "ctaTitle": "Lassen Sie uns prüfen, ob Abonnements für Ihr Unternehmen sinnvoll sind.",
-    "ctaText": "Teilen Sie uns die URL Ihres Shops und die regelmäßig nachbestellten Produkte mit. Wir beginnen mit einer Expertenanalyse und empfehlen einen praktikablen Ansatz, bevor Sie die Umsetzung beauftragen.",
-    "ctaFooter": "Die erste Prüfung umfasst keine Umsetzung und garantiert keine geschäftlichen Ergebnisse.",
-    "backLabel": "Shopify-Leistungen entdecken",
+    "ctaText": "Teilen Sie Ihre Shop-URL und die Produkte, die Kunden nachbestellen. Wir beginnen mit einer Expertenbewertung und empfehlen eine praktische Richtung, bevor wir uns zur Umsetzung verpflichten.",
+    "ctaFooter": "Die Erstprüfung umfasst weder die Umsetzung noch garantiert sie kommerzielle Ergebnisse.",
+    "backLabel": "Entdecken Sie die Shopify-Dienste",
     "navigationLabel": "Abonnements und Nachbestellungen"
   }
 }
