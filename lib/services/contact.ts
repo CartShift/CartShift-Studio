@@ -29,6 +29,7 @@ export async function submitContactForm(
     company: validation.data.company ? sanitizeString(validation.data.company) : undefined,
     projectType: validation.data.projectType ? sanitizeString(validation.data.projectType) : undefined,
     locale: validation.data.locale,
+    attribution: validation.data.attribution,
   };
   if (!form.name.trim()) {
     return { success: false, error: 'Name is required', status: 400 };

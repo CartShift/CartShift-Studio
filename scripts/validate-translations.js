@@ -18,7 +18,7 @@ const path = require('path');
 
 const MESSAGES_DIR = path.join(process.cwd(), 'messages');
 const SRC_DIR = path.join(MESSAGES_DIR, 'src');
-const LOCALES = ['en', 'he'];
+const LOCALES = ['en', 'he', 'de'];
 const CODE_DIRS = [
   path.join(process.cwd(), 'app'),
   path.join(process.cwd(), 'components'),
@@ -278,6 +278,20 @@ async function validateTranslations() {
     console.log(`✅ Key parity (${enKeys.size} leaf keys)`);
   }
 
+  // German is intentionally a partial source overlay but the generated tree
+  // must be structurally complete and preserve ICU interpolation arguments.
+  const deKeys = localeKeys.de;
+  const missingDeKeys = [...enKeys].filter(k => !deKeys.has(k));
+  if (missingDeKeys.length) {
+    hasErrors = true;
+    console.error(`❌ Missing German runtime keys: ${missingDeKeys.slice(0, 20).join(', ')}`);
+  }
+  const deStructures = findStructureMismatches(enData, localeData.de);
+  if (deStructures.length) {
+    hasErrors = true;
+    console.error(`❌ German structure mismatch: ${deStructures.slice(0, 20).join(', ')}`);
+  }
+
   // 4. Structure mismatches
   const structureMismatches = findStructureMismatches(enData, heData);
   if (structureMismatches.length) {
@@ -309,6 +323,15 @@ async function validateTranslations() {
 
     const enParams = extractParams(enVal);
     const heParams = extractParams(heVal);
+    const deVal = getValue(localeData.de, key);
+    const deParams = typeof deVal === 'string' ? extractParams(deVal) : new Set();
+    const missingDeParams = [...enParams].filter(p => !deParams.has(p));
+    const extraDeParams = [...deParams].filter(p => !enParams.has(p));
+    if (missingDeParams.length || extraDeParams.length) {
+      console.error(`❌ DE interpolation mismatch: ${key}`);
+      hasErrors = true;
+      interpolationErrors++;
+    }
     const missingInHeParams = [...enParams].filter(p => !heParams.has(p));
     const extraInHeParams = [...heParams].filter(p => !enParams.has(p));
 

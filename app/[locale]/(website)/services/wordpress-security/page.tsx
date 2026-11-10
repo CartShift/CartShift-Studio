@@ -24,7 +24,7 @@ import {
   generateFAQPageSchema,
 } from '@/lib/seo';
 
-type Locale = 'en' | 'he';
+type Locale = 'en' | 'he' | 'de';
 
 export async function generateMetadata({
   params,
@@ -39,7 +39,9 @@ export async function generateMetadata({
     description: t('seoDescription'),
     url: '/services/wordpress-security',
     socialImage: '/og/wordpress-security-launch.png',
-    keywords: locale === 'he'
+    keywords: locale === 'de'
+      ? ['WordPress-Sicherheit', 'WordPress-Sicherheitsprüfung', 'WordPress-Wartung', 'PHP-Sicherheitsupdates', 'PHP2Shell']
+      : locale === 'he'
       ? ['חבילת אבטחת WordPress', 'בדיקת אבטחה וורדפרס', 'תחזוקת וורדפרס', 'תיקוני אבטחה PHP', 'PHP2Shell']
       : ['WordPress security package', 'WordPress security check', 'WordPress maintenance', 'PHP security patches', 'PHP2Shell'],
   }, locale as Locale);
@@ -65,15 +67,15 @@ export default async function WordPressSecurityPage({
   const excluded = t.raw('offer.excluded') as string[];
 
   const serviceSchema = generateServiceSchema(
-    activeLocale === 'he' ? 'חבילת אבטחה ותחזוקה לאתרי WordPress' : 'WordPress Security & Maintenance Package',
+    activeLocale === 'he' ? 'חבילת אבטחה ותחזוקה לאתרי WordPress' : activeLocale === 'de' ? 'WordPress-Sicherheits- und Wartungspaket' : 'WordPress Security & Maintenance Package',
     t('seoDescription'),
     { url: '/services/wordpress-security', locale: activeLocale, priceRange: 'ILS 890', image: 'https://cart-shift.com/og/wordpress-security-launch.png' }
   );
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: activeLocale === 'he' ? 'בית' : 'Home', url: '/' },
+    { name: activeLocale === 'he' ? 'בית' : activeLocale === 'de' ? 'Startseite' : 'Home', url: '/' },
     { name: 'WordPress', url: '/solutions/wordpress' },
-    { name: activeLocale === 'he' ? 'חבילת אבטחה' : 'Security package', url: '/services/wordpress-security' },
+    { name: activeLocale === 'he' ? 'חבילת אבטחה' : activeLocale === 'de' ? 'Sicherheitspaket' : 'Security package', url: '/services/wordpress-security' },
   ], activeLocale);
 
   return (

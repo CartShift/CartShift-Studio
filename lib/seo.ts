@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
+import { germanMarketingEnabled, isGermanMarketingPath } from '@/lib/i18n/german-routes';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 const defaultOgImage = `${siteUrl}/images/og-default.png`;
-type Locale = 'en' | 'he';
+type Locale = 'en' | 'he' | 'de';
 
-const localePathPattern = /^\/(en|he)(?:\/|$)/;
+const localePathPattern = /^\/(en|he|de)(?:\/|$)/;
 
 function toAbsoluteAssetUrl(url?: string): string | undefined {
   if (!url) return undefined;
@@ -56,10 +57,12 @@ export interface SEOConfig {
   noindex?: boolean;
 }
 
-export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metadata {
+export function generateMetadata(config: SEOConfig, locale?: Locale): Metadata {
   const imageUrl = toAbsoluteAssetUrl(config.socialImage || config.image) || defaultOgImage;
-  const pathOnly = config.url?.replace(siteUrl, '').replace(/^\/(en|he)/, '') || '';
+  const rawPath = config.url?.replace(siteUrl, '').replace(/^\/(en|he|de)(?=\/|$)/, '') || '';
+  const pathOnly = rawPath === '/' ? '' : rawPath;
   const currentLocale = locale || 'en';
+  const hasGermanAlternative = germanMarketingEnabled() && isGermanMarketingPath(pathOnly || '/');
   const canonicalUrl = `${siteUrl}/${currentLocale}${pathOnly}`;
 
   const alternates: Metadata['alternates'] = {
@@ -67,6 +70,7 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
     languages: {
       en: `${siteUrl}/en${pathOnly}`,
       he: `${siteUrl}/he${pathOnly}`,
+      ...(hasGermanAlternative ? { de: `${siteUrl}/de${pathOnly}` } : {}),
       'x-default': `${siteUrl}/en${pathOnly}`,
     },
   };
@@ -83,8 +87,10 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
       description: config.description,
       url: canonicalUrl,
       siteName: 'CartShift Studio',
-      locale: currentLocale === 'he' ? 'he_IL' : 'en_US',
-      alternateLocale: currentLocale === 'he' ? 'en_US' : 'he_IL',
+      locale: currentLocale === 'he' ? 'he_IL' : currentLocale === 'de' ? 'de_DE' : 'en_US',
+      alternateLocale: (['en_US', 'he_IL', ...(hasGermanAlternative ? ['de_DE'] : [])] as string[]).filter(
+        code => code !== (currentLocale === 'he' ? 'he_IL' : currentLocale === 'de' ? 'de_DE' : 'en_US')
+      ),
       images: [
         {
           url: imageUrl,
@@ -107,9 +113,6 @@ export function generateMetadata(config: SEOConfig, locale?: 'en' | 'he'): Metad
       site: '@cartshiftstudio',
     },
     alternates,
-    other: {
-      'og:locale:alternate': currentLocale === 'he' ? 'en_US' : 'he_IL',
-    },
   };
 }
 
@@ -180,7 +183,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      availableLanguage: ['English', 'Hebrew'],
+      availableLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
       url: `${siteUrl}/contact`,
     },
   };
@@ -354,7 +357,7 @@ export function generateArticleSchema(post: {
   description: string;
   date?: string;
   url: string;
-  locale?: 'en' | 'he';
+  locale?: Locale;
   author?: string;
   category?: string;
   image?: string;
@@ -363,7 +366,7 @@ export function generateArticleSchema(post: {
   wordCount?: number;
   readingTime?: number;
 }) {
-  const language = post.locale === 'he' ? 'he-IL' : 'en-US';
+  const language = post.locale === 'he' ? 'he-IL' : post.locale === 'de' ? 'de-DE' : 'en-US';
   const articleUrl = toAbsoluteLocalizedUrl(post.url, post.locale || 'en');
   const imageUrl = toAbsoluteAssetUrl(post.socialImage || post.image) || defaultOgImage;
 
@@ -468,21 +471,13 @@ export function generateLocalBusinessSchema() {
     url: siteUrl,
     image: `${siteUrl}/images/og-default.png`,
     priceRange: '$$',
-    serviceArea: {
-      '@type': 'GeoCircle',
-      geoMidpoint: {
-        '@type': 'GeoCoordinates',
-        latitude: 32.0853,
-        longitude: 34.7818,
-      },
-      geoRadius: '50000',
-    },
+    // Do not invent a local business address or service radius; those require verified details.
     areaServed: 'Worldwide',
-    knowsLanguage: ['English', 'Hebrew'],
+    knowsLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
   };
 }
 
-export function generateWebSiteSchema(locale?: 'en' | 'he') {
+export function generateWebSiteSchema(locale?: Locale) {
   const localizedSiteUrl = `${siteUrl}/${locale || 'en'}`;
 
   return {
@@ -497,7 +492,7 @@ export function generateWebSiteSchema(locale?: 'en' | 'he') {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
     },
-    inLanguage: ['en-US', 'he-IL'],
+    inLanguage: ['en-US', 'he-IL', ...(germanMarketingEnabled() ? ['de-DE'] : [])],
     potentialAction: [
       {
         '@type': 'SearchAction',

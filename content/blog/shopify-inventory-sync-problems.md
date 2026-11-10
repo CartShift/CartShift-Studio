@@ -7,6 +7,9 @@ tags: ['Shopify', 'Inventory', 'Integrations', 'Fulfillment', 'B2B']
 title_he: 'סנכרון מלאי ב-Shopify: למה המלאי בחנות ובמחסן לא תואם?'
 excerpt_he: 'מדריך מעשי לאיתור פערי מלאי בין Shopify למחסן, כולל מיקומים, הזמנות, כפילויות, שמירת מלאי וטיפול בתקלות.'
 category_he: 'שופיפיי'
+title_de: "Probleme bei der Synchronisierung des Shopify-Bestands: Warum Lagerbestände zwischen Geschäft und Lager schwanken"
+excerpt_de: "Ein praktischer Leitfaden zu Shopify-Inventardrift, Lagerintegrationen, Standortzuordnung, Duplikatereignissen, Lagerreservierungen und zuverlässiger Wiederherstellung."
+category_de: "Shopify"
 ---
 
 Inventory synchronization failures are rarely solved by pressing “sync again.” The useful question is *which system owns each number, which inventory state is being compared, and what happens when an update arrives twice, late, or not at all?*
@@ -180,3 +183,86 @@ Webhooks יכולים להגיע שוב, ואוטומציה יכולה לבצע 
 ---
 
 *מקורות טכניים: [מצבי מלאי ב־Shopify](https://help.shopify.com/en/manual/inventory-and-locations/fundamentals/inventory-states), [מלאי לפי מיקום](https://help.shopify.com/en/manual/inventory-and-locations/adjusting-inventory/viewing-inventory) ו[מוטציות מלאי ב־GraphQL](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/inventoryAdjustQuantities). יש לוודא גרסת API והרשאות לפני שינוי מלאי בחנות פעילה.*
+
+---de---
+Fehler bei der Inventarsynchronisierung werden selten durch Drücken von „Erneut synchronisieren“ behoben. Die nützliche Frage lautet: *Welches System besitzt die einzelnen Nummern, welcher Bestandsstatus wird verglichen und was passiert, wenn ein Update zweimal, zu spät oder gar nicht eintrifft?*
+
+Für ein Geschäft, das Shopify zusammen mit einem Fulfillment-Partner, einem Lagerverwaltungssystem (WMS), einem ERP-System oder einem Automatisierungstool nutzt, können sich Bestandsprobleme in Form von Überverkäufen, nicht verfügbaren Produkten, die physisch vorhanden sind, Bestellungen, die an den falschen Standort weitergeleitet werden, oder inkonsistenten Zahlen in Berichten zeigen.
+
+Dieser Leitfaden richtet sich an Betreiber und Entwickler, die diese Probleme diagnostizieren möchten, bevor sie eine weitere App kaufen.
+
+## Beginnen Sie mit der richtigen Menge
+
+Shopify unterscheidet den Bestandsstatus an jedem Standort. **Vorhandensein** ist der an einem Standort erfasste Bestand; **verfügbar** ist der verkaufbare Bestand; **festgeschrieben** wird Bestellungen zugeordnet und kann nicht erneut verkauft werden; **nicht verfügbar** umfasst Einheiten, die aus anderen Gründen zurückgestellt wurden; und **eingehend** steht für noch nicht erhaltene Bestände.
+
+Wenn Ihr Lager „physische Einheiten im Regal“ sendet, diese Zahl aber durch eine Integration in die verkaufsfähige **verfügbare** Menge von Shopify geschrieben wird, kann es zu einer Diskrepanz kommen, selbst wenn beide Systeme korrekt berichten.
+
+Bevor Sie die Integration in Angriff nehmen, vergleichen Sie dieselbe SKU oder denselben Lagerbestandsartikel, *gleichen Standort, denselben Zeitpunkt und denselben Lagerbestandsstatus*. Verwenden Sie [Bestandsstatusreferenz von Shopify](https://help.shopify.com/en/manual/inventory-and-locations/fundamentals/inventory-states), um Definitionen auszurichten.
+
+## Sechs häufige Ursachen für Bestandsabweichungen
+
+### 1. Der falsche Standort wird aktualisiert
+
+Ein Händler kann über ein physisches Lager, einen Ausstellungsraum, ein Büro und einen Fulfillment-Partner verfügen, die als verschiedene Shopify-Standorte dargestellt werden. Eine Integration kann den Bestand an einem Standort erfolgreich aktualisieren, während die Storefront an einem anderen Standort verkauft.
+
+**Überprüfen Sie:** Listen Sie für eine Auswahl von Varianten die Shopify-Inventarartikel-ID, alle aktiven Standort-IDs, die Erfüllungskonfiguration und die Standortkennung des Lagers auf. Überprüfen Sie, welcher Standort Online-Bestellungen ausführen darf. Gehen Sie nicht davon aus, dass die Gesamtsumme eines Artikels an allen Standorten dem zur Kasse verfügbaren Betrag entspricht.
+
+### 2. Der SKU-Abgleich ist nicht eindeutig
+
+SKU-Werte sind nützliche Betriebskennungen, es kann jedoch nicht garantiert werden, dass sie eindeutig sind oder ausgefüllt werden. Einer Variante fehlt möglicherweise ihre SKU, sie hat eine mit einem Bundle oder Duplikat gemeinsam oder sie wird nach dem Import umbenannt.
+
+**Überprüfen:** Definieren Sie eine stabile Zuordnung von jedem externen Lagerartikel zum entsprechenden Shopify-Inventarartikel und -Standort. Erkennen Sie Duplikate und nicht übereinstimmende Produkte explizit. Erraten Sie niemals die nächstgelegene SKU, um einen Synchronisierungsauftrag umweltfreundlich zu halten.
+
+### 3. Eine Bestellung ändert den Status vor der Ausführung
+
+Aufgegebene Bestellungen können dazu führen, dass Einheiten in den Status „zurückgegeben“ verschoben werden, während die Arbeitsabläufe im Lager sie möglicherweise immer noch als auf die Kommissionierung wartend anzeigen. „Gedruckt“, „in Verpackung“ und „ausgeliefert“ sind unterschiedliche betriebliche Fakten. Die Anzahl der Warenlager und die Anzahl der verfügbaren Shopify-Produkte können in diesem Zeitraum durchaus unterschiedlich sein.
+
+**Überprüfen:** Untersuchen Sie einige reale Bestellabläufe: aufgegeben → weitergeleitet → kommissioniert → versendet → erfüllt. Fragen Sie, welches System den Bestand ändert und zu welchem ​​Zeitpunkt. Betrachten Sie den Verpackungsstatus eines Lagers nicht als Beweis dafür, dass der Bestandsabgleich abgeschlossen ist.
+
+### 4. Bei Wiederholungsversuchen wird dieselbe Anpassung zweimal ausgeführt
+
+Netzwerke scheitern. Webhook-Zustellungen können wiederholt werden und eine Automatisierung kann nach einer Zeitüberschreitung erneut abgespielt werden. Eine doppelte *inkrementelle Anpassung* kann dieselben Einheiten zweimal subtrahieren.
+
+**Überprüfen Sie:** Behalten Sie eine stabile Ereignis- oder Transaktionskennung bei, protokollieren Sie die Verarbeitungsergebnisse und verwenden Sie idempotente Vorgänge. Die GraphQL-Inventarmutationen von Shopify beinhalten Idempotenzanforderungen, die von der API-Version abhängen: Lesen Sie vor der Implementierung die [aktuelle Inventarmutationsreferenz](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/inventoryAdjustQuantities) und das [Shopify-Entwickleränderungsprotokoll](https://shopify.dev/changelog/adding-idempotency-for-inventory-adjustments-and-refund-mutations). Idempotenz reduziert doppelte Schreibvorgänge; es ersetzt nicht die Versöhnung.
+
+### 5. Beide Systeme glauben, sie seien die Quelle der Wahrheit
+
+Ein Flow importiert Lagermengen in Shopify; Eine andere Shopify-App sendet geänderte Mengen zurück an das Lager. Ohne Eigentumsregeln gewinnt der letzte Schreibvorgang – möglicherweise werden legitime Reservierungen oder Anpassungen der Zyklusanzahl überschrieben.
+
+**Überprüfen:** Dokumentbesitz nach Bestandsstatus, Standort und Vorgang. Beispielsweise können Anpassungen der physischen Anzahl im WMS erfolgen, während Verkaufsreservierungen ihren Ursprung in Shopify haben. Die genauen Eigentumsverhältnisse hängen von Ihren Verträgen und der Abwicklungskonfiguration ab.
+
+### 6. Misserfolge sind still, und niemand versöhnt sie
+
+Sogar eine robuste Webhook-Pipeline kann während eines Anbieterausfalls oder einer Berechtigungsänderung einen Downstream-Schreibvorgang übersehen. Ein „erfolgreicher“ Automatisierungslauf bedeutet möglicherweise, dass eine Anfrage angenommen wurde, nicht aber, dass das Lager den beabsichtigten Vorgang ausgeführt hat.
+
+**Überprüfen:** Überwachen Sie fehlgeschlagene Nachrichten, Wiederholungsversuche, Berechtigungsfehler und veraltete Bestände. Planen Sie einen kontrollierten Vergleich repräsentativer Inventargegenstände. Geben Sie Ausnahmen einen Besitzer. Führen Sie ein Wiedergabe-/Wiederherstellungsverfahren durch, anstatt zufällige Mengen manuell zu bearbeiten.
+
+## Ein 30-minütiges Diagnosearbeitsblatt
+
+| Frage | Zu sammelnde Beweise | Warum es wichtig ist |
+| --- | --- | --- |
+| Welcher Artikel? | Varianten-ID, Inventarartikel-ID, SKU | Verhindert versehentliche Verknüpfungen |
+| Welcher Standort? | Shopify-Standort-ID, Lagerstandort | Verhindert Verwirrung auf Standortebene |
+| Welches Bundesland? | Verfügbar, festgeschrieben, nicht verfügbar, verfügbar | Verhindert den Vergleich unterschiedlicher Mengen |
+| Wann kam es zu einer Divergenz? | Letzter bekannter übereinstimmender Zeitstempel | Verengt das Änderungsfenster |
+| Was hat sich geändert? | Bestellungen, Retouren, Quittungen, Überweisungen, manuelle Anpassungen | Identifiziert legitime Lagerbewegungen |
+| Ist die Lieferung abgeschlossen? | Webhook-ID, Automatisierungslauf, API-Antwort, Downstream-Bestätigung | Unterscheidet „akzeptiert“ von „angewandt |“.
+| Kann es sicher wiedergegeben werden? | Stabiler Idempotenzschlüssel und Abgleichsdatensatz | Verhindert die Entstehung einer weiteren Nichtübereinstimmung |
+
+Beginnen Sie mit fünf repräsentativen Varianten: einem gemeinsamen Verkäufer, einem Artikel mit geringem Lagerbestand, einem Artikel mit mehreren Standorten, einem Bundle oder Produkt mit Varianten und einem Artikel, der kürzlich zurückgegeben oder storniert wurde. Vergleichen Sie die tatsächlichen Zustände an jedem Standort. Führen Sie keine Massenkorrektur durch, bis das Nichtübereinstimmungsmuster verstanden ist.
+
+## Sollten Sie eine App, ein Make oder einen benutzerdefinierten Code verwenden?
+
+Verwenden Sie **unterstützte native Shopify-Funktionen**, wenn diese den Betriebsbedarf decken. Verwenden Sie eine **gut gewartete Integrations-App**, wenn das externe System unterstützt wird, sein Datenmodell passt und der Fehlerstatus klar angezeigt wird. Verwenden Sie ein Tool wie **Make** für begrenzte Arbeitsabläufe, mit denen Sie Verzögerungen tolerieren und beheben sowie fehlgeschlagene Vorgänge überprüfen können. Erwägen Sie **benutzerdefinierten Integrationscode**, wenn Abstimmung, komplexe Zuordnung, Auftragsweiterleitung oder Zuverlässigkeitsanforderungen die ständige Eigentümerschaft rechtfertigen.
+
+Ein kleiner Workflow ist nicht automatisch produktionssicher, nur weil er automatisiert ist. Berücksichtigen Sie die Betriebskosten für Überwachung, Ausnahmen, API-Limits und Support – nicht nur den Abonnementpreis.
+
+## Wie eine zuverlässige Lösung aussieht
+
+Eine zuverlässige Bestandsintegration sollte über identifizierbare Eingaben, eine dokumentierte Quelle der Wahrheit, eine genaue Artikel-/Standortzuordnung, wiederholsichere Verarbeitung, eine klare Fehlerwarteschlange, Prüfprotokolle, einen Abgleich und einen unkomplizierten menschlichen Wiederherstellungspfad verfügen.
+
+Wenn im Geschäft bereits Bestandsabweichungen auftreten, fordern Sie eine [gezielte Expertenbewertung des Geschäfts](/free-store-review) an, um die ersten Untersuchungsschritte festzulegen. Informationen zu Architektur- oder Implementierungsanforderungen finden Sie in unserem [Shopify B2B- und Integrationsservice](/services/shopify-b2b-integrations). Wir beginnen mit dem vorhandenen System und seinen Einschränkungen und gehen nicht davon aus, dass Sie eine neue App oder einen vollständigen Neuaufbau benötigen.
+
+---
+
+*Technische Referenzen: [Shopify-Inventarstatus](https://help.shopify.com/en/manual/inventory-and-locations/fundamentals/inventory-states), [Inventaranzeige nach Standort](https://help.shopify.com/en/manual/inventory-and-locations/adjusting-inventory/viewing-inventory) und [GraphQL-Inventaranpassungen](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/inventoryAdjustQuantities). Überprüfen Sie die API-Version und Berechtigungen für Ihren eigenen Shop, bevor Sie den Produktionsbestand ändern.*

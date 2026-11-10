@@ -9,6 +9,9 @@ socialImage: '/images/blog/og/wordpress-technical-seo.webp'
 title_he: 'צ׳ק ליסט SEO טכני לוורדפרס: גרסת איקומרס'
 excerpt_he: 'מדריך Technical SEO מעשי ל-WordPress שמפחית אי-בהירות סביב אינדוקס, canonicals, sitemaps, structured data, ביצועים וריבוי שפות.'
 category_he: 'וורדפרס'
+title_de: "Technische SEO-Checkliste für WordPress: E-Commerce-Edition"
+excerpt_de: "Ein praktischer technischer SEO-Leitfaden für WordPress zur Reduzierung von Unklarheiten in Bezug auf Indexierbarkeit, Canonicals, Sitemaps, strukturierte Daten, Leistung und mehrsprachige Einrichtung."
+category_de: "WordPress"
 ---
 
 Technical SEO on WordPress is mostly about removing ambiguity. Which pages should be indexed? Which versions are canonical? Which products, categories, and content hubs deserve crawl attention? Which plugins are creating noise?
@@ -402,3 +405,216 @@ SEO טכני זה לא להיות “מושלמים”. זה להוריד חיכ
 
 אם תרצו, נעשה לכם Audit טכני ונמפה את זה לתכנית עבודה מסודרת לפי ROI:
 [צרו קשר](/contact) — ושלחו גם URL + 3 המדינות המרכזיות שאתם מוכרים אליהן.
+
+---de---
+Beim technischen SEO auf WordPress geht es hauptsächlich darum, Unklarheiten zu beseitigen. Welche Seiten sollen indexiert werden? Welche Versionen sind kanonisch? Welche Produkte, Kategorien und Content Hubs verdienen Crawling-Aufmerksamkeit? Welche Plugins verursachen Lärm?
+
+Das Ziel besteht nicht darin, einer Checkliste zu gefallen. Dies soll das Crawlen der Website durch Google und das Vertrauen der Kunden erleichtern. Beginnen Sie mit [Google Search Central](https://developers.google.com/search) und überprüfen Sie dann die tatsächlichen Vorlagen, die Ihre Besucher verwenden.
+
+## Was „technisches SEO“ eigentlich für den E-Commerce bedeutet
+
+Im E-Commerce geht es bei technischem SEO hauptsächlich um Folgendes:
+
+- **Crawling**: Kann Google auf Ihre wichtigen URLs zugreifen?
+- **Indexierung**: Können die richtigen URLs in den Suchergebnissen erscheinen?
+- **Kanonisierung**: Werden doppelte URLs ordnungsgemäß konsolidiert?
+- **Strukturierte Daten**: Versteht Google Produkte, Preise, Verfügbarkeit und Richtlinien?
+- **Leistung**: Ist die Website schnell und stabil genug, um eine Konvertierung durchzuführen (und CWV nicht auszufallen)?
+
+Kommen wir zur Checkliste.
+
+## Technische SEO-Arbeitscheckliste für WordPress für E-Commerce
+
+### 1) Indexierungskontrollen: robots.txt vs. noindex (nicht verwechseln)
+
+Zwei Regeln, die die Leute verwirren:
+
+- **robots.txt** steuert das _Crawling_ (ob Googlebot eine URL abrufen kann).
+- **noindex** steuert die _Indexierung_ (ob eine URL in den Suchergebnissen erscheinen kann).
+
+Wichtig: Damit `noindex` funktioniert, muss Google in der Lage sein, die Seite zu crawlen und das Tag/den Header zu sehen – blockieren Sie es also nicht in robots.txt, wenn Ihr Ziel die Deindexierung ist.
+
+**Aktionselemente:**
+
+- [ ] Stellen Sie sicher, dass Ihr Shop keine wesentlichen Assets (CSS/JS) blockiert, die für das Rendering benötigt werden.
+- [ ] Verwenden Sie `noindex` für Thin-/Utility-Seiten, die Sie nicht in Google haben möchten (Beispiel: interne Suchergebnisse, Kontoseiten, Warenkorb, Checkout).
+- [ ] Halten Sie robots.txt sauber und zielgerichtet – kopieren/fügen Sie keine zufälligen „SEO-Roboter-Vorlagen“ aus dem Jahr 2016 ein.
+
+Hilfreiche Referenz:
+
+- Googles robots.txt-Dokumentation: https://developers.google.com/search/reference/robots_txt
+- Google auf noindex: https://developers.google.com/search/docs/crawling-indexing/block-indexing
+
+### 2) Sitemaps: saubere Signale generieren (und übermitteln)
+
+Eine Sitemap ist keine Zauberei. Es ist ein starker Hinweis. Es teilt Google mit: „Das sind die URLs, die uns wichtig sind.“
+
+**Aktionselemente:**
+
+- [ ] Stellen Sie sicher, dass Sie über eine XML-Sitemap verfügen (die meisten SEO-Plugins generieren diese).
+- [ ] Senden Sie es in der Google Search Console.
+- [ ] Stellen Sie sicher, dass es nur indexierbare URLs enthält (nicht `noindex`, keine 404s, keine umgeleiteten URLs).
+- [ ] Wenn Ihre Website groß ist, verwenden Sie Sitemap-Indexdateien und sorgen Sie für Ordnung.
+
+Referenz:
+
+- Best Practices für den Google Sitemap-Index: https://developers.google.com/search/docs/crawling-indexing/sitemaps/large-sitemaps
+
+### 3) Canonicals: Verhindern Sie, dass Duplikate Ihr Ranking verschlingen
+
+E-Commerce erzeugt ständig Duplikate:
+
+- Produktvarianten mit unterschiedlichen URLs,
+- Kategorieseiten mit Sortierparametern,
+- gefilterte Seiten,
+- Paginierung,
+- Tracking-Parameter.
+
+Google erklärt Kanonisierung als Auswahl der „repräsentativen“ URL unter Duplikaten. Sie können einen Kanon vorschlagen, aber es ist ein Hinweis – kein Befehl.
+
+**Aktionselemente:**
+
+- [ ] Stellen Sie sicher, dass jede Produktseite eine einzige bevorzugte kanonische URL hat.
+- [ ] Vermeiden Sie kanonische Fehler bei der Paginierung (verweisen Sie nicht auf Seite 2 → Seite 1, es sei denn, es handelt sich tatsächlich um ein Duplikat).
+- [ ] Wenn Sie sowohl HTTP als auch HTTPS (oder www vs. nicht-www) haben, beheben Sie das Problem mit Weiterleitungen + konsistenten Canonicals.
+
+Referenzen:
+
+- Übersicht über die Kanonisierung: https://developers.google.com/search/docs/crawling-indexing/canonicalization
+- Häufige kanonische Fehler (Paginierung): https://developers.google.com/search/blog/2013/04/5-common-mistakes-with-relcanonical
+
+### 4) Facettierte Navigation (Filter) – die WooCommerce-SEO-Falle Nr. 1
+
+Filter sind eine großartige UX. Sie sind auch ein Crawling-/Indexierungs-Albtraum.
+
+Typisches Problem:
+
+- Google entdeckt Tausende von Filterkombinationen
+- Crawling-Budget wird verschwendet
+- Duplicate Content explodiert
+- Kategorieseiten werden schwächer statt gestärkt
+
+**Aktionselemente:**
+
+- [ ] Entscheiden Sie, welche gefilterten Seiten eine Indexierung verdienen (normalerweise nur sehr wenige).
+- [ ] Im Übrigen: `noindex, follow` ist oft ein vernünftiger Ansatz.
+- [ ] Erwägen Sie das Blockieren endloser Parameterkombinationen in robots.txt _nur wenn_ Sie sicher sind, dass Google sie nicht für die Entdeckung crawlen muss.
+
+Profi-Tipp: Halten Sie „SEO-Filterseiten“ bewusst. Beispiel:
+Anstatt `/category/shoes?color=black&size=42&sort=price` indexieren zu lassen, erstellen Sie eine kuratierte Landingpage wie `/black-running-shoes/` mit echtem Text, internen Links und einer stabilen URL.
+
+### 5) Produktstrukturierte Daten (Schema): Machen Sie Google verständlich, was Sie verkaufen
+
+Wenn Sie umfassende Ergebnisse (Preis, Verfügbarkeit, Bewertungen) wünschen, benötigen Sie korrekte `Product` strukturierte Daten.
+
+**Aktionselemente:**
+
+- [ ] Fügen Sie das Schema `Product` mit den erforderlichen Eigenschaften hinzu (Name + mindestens eines von review/aggregateRating/offers).
+- [ ] Stellen Sie sicher, dass Preise, Währung und Verfügbarkeit korrekt aktualisiert werden.
+- [ ] Validieren Sie mit dem Rich Results Test von Google.
+- [ ] Generieren Sie Schemata nicht nur über umfangreiches clientseitiges JS, wenn Sie dies vermeiden können.
+
+Referenzen:
+
+- Strukturierte Produktdaten (Snippets): https://developers.google.com/search/docs/appearance/structured-data/product-snippet
+- Allgemeine Richtlinien für strukturierte Daten: https://developers.google.com/search/docs/appearance/structured-data/sd-policies
+
+### 6) Rückgaberichtlinienschema (optional, aber leistungsstark für Vertrauen)
+
+Wenn Sie in SEO investieren, sind Vertrauenssignale wichtig. Markup für Rückgaberichtlinien kann Suchmaschinen dabei helfen, Ihre Händlerrichtlinien zu verstehen.
+
+**Aktionselemente:**
+
+- [ ] Veröffentlichen Sie eine klare Seite mit den Rückgabebedingungen.
+- [ ] Fügen Sie gegebenenfalls strukturierte MerchantReturnPolicy-Daten hinzu.
+
+Referenz:
+
+- MerchantReturnPolicy-Dokumentation: https://developers.google.com/search/docs/appearance/structured-data/return-policy
+
+### 7) Core Web Vitals: E-Commerce-Leistung ist nicht „nice to have“
+
+Die Core Web Vitals-Ziele von Google sind bekannt, aber die Geschäfte ignorieren sie immer noch, bis der bezahlte Traffic teuer wird.
+
+Zielt auf Google-Dokumente ab:
+
+- LCP innerhalb von 2,5 s
+- INP unter 200 ms
+- CLS unter 0,1
+
+**Aktionselemente (WordPress/WooCommerce-spezifisch):**
+
+- [ ] Verwenden Sie einen schnellen Host (wenn möglich verwaltetes WP/Woo-Hosting).
+- [ ] Vollseiten-Caching + Objekt-Cache hinzufügen (Redis, wenn der Stack dies unterstützt).
+- [ ] Bilder optimieren (WebP + korrekte Größe + Lazy Load).
+- [ ] Reduzieren Sie das Aufblähen von Plugins (insbesondere Seitenersteller + mehrere Analyseskripte).
+- [ ] Verzögern Sie nicht kritische JS- und Drittanbieter-Skripte (Chat-Widgets, Heatmaps usw.).
+
+Referenz:
+
+- Kern-Web-Vitals in der Suche: https://developers.google.com/search/docs/appearance/core-web-vitals
+
+### 8) Mehrsprachige Einrichtung (Hebräisch + Englisch): Machen Sie es auf die „Google-sichere“ Art und Weise
+
+Wenn Ihr Shop zweisprachig ist, verlassen Sie sich bei kritischen Inhalten nicht auf Cookies oder Browser-Sprachweiterleitungen. Google empfiehlt die Verwendung unterschiedlicher URLs pro Sprache und die Verwendung von Hreflang-Anmerkungen, um Nutzer zur richtigen Sprachversion weiterzuleiten.
+
+**Aktionselemente:**
+
+- [ ] Verwenden Sie für jede Sprache separate URLs (zum Beispiel `/en/` und `/he/`).
+- [ ] Fügen Sie `hreflang` korrekt hinzu (Plugin oder benutzerdefinierte Ausgabe).
+- [ ] Stellen Sie sicher, dass jede Sprachversion über gleichwertige interne Links und Indexierbarkeit verfügt.
+
+Referenz:
+
+- Google-Anleitung für mehrsprachige Websites: https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites
+
+### 9) Überwachung: Die Search Console ist Ihr technisches SEO-Dashboard
+
+Wenn Sie es nicht messen, werden Sie die Ausfälle erst dann bemerken, wenn die Einnahmen sinken.
+
+**Aktionselemente:**
+
+- [ ] Verwenden Sie die URL-Inspektion für wichtige Seiten (Produkte + Kategorien).
+- [ ] Überwachen Sie die Indexierungsberichte „Seiten“ (suchen Sie nach Problemen vom Typ „Duplikat, Google hat andere kanonische Daten ausgewählt“).
+- [ ] Verfolgen Sie den Core Web Vitals-Bericht in der Search Console.
+- [ ] Sitemap nach größeren Site-Änderungen erneut einreichen.
+
+## Schnelle „Fertig“-Checkliste (Kopieren/Einfügen)
+
+**Crawling & Index**
+
+- [ ] robots.txt ist beabsichtigt (blockiert keine wichtigen Seiten/Assets)
+- [ ] noindex wird für Thin-Utility-Seiten (Warenkorb/Checkout/Konto/Suche) verwendet.
+- [ ] XML-Sitemap eingereicht und bereinigt
+
+**Duplikate**
+
+- [ ] Canonicals sind für Produkte und Kategorien korrekt
+- [ ] Die Paginierung ist nicht versehentlich Canonicals-to-page-1
+- [ ] Filter-URLs werden kontrolliert (kein Index oder kuratierte Zielseiten)
+
+**Rich-Ergebnisse**
+
+- [ ] Produktschema gültig und getestet
+- [ ] Seite mit Rückgaberichtlinien vorhanden (Schema, falls relevant)
+
+**Leistung**
+
+- [ ] CWV-Ziele angesprochen (LCP/INP/CLS)
+- [ ] Plugins/Skripte getrimmt und optimiert
+
+**Zweisprachig**
+
+- [ ] separate Sprach-URLs + hreflang
+- [ ] beide Sprachen intern verknüpft und indizierbar
+
+## Fazit
+
+Bei technischem SEO geht es nicht darum, „perfekt“ zu sein. Es geht darum, Reibungen zu beseitigen:
+
+- für Crawler (damit Sie richtig indiziert werden),
+- für Benutzer (damit Seiten geladen und konvertiert werden),
+- und für Ihr Team (damit Änderungen nicht alles kaputt machen).
+
+Wenn Sie möchten, können wir ein technisches SEO-Audit für Ihren WordPress/WooCommerce-Shop durchführen und diese Checkliste in eine priorisierte Roadmap umwandeln:
+[Kontaktieren Sie uns](/contact) – und geben Sie Ihre Shop-URL + die drei wichtigsten Länder an, in die Sie verkaufen.

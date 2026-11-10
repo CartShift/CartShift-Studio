@@ -9,6 +9,9 @@ socialImage: '/images/blog/og/shopify-checkout-optimization.webp'
 title_he: 'צ׳ק ליסט להשקת חנות Shopify: מה לבדוק לפני שעולים לאוויר'
 excerpt_he: 'צ׳ק ליסט מעשי להשקת חנות Shopify: מוצרים, תשלומים, משלוחים, מסים, SEO, הפניות, אנליטיקס, checkout ותוכנית חזרה לאחור לפני יום ההשקה.'
 category_he: 'Shopify'
+title_de: "Checkliste für die Shopify-Store-Einführung: Was Sie überprüfen sollten, bevor Sie live gehen"
+excerpt_de: "Eine praktische Checkliste für die Shopify-Shop-Einführung für Teams, die vor dem Einführungstag Produkte, Zahlungen, Versand, Steuern, SEO, Weiterleitungen, Analysen, Checkout und Rollback überprüfen müssen."
+category_de: "Shopify"
 ---
 
 A Shopify launch is not one task. It is the moment when catalog, checkout, operations, analytics, SEO, and customer support all have to agree with each other.
@@ -644,3 +647,320 @@ Rollback לא תמיד אומר להוריד את החנות. לפעמים זה 
 אם אתם קרובים להשקה והצ׳ק ליסט מעלה יותר שאלות מתשובות, זה טוב. זה אומר שתוכנית ההשקה עושה את העבודה לפני שהלקוחות מוצאים את הפערים.
 
 [דברו עם CartShift Studio](/contact) אם אתם רוצים בדיקת השקת Shopify, QA למיגרציה או תוכנית go-live לפני שהחנות מתחילה לקבל הזמנות אמיתיות.
+
+---de---
+Ein Shopify-Start ist keine einzelne Aufgabe. Es ist der Moment, in dem Katalog, Checkout, Betrieb, Analyse, SEO und Kundensupport miteinander übereinstimmen müssen.
+
+Aus diesem Grund sollte eine Launch-Checkliste kein dekoratives Dokument sein, in dem steht: „Produkte, Thema, Domain, fertig.“ Mithilfe einer nützlichen Shopify-Shop-Start-Checkliste kann das Team beweisen, dass der Shop echte Bestellungen entgegennehmen, echte Richtlinien erklären, die Suchsichtbarkeit schützen und Probleme ohne Panik beheben kann.
+
+Verwenden Sie diesen Leitfaden vor einem neuen Shopify-Build, einem Redesign oder einer Migration von einer anderen Plattform. Wenn es sich bei dem Projekt um eine Migration handelt, kombinieren Sie es mit unserem [Migrationsleitfaden von WooCommerce zu Shopify](/blog/woocommerce-to-shopify-migration) und der umfassenderen [Checkliste für die E-Commerce-Migration](/blog/complete-guide-ecommerce-migration).
+
+## Die kurze Antwort
+
+Bevor ein Shopify-Shop online geht, überprüfen Sie sechs Dinge:
+
+1. Der Kunde kann das richtige Produkt finden, verstehen und kaufen.
+2. Zahlungen, Versand, Steuern, Rabatte und Benachrichtigungen verhalten sich korrekt.
+3. SEO-kritische URLs, Weiterleitungen, Titel, Canonicals und indexierbare Seiten sind beabsichtigt.
+4. Analytics kann Traffic, Checkout-Verhalten, Käufe und Markteinführungsänderungen unterscheiden.
+5. Das Team weiß, wer für Bestellungen, Inventar, Support, Erfüllung und Rollback zuständig ist.
+6. Der Starttag hat einen schriftlichen Ablauf und keinen Slack-Thread voller Vermutungen.
+
+Shopifys eigenes Hilfecenter bietet eine allgemeine Checkliste für die Einrichtung neuer Shops und Shopify Plus verfügt über zusätzliche Checklisten für die Einführung und den Go-Live für größere Implementierungen. Behandeln Sie diese als Meilensteine ​​der Plattform. Behandeln Sie diesen Artikel als die operative Qualitätssicherungsebene rund um Umsatz, SEO und Konvertierung.
+
+## Wählen Sie zunächst den Starttyp
+
+Die Checkliste ändert sich je nachdem, was tatsächlich gestartet wird.
+
+| Starttyp | Was am wichtigsten ist | Hauptrisiko |
+| ---------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------ |
+| Neuer Shopify-Shop | Katalogeinrichtung, Zahlungen, Versand, Richtlinien, Sendungsverfolgung, Vertrauen | Eine erforderliche E-Commerce-Einstellung fehlt |
+| Neugestaltung des bestehenden Shopify-Shops | Theme-QA, App-Verhalten, Seitengeschwindigkeit, Checkout-Pfad, Inhaltsparität | Einen funktionierenden Umsatzpfad durchbrechen |
+| Plattformmigration zu Shopify | URL-Weiterleitungen, Produktdaten, Kundenerwartungen, Bestellvorgänge | Verlust von SEO-Wert oder betrieblicher Kontinuität |
+| Shopify Plus-Einführung | Checkout-Erweiterbarkeit, Märkte, B2B, komplexe Integrationen, Go-Live-Rollen | Zu viele Teams stellen gleichzeitig die Produktion um |
+
+Wenn der Shop bereits Traffic, Umsatz oder indizierte URLs hat, handelt es sich bei der Einführung nicht nur um eine Designveröffentlichung. Es handelt sich um eine Veranstaltung zur Geschäftskontinuität.
+
+## 1. Katalog- und Merchandising-Checks
+
+Beginnen Sie mit den Teilen, die Käufer zuerst sehen.
+
+Überprüfen Sie jeden wichtigen Produkttyp, nicht nur ein perfektes Musterprodukt. Ein Shop mit einfachen Produkten, Varianten, Bundles, Abonnements, Vorbestellungen und digitalen Produkten benötigt Testfälle für jeden Typ.
+
+Überprüfen Sie:
+
+- Produkttitel sind eindeutig und nicht intern benannt
+- Beschreibungen beantworten Fragen zu Größe, Materialien, Kompatibilität, Pflege, Garantie oder Verwendung
+- Variantennamen sind auf Mobilgeräten verständlich
+- Preise, Vergleichspreise, Steuern und Verkaufsregeln sind beabsichtigt
+- Produktbilder haben einheitliche Seitenverhältnisse und nützlichen Alternativtext
+- Nicht verfügbare Varianten verhalten sich eindeutig
+- Zu den Kollektionen gehören die richtigen Produkte und Sortierregeln
+- Filter erzeugen keine verwirrenden leeren Zustände
+- Die Suche liefert nützliche Ergebnisse für Marke, Produkt, SKU und häufige Rechtschreibfehler
+- Produktempfehlungen sind relevant genug, um angezeigt zu werden
+
+Bei SEO besteht das Ziel nicht darin, Sammlungsseiten mit Schlüsselwörtern zu füllen. Es geht darum, jedes kommerziell wichtige Produkt und jede Sammlung nützlich genug zu machen, um sie zu bewerten und zu konvertieren. Unser [Shopify SEO-Leitfaden](/blog/shopify-seo-complete-guide) behandelt die Produkt- und Kollektionsstruktur detaillierter.
+
+## 2. Thema, Geschwindigkeit und mobile Qualitätssicherung
+
+Ein startbereites Shopify-Theme muss in dem vom Team verwendeten Browser ansprechend und in den von den Kunden verwendeten Browsern stabil sein.
+
+Testen Sie den Shop auf:
+
+- ein aktuelles iPhone
+- möglichst ein aktuelles Android-Gerät
+- ein Desktop-Browser
+- eine langsamere Mobilfunkverbindung
+- das kleinste gemeinsame mobile Ansichtsfenster
+
+Sehen Sie sich den vollständigen Pfad von der Startseite zum Produkt, zum Warenkorb, zur Kasse und zur Dankesseite an. Bleiben Sie nicht bei der Produktvorlage stehen.
+
+Suchen Sie nach:
+
+- Das Layout verschiebt sich, wenn Bilder oder App-Blöcke geladen werden
+- Tippen Sie auf Ziele, die schwer zu treffen sind
+- Sticky Bars, Chat-Widgets, Popups oder Einwilligungsbanner, die Kaufaktionen abdecken
+- Filter oder Menüs, die den Tastaturfokus blockieren
+- Produktmedien, die zu spät geladen werden
+- Warenkorbschubladen, die bei Rabatten, Paketen oder Abonnements scheitern
+- Text, der in Hebräisch oder Englisch schlecht umbrochen werden kann
+- Formulare, die die falsche mobile Tastatur verwenden
+
+Wenn die Leistung bereits fragil ist, wird dies am Starttag deutlicher sichtbar. Nutzen Sie unseren [Leitfaden zur Shopify-Geschwindigkeitsoptimierung](/blog/speed-up-shopify-store) und [Ladengeschwindigkeit vs. Konvertierung](/blog/store-speed-vs-conversion), um Korrekturen zu priorisieren, die sich auf das Kaufverhalten auswirken, und nicht nur auf Laborergebnisse.
+
+## 3. Zahlungen, Versand, Steuern und Märkte
+
+Der Checkout-Pfad ist der Ort, an dem das Vertrauen beim Start real wird. Testen Sie es mit realen Konfigurationen und kontrollierten Testaufträgen.
+
+Zahlungen überprüfen:
+
+- die vorgesehenen Zahlungsanbieter sind aktiv
+- Der Testmodus wird erst am richtigen Punkt in der Startsequenz entfernt
+- Beschleunigte Wallets erscheinen dort, wo erwartet
+- Zahlungsfehler sind verständlich
+- Auftragsbestätigung und Zahlungsstatus stimmen überein
+- Rückerstattungen und Stornierungen können vom Betriebsteam bearbeitet werden
+
+Versand überprüfen:
+
+- Zonen entsprechen den Märkten, die Sie tatsächlich bedienen
+- Die Preise gelten für gängige Wagengrößen
+- Die Schwellenwerte für den kostenlosen Versand funktionieren
+- Lokale Liefer-, Abhol- oder Speditionstarife werden nicht versehentlich angezeigt
+- Für übergroße, zerbrechliche, Kühlkettenprodukte oder eingeschränkte Produkte gelten die richtigen Regeln
+
+Steuern und Abgaben überprüfen:
+
+- Steuereinstellungen spiegeln wider, wo das Unternehmen Verpflichtungen hat
+- Preise und Steuerbotschaften sind für die Zielmärkte klar
+- Internationale Zölle oder Importerwartungen werden erst zu spät verborgen
+- Rechnungen, Quittungen und Benachrichtigungen verwenden die richtigen Geschäftsdaten
+
+Für den internationalen Verkauf kann Shopify Markets regionalspezifische Domains, Kataloge, Währungen und Einstellungen steuern. In der Dokumentation von Shopify wird außerdem darauf hingewiesen, dass das Deaktivieren oder Löschen von Märkten Auswirkungen darauf haben kann, ob Unterordner-URLs weiterhin funktionieren. Marktentscheidungen sollten daher vor der URL- und Weiterleitungs-QA und nicht danach getroffen werden.
+
+## 4. Checkout- und Umrechnungsprüfungen
+
+Launch-Teams konzentrieren sich oft zu sehr auf die Homepage. Kunden beurteilen den Shop im Moment des Risikos: Warenkorb, Kasse, Zahlung und Bestätigung.
+
+Führen Sie Checkout-Tests durch für:
+
+- Erstkunde
+- wiederkehrender Kunde
+- Mobilfunkkunde
+- Rabattcode
+- Schwelle für den kostenlosen Versand
+- Nicht vorrätiges oder wenig vorrätiges Produkt
+- internationale Adresse
+- fehlgeschlagene Zahlung
+- Geschenkkarte oder Guthaben, falls verwendet
+- Abonnement oder Vorbestellung bei Nutzung
+
+Überprüfen Sie dann die Reibung:
+
+- Sind die Versandkosten früh genug sichtbar?
+- Erklärt der Warenkorb, was als nächstes passiert?
+- Verursacht das Rabattfeld eine Coupon-Jagd?
+- Sind Rückgabe- und Liefererwartungen vor der Zahlung zugänglich?
+- Fühlen sich die Bezeichnungen der Zahlungsmethoden der Zielgruppe bekannt an?
+- Sagt die Dankesseite dem Kunden, was ihn erwartet?
+
+Wenn der Checkout bereits leistungsschwach ist, begraben Sie das Problem nicht unter einem Launch. Diagnostizieren Sie es mit unserem [Shopify Checkout-Optimierungsleitfaden](/blog/shopify-checkout-optimization) und unserer [Conversion-Audit-Checkliste](/blog/conversion-audit-checklist).
+
+## 5. SEO, URLs und Weiterleitungen
+
+Dies ist der Teil eines Shopify-Starts, der ruhig Monate dauern kann.
+
+Bei einem neuen Shop besteht das größte SEO-Risiko darin, dünne, verwirrende oder nicht indexierbare Seiten zu starten. Bei einer Migration oder Neugestaltung besteht das größere Risiko darin, URLs zu ändern, ohne die Signale beizubehalten.
+
+Überprüfen Sie vor dem Start Folgendes:
+
+- Jedes wichtige Produkt, jede Sammlung, jeder Blog-Beitrag und jede Landingpage hat einen absichtlichen Titel und eine Meta-Beschreibung
+- Sammlungsseiten enthalten gegebenenfalls nützliche Einführungs- oder unterstützende Inhalte
+- Es sind keine Staging-, Test-, Duplikat- oder gefilterten Seiten unbeabsichtigt indexierbar
+- Kanonische URLs verweisen auf die bevorzugte Produktions-URL
+- Interne Links verwenden die endgültige URL-Struktur
+- Der Alternativtext des Bildes ist beschreibend
+- Die Sitemap ist nach dem Start verfügbar
+- Die Robots-Einstellungen blockieren keine wichtigen Seiten
+- Alte URLs leiten zur nächstgelegenen relevanten neuen URL weiter
+- Gelöschte Produkte werden zu Ersatzprodukten, übergeordneten Kollektionen oder nützlichen Alternativen weitergeleitet
+
+In der URL-Umleitungsdokumentation von Shopify wird erläutert, dass Weiterleitungen Kunden dabei helfen, die richtige Seite zu erreichen, wenn sich eine URL ändert. Exportieren Sie bei Migrationen die alte URL-Liste vor dem Start und testen Sie die URLs mit dem höchsten Wert manuell, insbesondere Seiten mit Backlinks, organischem Traffic oder E-Mail-Traffic.
+
+Leiten Sie nicht alles auf die Homepage um. Das ist normalerweise schlecht für Benutzer und schwach für Suchmaschinen. Ordnen Sie alte Produktseiten neuen Produktseiten, alte Kategorien neuen Kollektionen und alte Inhalte den am besten passenden Inhalten zu.
+
+## 6. Apps, Integrationen und Automatisierung
+
+Jede installierte App ist Teil der Startoberfläche. Einige wirken sich auf die Geschwindigkeit aus. Einige wirken sich auf den Checkout aus. Einige wirken sich auf Inventar, Abonnements, Bewertungen, Suche, Personalisierung, Retouren, Steuern oder Erfüllung aus.
+
+Erstellen Sie ein Launch-App-Inventar:
+
+- App-Name
+- Besitzer
+- Zweck
+- betroffene Seiten
+- Daten abgerufen
+- Rechnungsinhaber
+- Theme-Code oder App-Block verwendet
+- Startkritisch oder optional
+- Rollback-/Deaktivierungsplan
+
+Testen Sie dann die Integrationen nach Workflow und nicht nach App-Namen.
+
+Zum Beispiel:
+
+- Bei einer in Shopify aufgegebenen Bestellung wird die richtige Erfüllungsaktion erstellt
+- Die Inventarsynchronisierung aktualisiert Shopify ohne doppelte Änderungen
+- Die E-Mail-Plattform erhält das richtige Ereignis und den richtigen Zustimmungsstatus des Kunden
+- Bewertungen, Widget-Renderings, ohne Produktinhalte zu blockieren
+- ERP oder Buchhaltungsexport wickelt Rückerstattungen, Rabatte, Steuern und Versand ab
+- Das Supportsystem erhält Kunden- und Auftragskontext
+
+Wenn der App-Stack bereits überfüllt ist, kann unser [Leitfaden zur Optimierung von Shopify-Apps](/blog/shopify-apps-optimization-guide) bei der Entscheidung helfen, was bleiben, was ersetzt werden soll und was vor dem Start entfernt werden sollte.
+
+## 7. Analytik und Event-QS
+
+Ein Start ohne Analyse ist ein Start ohne Speicher.
+
+Bestätigen Sie vor dem Start Folgendes:
+
+- GA4 ist installiert und empfängt Datenverkehr
+- Kaufereignisse werden einmal ausgelöst, nicht zweimal
+- Währungs- und Umsatzwerte sind korrekt
+- Checkout- und Warenkorbereignisse entsprechen der aktuellen Implementierung
+- Bei Bedarf werden Paid-Media-Pixel eingebaut
+- Das Einwilligungsverhalten entspricht der Geschäftspolitik
+- Der interne Teamverkehr wird gefiltert oder kommentiert, sofern dies praktisch ist
+- Startänderungen werden im Berichtsworkflow mit Anmerkungen versehen
+- Die Search Console-Property und die Sitemap sind fertig
+
+Testen Sie die Analyse mit einer echten Browsing-Sequenz:
+
+1. kommen von einer getaggten Test-URL
+2. ein Produkt ansehen
+3. Zum Warenkorb hinzufügen
+4. Kasse starten
+5. Schließen Sie eine Testbestellung ab
+6. Bestätigen Sie die Bestellung und den Umsatz in Reporting-Tools
+
+Wenn die Site sowohl englische als auch hebräische Seiten verwendet, überprüfen Sie die Sprach- und Pfadberichte, damit das Team die Leistung vergleichen kann, ohne unabhängige Reisen zu vermischen.
+
+## 8. Inhalts-, Richtlinien- und Vertrauensprüfungen
+
+Vertrauenslücken werden nach der Einführung zu Support-Tickets.
+
+Rezension:
+
+- Versandbedingungen
+- Rückgabe und Umtausch
+- Datenschutzrichtlinie
+- Begriffe
+- Kontaktdaten
+- Gewährleistungs- oder Garantiebedingungen
+- Größentabellen oder Kompatibilitätshinweise
+- FAQ-Inhalt
+- Bestellbestätigungs-E-Mails
+- E-Mails mit abgebrochenen Kaufabwicklungen
+- Transaktionales E-Mail-Branding
+
+Stellen Sie sicher, dass die Richtlinien dort sichtbar sind, wo Kunden Sicherheit benötigen. Eine Rückgaberichtlinie, die nur in der Fußzeile versteckt ist, mag zwar technisch gesehen existieren, aber sie hilft einem zögerlichen Käufer auf einer Produktseite oder im Bezahlvorgang nicht weiter.
+
+Überprüfen Sie bei zweisprachigen Geschäften direkt den hebräischen Inhalt. Übersetzungsdrift ist leicht zu übersehen, wenn das Startteam nur die englische Reise überprüft.
+
+## 9. Betriebs- und Supportbereitschaft
+
+Der Shop wird nicht gestartet, wenn die Homepage sichtbar ist. Es wird gestartet, wenn das Team echte Aufträge ruhig bearbeiten kann.
+
+Bestätigen:
+
+- Wer überwacht die ersten Bestellungen?
+- Wem gehören Erfüllungsausnahmen?
+- Wer beantwortet den Kundensupport?
+- wie Rückerstattungen und Stornierungen gehandhabt werden
+- wie Bestandsinkongruenzen eskalieren
+- wie die Betrugsprüfung gehandhabt wird
+- wie Fehler mit hoher Priorität gemeldet werden
+- Wer kann Kampagnen pausieren, wenn der Checkout fehlschlägt?
+- Wer kann bei Bedarf Theme-Änderungen rückgängig machen?
+
+Erstellen Sie am Einführungstag eine Kontaktliste mit Namen, Rollen und Entscheidungsbefugnissen. Vermeiden Sie einen Plan, bei dem jeder „verfügbar“ ist, aber niemand die Entscheidung trifft.
+
+## 10. Startsequenz und Rollback-Plan
+
+Schreiben Sie die Startsequenz vor dem Starttag.
+
+Eine praktische Abfolge könnte Folgendes umfassen:
+
+1. Einfrieren nicht wesentlicher Inhalte und App-Änderungen
+2. Bestätigen Sie Backups, Theme-Version und DNS-Plan
+3. Überprüfen Sie Endprodukte, Sammlungen, Richtlinien und Benachrichtigungen
+4. Aktivieren Sie die endgültige Zahlungskonfiguration
+5. Domäne verbinden oder wechseln
+6. Entfernen Sie den Passwortschutz, wenn Sie bereit sind
+7. Testen Sie die Pfade Homepage, Sammlung, Produkt, Warenkorb, Kasse, Zahlung und Dankeschön
+8. Testen Sie Weiterleitungen und Sitemap
+9. eine kontrollierte Bestellung aufgeben und stornieren
+10. Kommentieren Sie Analysen
+11. Überwachen Sie Bestellungen, Fehler, Seitengeschwindigkeit und Supportmeldungen
+12. Führen Sie innerhalb von 24 bis 72 Stunden eine Überprüfung nach der Markteinführung durch
+
+Rollback bedeutet nicht immer, den Shop offline zu schalten. Dies kann das Zurückkehren zum vorherigen Thema, das Deaktivieren einer unkritischen App-Blockierung, das Pausieren von Kampagnen, das Wiederherstellen einer DNS-Einstellung oder das vorübergehende Ausblenden eines problematischen Produkts bedeuten.
+
+Es geht darum, diese Schritte zu entscheiden, bevor Stress auftritt.
+
+## Eine kompakte Shopify-Start-Checkliste
+
+Verwenden Sie dies als letzten Durchgang.
+
+- [ ] Wichtige Produkt- und Kollektionsseiten sind vollständig
+- [ ] Mobile Produkt-, Warenkorb- und Checkout-Pfade werden getestet
+- [ ] Zahlungen sind aktiv und der Testmodus wird absichtlich gehandhabt
+- [ ] Versandzonen, Tarife und Schwellenwerte werden überprüft
+- [ ] Steuern, Zölle und Markteinstellungen werden überprüft
+- [ ] Rabatt-, Geschenkkarten-, Abonnement- und Vorbestellungsabläufe werden bei Verwendung getestet
+- [ ] Transaktions-E-Mails werden überprüft
+- [ ] Titel, Beschreibungen, Canonicals, Sitemap und Roboterverhalten werden überprüft
+- [ ] alte URLs werden relevanten neuen URLs zugeordnet
+- [ ] GA4, Pixel, Kaufereignisse und Search Console sind verifiziert
+- [ ] Apps und Integrationen haben Besitzer und Rollback-Pfade
+- [ ] Support-, Erfüllungs-, Rückerstattungs- und Inventarausnahmen haben Eigentümer
+- [ ] Startsequenz wird geschrieben
+- [ ] Rollback-Plan ist geschrieben
+- [ ] Überwachungsfenster nach dem Start ist geplant
+
+## Worauf CartShift Studio vor dem Start achtet
+
+Wenn wir einen Shopify-Start überprüfen, ist es uns weniger wichtig, ob jede Aufgabe ein Häkchen hat, sondern vielmehr, ob das System den ersten Kontakt mit echten Kunden übersteht.
+
+Das bedeutet, dass wir den Fluss zwischen den Seiten betrachten, nicht nur die Seiten selbst:
+
+- Produktversprechen, Warenkorberwartung
+- Warenkorb Erwartung zur Kasse Realität
+- Kassenrealität zum Betriebsablauf
+- URL-Struktur zur Suchsichtbarkeit
+- Analyseereignisse bis hin zu Entscheidungen nach dem Start
+
+Wenn Sie kurz vor dem Start stehen und die Checkliste mehr Fragen als Antworten aufwirft, ist das hilfreich. Das bedeutet, dass der Einführungsplan seine Aufgabe erfüllt, bevor Kunden die Lücken entdecken.
+
+[Sprechen Sie mit CartShift Studio](/contact), wenn Sie eine Shopify-Einführungsüberprüfung, einen Migrations-QA-Pass oder einen Go-Live-Plan wünschen, bevor der Shop echte Bestellungen entgegennimmt.

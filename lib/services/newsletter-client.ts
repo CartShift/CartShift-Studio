@@ -2,7 +2,7 @@ import { logError } from '@/lib/logger';
 
 export async function subscribeNewsletter(
   email: string,
-  options?: { locale?: 'en' | 'he'; source?: string }
+  options?: { locale?: 'en' | 'he' | 'de'; source?: string }
 ) {
   try {
     const response = await fetch('/api/newsletter', {

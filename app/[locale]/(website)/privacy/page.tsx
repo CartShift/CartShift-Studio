@@ -13,24 +13,24 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe ? 'מדיניות פרטיות | CartShift Studio' : 'Privacy Policy | CartShift Studio',
-      description: isHe ? 'כיצד CartShift Studio אוספת, משתמשת ושומרת מידע אישי.' : 'How CartShift Studio handles and protects personal information.',
+      title: locale === 'de' ? 'Datenschutzerklärung | CartShift Studio' : isHe ? 'מדיניות פרטיות | CartShift Studio' : 'Privacy Policy | CartShift Studio',
+      description: locale === 'de' ? 'Wie CartShift Studio personenbezogene Daten verarbeitet und schützt.' : isHe ? 'כיצד CartShift Studio אוספת, משתמשת ושומרת מידע אישי.' : 'How CartShift Studio handles and protects personal information.',
       url: '/privacy',
       keywords: ['privacy policy', 'data protection', 'GDPR', 'cookie policy'],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
-      { name: locale === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy', url: '/privacy' },
+      { name: locale === 'he' ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'מדיניות פרטיות' : locale === 'de' ? 'Datenschutzerklärung' : 'Privacy Policy', url: '/privacy' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   return (

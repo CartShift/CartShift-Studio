@@ -9,6 +9,9 @@ socialImage: '/images/blog/og/shopify-seo-audit-checklist.webp'
 title_he: 'צ׳קליסט Shopify SEO: מה לתקן קודם ב-2026'
 excerpt_he: 'אודיט Shopify SEO מעשי להחלטה מה לתקן קודם: אינדוקס, כוונת חיפוש, collections, קישורים פנימיים, snippets, מהירות ומסלולי הכנסה.'
 category_he: 'שופיפיי'
+title_de: "Shopify SEO-Audit-Checkliste: Was im Jahr 2026 als Erstes behoben werden muss"
+excerpt_de: "Ein praktisches Shopify-SEO-Audit zur Entscheidung, was in Bezug auf Indexierbarkeit, Absicht, Sammlungen, interne Links, Snippets, Geschwindigkeit und Umsatzpfade zuerst behoben werden soll."
+category_de: "Shopify"
 ---
 
 A Shopify SEO audit should not end with a beautiful spreadsheet. It should end with a short list of fixes that explain what is blocking growth and what to do first.
@@ -426,3 +429,222 @@ SEO שלא מתחבר להכנסות הוא עבודה לא שלמה.
 ## מסקנה
 
 אודיט Shopify SEO טוב צריך להסתיים במפת עבודה מתועדפת, לא ברשימת בעיות כללית. המטרה היא לדעת מה לתקן קודם, למה זה חשוב, ואיך זה מתחבר לחשיפה, אמון והכנסות.
+
+---de---
+Ein Shopify-SEO-Audit sollte nicht mit einer schönen Tabelle enden. Am Ende sollte eine kurze Liste von Korrekturen stehen, die erklären, was das Wachstum blockiert und was zuerst zu tun ist.
+
+Die sinnvolle Reihenfolge ist einfach: Stellen Sie sicher, dass die richtigen Seiten gefunden werden können, stellen Sie sicher, dass sie die Suchanfrage verdienen, stellen Sie sicher, dass sie miteinander verlinkt sind, und stellen Sie sicher, dass der Shop für echte Käufer schnell genug ist.
+
+## Bevor Sie beginnen: Definieren Sie die Seiten, die wichtig sind
+
+Prüfen Sie nicht jede URL mit gleicher Gewichtung. Shopify-Shops haben oft viele Seiten mit geringem Wert: Tag-Seiten, Anbieterseiten, gefilterte Sammlungs-URLs, alte Kampagnenseiten, Kontoseiten und Dienstprogramm-URLs.
+
+Erstellen Sie zunächst eine Prioritätenliste:
+
+1. Homepage
+2. Kernsammlungsseiten
+3. Top-Produktseiten
+4. Shopify-Service oder Landingpages
+5. Blogbeiträge mit dem höchsten Traffic
+6. Konvertierungspfade wie das Expertenbewertungsformular, Kontakt, Warenkorb und Kasse
+
+Ihre Prüfung sollte zunächst diese Seiten schützen und verbessern.
+
+## 1. Indizierung und Crawling-Kontrolle
+
+Wenn Google nicht auf die richtigen Seiten zugreifen oder diese nicht verstehen kann, wird alles andere zweitrangig.
+
+### Checkliste
+
+- [ ] Bestätigen Sie, dass die wichtigsten kommerziellen Seiten indexierbar sind
+- [ ] Bestätigen Sie, dass wichtige Sammlungs- und Produktseiten indexierbar sind
+- [ ] Stellen Sie sicher, dass Dienstprogrammseiten nicht um Aufmerksamkeit konkurrieren
+- [ ] Überprüfen Sie kanonische Tags auf Blog-, Sammlungs- und Serviceseiten
+- [ ] Suchen Sie nach doppelten URLs, die durch Filterung, Tagging, Anbieterseiten oder Migrationen erstellt wurden
+- [ ] Stellen Sie sicher, dass die Robots-Regeln keine Seiten blockieren, die ranken sollten
+- [ ] Bestätigen Sie, dass die XML-Sitemap nur nützliche, indizierbare URLs enthält
+- [ ] Überprüfen Sie die Google Search Console auf „Duplikat, Google hat andere kanonische Muster ausgewählt“.
+
+### Häufiges Shopify-Problem
+
+Stores indizieren häufig Seiten, die nur existieren, weil sie von der Plattform oder dem Thema generiert wurden. Diese Seiten können möglicherweise gecrawlt werden, sie sind jedoch keine nützlichen Zielseiten für die Suche. Kontrollieren Sie sie, bevor Sie weitere Inhalte veröffentlichen.
+
+## 2. Passend zur Suchabsicht
+
+SEO-Seiten scheitern, wenn sie die falsche Frage beantworten.
+
+### Checkliste
+
+- [ ] Ordnen Sie jede Zielseite einer primären Absicht zu
+- [ ] Überprüfen Sie, ob Titel und H1s das tatsächliche Abfragethema widerspiegeln
+- [ ] Bestätigen Sie, dass die Serviceseiten kommerzielle Absichten haben und nicht nur der Bildung dienen
+- [ ] Bestätigen Sie, dass Informationsseiten Benutzer auf den nächsten Schritt hinweisen
+- [ ] Überprüfen Sie, ob die Sammlungsseiten die Einkaufsabsicht schnell erfüllen
+- [ ] Entfernen Sie Inhalte, die von der Aufgabe des Suchenden ablenken
+
+### Beispiel
+
+Eine Seite, die auf `shopify seo services` ausgerichtet ist, sollte sich nicht wie eine Anfängerdefinition von SEO lesen. Es muss den Service, den Prozess, die Ergebnisse und die Gründe für die Glaubwürdigkeit des Anbieters erläutern. Eine auf `shopify seo checklist` ausgerichtete Seite sollte praktisch, scanbar und vollständig genug für die Verwendung sein.
+
+## 3. Interne Verlinkung
+
+Interne Links sagen Benutzern und Suchmaschinen, welche Seiten wichtig sind.
+
+### Checkliste
+
+- [ ] Link von der Homepage zur Hauptseite des Shopify-Service
+- [ ] Link von den Serviceseiten zum Pillar Guide und Audit-Tool
+- [ ] Verknüpfen Sie unterstützende Beiträge mit der Pillar-Seite
+- [ ] Verknüpfen Sie Conversion-Beiträge mit SEO-Beiträgen, bei denen sich das Problem überschneidet
+- [ ] Verwenden Sie Ankertextvariationen rund um Shopify SEO, Audits, Geschwindigkeit und Konvertierung
+- [ ] Stellen Sie sicher, dass wichtige Seiten nicht verwaist sind
+- [ ] Ersetzen Sie Links zu alten oder eingestellten Slugs
+- [ ] Vermeiden Sie es, wichtige Links nur in der Fußzeile zu vergraben
+
+### Starkes internes Linkmuster
+
+Verwenden Sie einen Cluster:
+
+- Säule: [Kompletter Shopify SEO-Leitfaden](/blog/shopify-seo-complete-guide)
+- Checkliste: diese Seite
+- Diagnose: [Warum Shopify-Shops kein Ranking erzielen](/blog/why-shopify-stores-dont-rank)
+- Verbesserungsplan: [So verbessern Sie die SEO-Ergebnisse von Shopify](/blog/improve-shopify-seo-results)
+- Serviceseite: [Shopify SEO- und Entwicklungsdienste](/solutions/shopify)
+
+## 4. Geschwindigkeit und zentrale Web-Vitalwerte
+
+Geschwindigkeit ist sowohl ein Ranking- als auch ein Conversion-Problem. Ein Shop, der auf Mobilgeräten langsam wirkt, muss für jeden Klick und jeden Verkauf härter arbeiten.
+
+### Checkliste
+
+- [ ] Überprüfen Sie die Hero-Mediengrößen
+- [ ] Überprüfen Sie Skripte von Drittanbietern und das Aufblähen von Apps
+- [ ] Überprüfen Sie die Layoutverschiebung auf Mobilgeräten
+- [ ] Suchen Sie nach doppeltem JavaScript und umfangreichen Widgets
+- [ ] Bestätigen Sie, dass wichtige Vorlagen auch auf langsameren Mobilgeräten nutzbar bleiben
+- [ ] Produkt, Sammlung, Warenkorb und Top-Landingpages testen
+- [ ] Zeichnen Sie LCP, INP, CLS, TTFB, Seitengewicht und Gesamt-JS auf
+- [ ] Entfernen oder verzögern Sie Skripte, die für die erste Interaktion nicht benötigt werden
+
+Wenn Geschwindigkeit auch den Umsatz beeinträchtigt, lesen Sie [Store-Geschwindigkeit vs. Conversion](/blog/store-speed-vs-conversion) und [10 Möglichkeiten, Ihren Shopify-Shop zu beschleunigen](/blog/speed-up-shopify-store).
+
+## 5. On-Page-SEO
+
+On-Page-SEO soll dafür sorgen, dass die Seite leichter verständlich ist und nicht mit Schlüsselwörtern vollgestopft wird.
+
+### Checkliste
+
+- [ ] Titel-Tags stimmen eindeutig mit der Ziel-Keyword-Familie überein
+- [ ] Meta-Beschreibungen sind aktuell und nutzenorientiert
+- [ ] Ein H1 kommuniziert das Seitenthema
+- [ ] Die H2-Struktur deckt das Thema in einer logischen Reihenfolge ab
+- [ ] Wichtige Schlüsselwörter erscheinen natürlich im ersten Abschnitt
+- [ ] FAQ-Inhalte gibt es dort, wo sie tatsächliche Suchfragen unterstützen
+- [ ] Produkt- und Kollektionsseiten enthalten nützliche Originalkopien
+- [ ] Seiten enthalten Vertrauens- und Konvertierungshinweise, nicht nur Verkehrskopien
+- [ ] Veraltete Jahreszahlen, vage Behauptungen und Platzhalterkopien werden entfernt
+
+### Frage zur Inhaltsqualität
+
+Wäre diese Seite immer noch nützlich, wenn der Leser direkt und ohne Suche darauf zugreifen würde? Wenn die Antwort „Nein“ lautet, braucht es wahrscheinlich mehr Substanz.
+
+## 6. Strukturierte Daten und SERP-Bereitschaft
+
+Strukturierte Daten können schwache Inhalte nicht beheben, aber sie helfen Suchmaschinen, starke Seiten zu interpretieren.
+
+### Checkliste
+
+- [ ] Das Artikelschema ist in Blogbeiträgen vorhanden
+- [ ] Organisation und Website-Schema sind gegebenenfalls auf der gesamten Website vorhanden
+- [ ] Das Produktschema ist auf Produktseiten gültig
+- [ ] Angebot, Preis, Währung und Verfügbarkeit sind korrekt
+- [ ] Das FAQ-Schema wird nur verwendet, wenn die Seite tatsächlich FAQ-Inhalte enthält
+- [ ] Das Breadcrumb-Schema spiegelt die tatsächliche Seitenhierarchie wider
+- [ ] Bild- und Snippet-Assets sind gültig und aktuell
+- [ ] Rich Results Test zeigt keine kritischen Fehler
+
+## 7. Tiefe und Nützlichkeit des Inhalts
+
+Google-bezogene Inhalte müssen den Menschen immer noch zuerst helfen. Dünne Seiten mit allgemeinen Ratschlägen verdienen selten ein gutes Ranking.
+
+### Checkliste
+
+- [ ] Die Seite gibt eine vollständige Antwort für die Zielabsicht
+- [ ] Die Beratung bezieht sich speziell auf Shopify oder E-Commerce, nicht auf allgemeine Geschäftsberatung
+- [ ] Wo hilfreich, werden Beispiele, Checklisten, Tabellen oder Entscheidungsrahmen eingefügt
+- [ ] Interne Links helfen dem Leser, weiterzumachen
+- [ ] Behauptungen sind nicht übertrieben
+- [ ] Der Beitrag verzichtet auf Clickbait und recycelte Formulierungen
+- [ ] Der Artikel hat einen klaren Standpunkt aus realer Implementierungserfahrung
+
+### Was muss zuerst verbessert werden?
+
+Wenn ein Beitrag weniger als 700 Wörter umfasst und auf ein Wettbewerbsthema abzielt, ist wahrscheinlich eine von drei Aktionen erforderlich:
+
+1. Erweitern Sie es zu einem nützlichen Leitfaden
+2. Fügen Sie es zu einer stärker verwandten Seite zusammen
+3. Positionieren Sie es als schmale Checkliste oder Support-Seite neu
+
+## 8. Umsatz fit
+
+SEO, das nie zu Umsatz führt, ist unvollständig.
+
+### Checkliste
+
+- [ ] Seitenranking für Shopify SEO-Link zu einem Beratungspfad
+- [ ] Die Seiten verweisen gegebenenfalls auf die [kostenlose Experten-Store-Bewertung](/free-store-review).
+- [ ] Conversion- und SEO-Inhalte verstärken sich gegenseitig
+- [ ] CTAs sind sichtbar, bevor der Benutzer das Ende erreicht
+- [ ] Blogbeiträge schlagen praktische nächste Schritte vor
+- [ ] Serviceseiten erklären die Umsetzung, nicht nur die Strategie
+
+## Was muss zuerst behoben werden?
+
+Wenn Ihr Team wenig Zeit hat, priorisieren Sie in dieser Reihenfolge:
+
+1. Indexierbarkeit und kanonische Fragen
+2. defekte interne Links und alte Slugs
+3. mobile Geschwindigkeit und App-/Skript-Aufblähung
+4. Nachrichten auf der Shopify-Serviceseite
+5. eine aktualisierte Pillar-Seite
+6. dünne Stützpfosten
+7. Snippet wird neu geschrieben
+8. Strukturierte Datenvalidierung
+
+Diese Reihenfolge sorgt normalerweise für mehr Dynamik, als mehr Inhalte zu veröffentlichen, bevor die Kernseiten fertig sind.
+
+## 90-minütiger Shopify-SEO-Audit-Workflow
+
+Verwenden Sie dies, wenn Sie einen schnellen ersten Durchgang benötigen:
+
+### Erste 20 Minuten: Sichtbarkeit in der Suche
+
+- [ ] Überprüfen Sie die häufigsten Suchanfragen in der Search Console
+- [ ] Beachten Sie Seiten mit Impressionen, aber niedriger CTR
+- [ ] Beachten Sie, dass Seiten Klicks verlieren
+- [ ] Überprüfen Sie, ob die richtige Seite für die Suchanfrage rankt
+
+### Nächste 25 Minuten: technische Kontrollen
+
+- [ ] Überprüfen Sie die Indexierbarkeit und Canonicals auf wichtigen Seiten
+- [ ] Überprüfen Sie die Sitemap und das Verhalten der Roboter
+- [ ] Suchen Sie nach doppelten Sammlungs- oder Tag-URLs
+- [ ] Testen Sie strukturierte Daten in einem Blogbeitrag und einer Produktseite
+
+### Nächste 25 Minuten: Inhalte und Links
+
+- [ ] Überprüfen Sie Titel, H1s und Seitentiefe
+- [ ] Überprüfen Sie interne Links zwischen Pillar-, Support- und Serviceseiten
+- [ ] Identifizieren Sie dünne oder überlappende Pfosten
+- [ ] Bestätigen Sie, dass CTAs mit der Absicht des Lesers übereinstimmen
+
+### Letzte 20 Minuten: Auftritt und Konvertierung
+
+- [ ] Testen Sie die mobile Geschwindigkeit mit Top-Vorlagen
+- [ ] Überprüfen Sie die App- und Skriptauslastung
+- [ ] Überprüfen Sie die Vertrauenssignale der Produktseite
+- [ ] Überprüfen Sie die Reibung an der Kasse
+
+## Letzter Imbiss
+
+Ein gutes SEO-Audit von Shopify sollte mit einer priorisierten Roadmap enden, nicht mit einer vagen Liste von Problemen. Das Ziel besteht darin, zu wissen, was zuerst behoben werden muss, warum es wichtig ist und wie es sich auf Sichtbarkeit, Vertrauen und Umsatz auswirkt.

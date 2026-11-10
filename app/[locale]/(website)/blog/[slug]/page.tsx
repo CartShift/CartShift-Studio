@@ -18,7 +18,7 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  return routing.locales.flatMap(locale =>
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale =>
     posts.slice(0, PRERENDERED_POST_COUNT).map(post => ({
       locale,
       slug: post.slug,
@@ -38,12 +38,10 @@ export async function generateMetadata({
     return { title: 'Post Not Found' };
   }
 
-  const localizedTitle =
-    locale === 'he' && post.translation?.title ? post.translation.title : post.title;
-  const localizedExcerpt =
-    locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
-  const localizedCategory =
-    locale === 'he' && post.translation?.category ? post.translation.category : post.category;
+  const de = locale === 'de' ? post.translations?.de : undefined;
+  const localizedTitle = de?.title || (locale === 'he' && post.translation?.title ? post.translation.title : post.title);
+  const localizedExcerpt = de?.excerpt || (locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt);
+  const localizedCategory = de?.category || (locale === 'he' && post.translation?.category ? post.translation.category : post.category);
 
   const keywords = [
     localizedCategory.toLowerCase(),
@@ -68,7 +66,7 @@ export async function generateMetadata({
       image: post.image,
       socialImage: post.socialImage,
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
@@ -78,19 +76,17 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  const localizedTitle =
-    locale === 'he' && post.translation?.title ? post.translation.title : post.title;
-  const localizedExcerpt =
-    locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
-  const localizedCategory =
-    locale === 'he' && post.translation?.category ? post.translation.category : post.category;
+  const de = locale === 'de' ? post.translations?.de : undefined;
+  const localizedTitle = de?.title || (locale === 'he' && post.translation?.title ? post.translation.title : post.title);
+  const localizedExcerpt = de?.excerpt || (locale === 'he' && post.translation?.excerpt ? post.translation.excerpt : post.excerpt);
+  const localizedCategory = de?.category || (locale === 'he' && post.translation?.category ? post.translation.category : post.category);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
   const articleUrl = `${baseUrl}/${locale}/blog/${post.slug}`;
@@ -100,7 +96,7 @@ export default async function BlogPostPage({
     description: localizedExcerpt,
     date: post.date,
     url: articleUrl,
-    locale: locale as 'en' | 'he',
+    locale: locale as 'en' | 'he' | 'de',
     author: 'CartShift Studio',
     category: localizedCategory,
     image: post.image,
@@ -111,11 +107,11 @@ export default async function BlogPostPage({
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: 'Home', url: `${baseUrl}/${locale}` },
+      { name: locale === 'he' ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: `${baseUrl}/${locale}` },
       { name: 'Blog', url: `${baseUrl}/${locale}/blog` },
       { name: localizedTitle, url: articleUrl },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const allPosts = await getAllPosts();
@@ -137,6 +133,9 @@ export default async function BlogPostPage({
             category: p.translation.category,
           }
         : undefined,
+      translations: p.translations?.de ? {
+        de: { title: p.translations.de.title, excerpt: p.translations.de.excerpt, category: p.translations.de.category },
+      } : undefined,
     }));
 
   return (

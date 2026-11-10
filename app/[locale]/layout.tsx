@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { germanMarketingEnabled } from '@/lib/i18n/german-routes';
 import { RadixProvider } from '@/components/providers/RadixProvider';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
@@ -85,14 +86,16 @@ export async function generateMetadata({
       google: process.env.GOOGLE_SITE_VERIFICATION,
     },
     other: {
-      'og:locale:alternate': locale === 'he' ? 'en_US' : 'he_IL',
+      'og:locale:alternate': locale === 'he' ? 'en_US' : locale === 'de' ? 'en_US' : 'he_IL',
     },
     category: 'technology',
   };
 }
 
 export function generateStaticParams() {
-  return routing.locales.map(locale => ({ locale }));
+  return routing.locales
+    .filter(locale => locale !== 'de' || germanMarketingEnabled())
+    .map(locale => ({ locale }));
 }
 
 export default async function LocaleLayout({

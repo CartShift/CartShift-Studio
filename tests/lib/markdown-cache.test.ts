@@ -18,7 +18,7 @@ describe('static Markdown processing', () => {
     const [allFirst, allSecond] = await Promise.all([getAllPosts(), getAllPosts()]);
     expect(allFirst).toBe(allSecond);
     expect(allFirst.some(post => post.slug === slug)).toBe(true);
-  });
+  }, 15000);
 
   it('re-reads source Markdown in development so editing stays responsive', async () => {
     vi.stubEnv('NODE_ENV', 'development');

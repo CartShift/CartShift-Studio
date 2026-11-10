@@ -17,7 +17,7 @@ export default async function WebsiteLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const activeLocale = locale as 'en' | 'he';
+  const activeLocale = locale as 'en' | 'he' | 'de';
   setRequestLocale(activeLocale);
 
   const messages = await getMessages();
@@ -34,7 +34,7 @@ export default async function WebsiteLayout({
         <Suspense fallback={null}>
           <MarketingStatusToast />
         </Suspense>
-        <GeoLocaleRedirect />
+        {activeLocale !== 'de' && <GeoLocaleRedirect />}
         <GoogleAnalytics />
         <AnalyticsProvider>
           <MainLayout>{children}</MainLayout>

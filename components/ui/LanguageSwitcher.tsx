@@ -10,6 +10,7 @@ import { ChevronDown } from 'lucide-react';
 import { trackLanguageSwitch } from '@/lib/analytics';
 import { setUserLocalePreference } from '@/components/providers/GeoLocaleRedirect';
 import { useLanguageSync } from '@/lib/hooks/useLanguageSync';
+import { germanMarketingEnabled, isGermanMarketingPath } from '@/lib/i18n/german-routes';
 
 const USFlag = () => (
   <svg
@@ -102,6 +103,8 @@ const langItemVariants = cva(
   }
 );
 
+const DEFlag = () => <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-200 text-[10px] font-bold text-surface-900" aria-hidden="true">DE</span>;
+
 export const LanguageSwitcher = ({ compact = false }: { compact?: boolean }) => {
   const locale = useLocale();
   const router = useRouter();
@@ -111,27 +114,27 @@ export const LanguageSwitcher = ({ compact = false }: { compact?: boolean }) => 
   // Sync language preference to Firestore for authenticated portal users
   useLanguageSync();
 
-  const handleLanguageChange = (lang: 'en' | 'he') => {
+  const handleLanguageChange = (lang: 'en' | 'he' | 'de') => {
     setUserLocalePreference(lang);
     trackLanguageSwitch(lang);
-    router.replace(pathname, { locale: lang });
+    router.replace(lang === 'de' && !isGermanMarketingPath(pathname) ? '/' : pathname, { locale: lang });
     setIsOpen(false);
   };
 
-  const currentLanguage = locale as 'en' | 'he';
+  const currentLanguage = locale as 'en' | 'he' | 'de';
 
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenu.Trigger asChild>
         <button
           className={cn(triggerVariants({ isOpen }), compact && 'px-2 py-2')}
-          aria-label="Select Language"
+          aria-label={locale === 'de' ? 'Sprache wählen' : locale === 'he' ? 'בחירת שפה' : 'Select Language'}
         >
-          {currentLanguage === 'en' ? <USFlag /> : <ILFlag />}
+          {currentLanguage === 'en' ? <USFlag /> : currentLanguage === 'he' ? <ILFlag /> : <DEFlag />}
           {!compact ? (
             <>
               <span className="text-sm font-medium text-surface-700 dark:text-surface-200">
-                {currentLanguage === 'en' ? 'EN' : 'עב'}
+                {currentLanguage === 'en' ? 'EN' : currentLanguage === 'he' ? 'עב' : 'DE'}
               </span>
               <ChevronDown
                 className={cn(
@@ -164,6 +167,15 @@ export const LanguageSwitcher = ({ compact = false }: { compact?: boolean }) => 
             <ILFlag />
             עברית
           </DropdownMenu.Item>
+          {germanMarketingEnabled() && (
+            <DropdownMenu.Item
+              onSelect={() => handleLanguageChange('de')}
+              className={cn(langItemVariants({ active: currentLanguage === 'de' }), 'cursor-default outline-none data-[highlighted]:bg-surface-50 dark:data-[highlighted]:bg-white/5')}
+            >
+              <DEFlag />
+              Deutsch
+            </DropdownMenu.Item>
+          )}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

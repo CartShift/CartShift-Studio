@@ -1,0 +1,202 @@
+{
+  "privacy": {
+    "title": "Datenschutzrichtlinie",
+    "subtitle": "Ihre Privatsphäre ist uns wichtig. Erfahren Sie, wie wir Ihre Daten sammeln, verwenden und schützen.",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "toc": "Inhaltsverzeichnis",
+    "sections": {
+      "collect": {
+        "title": "Informationen, die wir sammeln",
+        "intro": "Wenn Sie unsere Website oder Dienste nutzen, können wir Folgendes erfassen:",
+        "items": {
+          "contact": {
+            "title": "Kontaktinformationen",
+            "desc": "Name, E-Mail-Adresse, Telefonnummer und Firmenname, wenn Sie unsere Kontaktformulare ausfüllen."
+          },
+          "project": {
+            "title": "Projektinformationen",
+            "desc": "Details zu Ihren Projektanforderungen, die Sie uns mitteilen."
+          },
+          "usage": {
+            "title": "Nutzungsdaten",
+            "desc": "Informationen darüber, wie Sie mit unserer Website interagieren, einschließlich der besuchten Seiten und der verbrachten Zeit."
+          },
+          "device": {
+            "title": "Geräteinformationen",
+            "desc": "Browsertyp, Betriebssystem und Gerätetyp."
+          }
+        }
+      },
+      "use": {
+        "title": "Wie wir Ihre Informationen verwenden",
+        "intro": "Wir verwenden die von uns erfassten Informationen, um:",
+        "items": [
+          "Beantworten Sie Ihre Anfragen und leisten Sie Kundensupport",
+          "Senden Sie Ihnen Informationen zu unseren Dienstleistungen",
+          "Verbessern Sie unsere Website und Dienstleistungen",
+          "Halten Sie gesetzliche Verpflichtungen ein"
+        ]
+      },
+      "sharing": {
+        "title": "Informationsaustausch",
+        "intro": "Wir verkaufen Ihre persönlichen Daten nicht. Wir können Ihre Daten weitergeben an:",
+        "items": {
+          "providers": {
+            "title": "Dienstleister",
+            "desc": "Dienste Dritter, die uns beim Betrieb unseres Geschäfts unterstützen (z. B. E-Mail-Dienste, Analysen)."
+          },
+          "legal": {
+            "title": "Gesetzliche Anforderungen",
+            "desc": "Wenn es gesetzlich vorgeschrieben ist oder um unsere Rechte zu schützen."
+          }
+        }
+      },
+      "cookies": {
+        "title": "Cookies und Tracking",
+        "intro": "Wir verwenden Cookies und ähnliche Technologien, um:",
+        "items": [
+          "Merken Sie sich Ihre Präferenzen (z. B. Sprachauswahl)",
+          "Verstehen Sie, wie Sie unsere Website nutzen",
+          "Verbessern Sie unsere Dienstleistungen"
+        ],
+        "control": "Sie können Cookies über Ihre Browsereinstellungen steuern.",
+        "consent": {
+          "message": "Wir verwenden Cookies, um Ihr Surferlebnis zu verbessern und die Nutzung der Website zu analysieren.",
+          "accept": "Akzeptiere",
+          "decline": "Ablehnen",
+          "learnMore": "Erfahren Sie mehr"
+        }
+      },
+      "security": {
+        "title": "Datensicherheit",
+        "content": "Wir ergreifen geeignete Sicherheitsmaßnahmen, um Ihre persönlichen Daten zu schützen. Allerdings ist keine Übertragung über das Internet zu 100 % sicher."
+      },
+      "rights": {
+        "title": "Ihre Rechte",
+        "intro": "Sie haben das Recht:",
+        "items": [
+          "Greifen Sie auf die persönlichen Daten zu, die wir über Sie gespeichert haben",
+          "Fordern Sie die Korrektur unrichtiger Informationen an",
+          "Fordern Sie die Löschung Ihrer Daten an",
+          "Deaktivieren Sie die Marketingkommunikation"
+        ]
+      },
+      "thirdParty": {
+        "title": "Dienste Dritter",
+        "intro": "Unsere Website kann Dienste Dritter nutzen, darunter:",
+        "items": [
+          "Google Analytics für Website-Analysen",
+          "Firebase für Hosting und Authentifizierung"
+        ],
+        "note": "Für diese Dienste gelten eigene Datenschutzrichtlinien."
+      },
+      "contact": {
+        "title": "Kontaktieren Sie uns",
+        "intro": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie oder Ihren persönlichen Daten haben, kontaktieren Sie uns bitte unter:",
+        "email": "E-Mail"
+      },
+      "changes": {
+        "title": "Änderungen an dieser Richtlinie",
+        "content": "Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Wir werden Sie über alle Änderungen informieren, indem wir die neue Richtlinie auf dieser Seite veröffentlichen."
+      }
+    },
+    "expertReview": {
+      "title": "Anfragen zur Bewertung von Expertengeschäften",
+      "description": "Wenn Sie eine professionelle Store-Bewertung anfordern, verarbeiten wir den Namen, die E-Mail-Adresse, die Store-Domain, optionale Ziele und Notizen, die Sie einreichen, um die Anfrage zu bewerten, eine gezielte Überprüfung öffentlich zugänglicher Store-Seiten durchzuführen, die Anfrage zu verwalten und mit Ergebnissen oder einem optionalen Vorschlag zu antworten. Autorisierte CartShift-Mitarbeiter können auf diese Anfragedetails zugreifen; Berichte sind standardmäßig privat und werden nicht ohne zusätzliche Genehmigung als Fallstudien veröffentlicht.",
+      "marketing": "Die Kommunikation über Ihre angeforderte Bewertung erfolgt unabhängig von optionalen Marketingnachrichten. Das Kontrollkästchen „Marketing“ ist standardmäßig deaktiviert. Informationen in Bewertungsanfragen können in unserem internen Lead-Workflow gespeichert und ausschließlich zur Korrespondenz und Zustellung an unseren Service-E-Mail-Anbieter übermittelt werden."
+    }
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "subtitle": "Bitte lesen Sie diese Bedingungen sorgfältig durch, bevor Sie unsere Dienste nutzen.",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "toc": "Inhaltsverzeichnis",
+    "sections": {
+      "agreement": {
+        "title": "Zustimmung zu den Bedingungen",
+        "content": "Durch den Zugriff auf oder die Nutzung der CartShift Studio-Website und -Dienste erklären Sie sich mit diesen Nutzungsbedingungen einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie unsere Dienste bitte nicht."
+      },
+      "services": {
+        "title": "Dienstleistungen",
+        "intro": "CartShift Studio bietet Webentwicklungs- und E-Commerce-Dienste, einschließlich, aber nicht beschränkt auf:",
+        "items": [
+          "Shopify-Shop-Entwicklung und -Anpassung",
+          "Entwicklung einer WordPress-Website",
+          "Wartung und Support der Website",
+          "E-Commerce-Beratung"
+        ]
+      },
+      "projectAgreements": {
+        "title": "Projektvereinbarungen",
+        "intro": "Für alle Projektarbeiten gilt eine separate Projektvereinbarung, in der Folgendes festgelegt ist:",
+        "items": [
+          "Arbeitsumfang",
+          "Zeitleiste und Meilensteine",
+          "Preise und Zahlungsbedingungen",
+          "Leistungen"
+        ]
+      },
+      "payment": {
+        "title": "Zahlungsbedingungen",
+        "intro": "Die Zahlungsbedingungen werden in den einzelnen Projektvereinbarungen festgelegt. Allgemein:",
+        "items": [
+          "Vor Beginn der Arbeiten ist eine Anzahlung zu leisten",
+          "Bei größeren Projekten können Meilensteinzahlungen erforderlich sein",
+          "Die Restzahlung ist nach Abschluss des Projekts fällig"
+        ]
+      },
+      "ip": {
+        "title": "Geistiges Eigentum",
+        "intro": "Nach vollständiger Zahlung erhalten Kunden das Eigentum an benutzerdefiniertem Code und Designs, die speziell für ihr Projekt erstellt wurden. CartShift Studio behält sich das Recht vor:",
+        "items": [
+          "Arbeiten in unserem Portfolio nutzen (mit Genehmigung des Kunden)",
+          "Allgemeine Techniken und nicht proprietären Code wiederverwenden"
+        ]
+      },
+      "clientResponsibilities": {
+        "title": "Verantwortlichkeiten des Kunden",
+        "intro": "Kunden sind verantwortlich für:",
+        "items": [
+          "Bereitstellung notwendiger Inhalte, Vermögenswerte und Informationen",
+          "Rechtzeitiges Feedback und Genehmigungen",
+          "Sicherstellen, dass sie Rechte an den bereitgestellten Inhalten haben",
+          "Pflege eigener Backups"
+        ]
+      },
+      "liability": {
+        "title": "Haftungsbeschränkung",
+        "content": "CartShift Studio haftet nicht für indirekte, zufällige oder Folgeschäden. Unsere Gesamthaftung ist auf den Betrag beschränkt, der für die jeweilige Dienstleistung gezahlt wurde."
+      },
+      "warranties": {
+        "title": "Garantien",
+        "content": "Wir gewährleisten, dass unsere Leistungen professionell und im Einklang mit den Branchenstandards erbracht werden. Wir garantieren keine spezifischen Geschäftsergebnisse wie Umsatz- oder Verkehrssteigerungen."
+      },
+      "termination": {
+        "title": "Kündigung",
+        "intro": "Jede Partei kann einen Projektvertrag durch schriftliche Mitteilung kündigen. Im Falle einer Kündigung:",
+        "items": [
+          "Der Kunde zahlt für die bisher geleistete Arbeit",
+          "Der Kunde erhält Leistungen für bezahlte Arbeit",
+          "Abhängig von der abgeschlossenen Arbeit kann es sein, dass Anzahlungen nicht zurückerstattet werden"
+        ]
+      },
+      "confidentiality": {
+        "title": "Vertraulichkeit",
+        "content": "Beide Parteien verpflichten sich, vertrauliche Informationen geheim zu halten und sie nicht ohne Genehmigung an Dritte weiterzugeben."
+      },
+      "governingLaw": {
+        "title": "Geltendes Recht",
+        "content": "Diese Bedingungen unterliegen den Gesetzen Israels. Alle Streitigkeiten werden vor den Gerichten Israels gelöst."
+      },
+      "changes": {
+        "title": "Änderungen der Bedingungen",
+        "content": "Wir können diese Bedingungen von Zeit zu Zeit aktualisieren. Die weitere Nutzung unserer Dienste nach Änderungen stellt die Annahme der neuen Bedingungen dar."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "intro": "Bei Fragen zu diesen Bedingungen kontaktieren Sie uns unter:",
+        "email": "E-Mail"
+      }
+    }
+  }
+}

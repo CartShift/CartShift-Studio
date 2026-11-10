@@ -1,0 +1,157 @@
+{
+  "wordpressSecurity": {
+    "seoTitle": "WordPress-Sicherheitspaket – ILS 890-Einführungsangebot | CartShift Studio",
+    "seoDescription": "Einführungsangebot für WordPress-Sicherheit und -Wartung für Standardinhalte und Unternehmensseiten: PHP-Patch-Überprüfung, Plugin-Updates, Backups, Berechtigungen und kontrollierte Korrekturen. 890 ILS pro berechtigtem Standort.",
+    "eyebrow": "PHP2Shell-Sicherheitsupdate · Einführungsangebot",
+    "title": "WordPress ausführen?",
+    "titleAccent": "Bringen wir die Sicherheit in Ordnung.",
+    "subtitle": "Als Reaktion auf die jüngsten PHP-Schwachstellen haben wir ein gezieltes Sicherheits- und Wartungspaket auf den Markt gebracht: Hosting-Prüfungen, Updates, Backups und Zugriffsüberprüfung – mit kontrollierten Korrekturen und einem klaren Bericht.",
+    "primaryCta": "Überprüfen Sie die Paketberechtigung",
+    "secondaryCta": "Sehen Sie, was enthalten ist",
+    "trustNotes": [
+      "Menschliche technische Überprüfung, keine automatisierte Bewertung",
+      "Aktualisierungen nur mit vorheriger Genehmigung",
+      "Dokumentierte Kontrollen und klare nächste Schritte"
+    ],
+    "alertTitle": "Warum jetzt? Die PHP2Shell-Schwachstellen",
+    "alertText": "Am 21. Oktober 2026 wurden Sicherheitsfixes für zwei schwerwiegende PHP-Schwachstellen (CVE-2026-109618 und CVE-2026-109619) veröffentlicht. Nicht jede WordPress-Site bleibt ungeschützt, da viele Hosts ihre Server bereits gepatcht haben. Dieses Paket kombiniert die Überprüfung des Patch-Status mit einer umfassenderen WordPress-Wartungsüberprüfung.",
+    "alertLink": "Lesen Sie den Sicherheitshinweis",
+    "whyTitle": "Das Patchen des Servers ist wichtig. Es ist nicht die ganze Geschichte.",
+    "whyText": "Ihr Hosting-Anbieter wendet in der Regel PHP-Sicherheitspatches an und Sie können ihn selbst nach dem Status fragen. Unser Paket geht noch weiter: WordPress und Plugins, Backups, Zugriffsberechtigungen und grundlegende Sicherheitsmaßnahmen, bei Bedarf mit sicheren Routine-Updates.",
+    "serviceTitle": "Eine gründliche Prüfung. Keine Angsttaktiken.",
+    "serviceIntro": "Vom Server bis zu Ihren Plugins prüfen wir, worauf es bei der praktischen WordPress-Wartung ankommt und kümmern uns um Routineprobleme im Rahmen des vereinbarten Pakets.",
+    "features": [
+      {
+        "title": "PHP- und Hosting-Patch-Check",
+        "description": "Überprüfen Sie PHP und klären Sie mit Ihrem Hosting-Anbieter ab, ob die relevanten Patches – einschließlich Anbieter-Backports – angewendet wurden."
+      },
+      {
+        "title": "WordPress- und Plugin-Rezension",
+        "description": "Überprüfen Sie die WordPress-Kern-, Plugin- und Theme-Versionen, kennzeichnen Sie nicht unterstützte Komponenten und priorisieren Sie relevante Sicherheitsupdates."
+      },
+      {
+        "title": "Backups und Wiederherstellungsbereitschaft",
+        "description": "Überprüfen Sie die verfügbaren Backup- und Wiederherstellungsoptionen. Erstellen Sie vor genehmigten Routineaktualisierungen ein entsprechendes Backup."
+      },
+      {
+        "title": "Benutzer- und Anmeldesicherheit",
+        "description": "Überprüfen Sie Administratorkonten, Rollen, Zwei-Faktor-Authentifizierungsoptionen und Anmeldeschutz."
+      },
+      {
+        "title": "Grundlegende Sicherheitsmaßnahmen und routinemäßige Aktualisierungen",
+        "description": "Überprüfen Sie die HTTPS- und Kernsicherheitseinstellungen und führen Sie kompatible Routineaktualisierungen innerhalb der vereinbarten Zeit und im vereinbarten Umfang durch."
+      },
+      {
+        "title": "Regressionsprüfungen und Zusammenfassung",
+        "description": "Überprüfen Sie wichtige Seiten, Formulare und den Administratorzugriff nach Änderungen und erstellen Sie dann einen kurzen Bericht über die geleistete Arbeit und Empfehlungen für die Folgemaßnahmen."
+      }
+    ],
+    "processTitle": "Unkompliziert. Keine Überraschungen.",
+    "process": [
+      {
+        "title": "Senden Sie uns Ihre Website",
+        "description": "Wir prüfen, ob es sich um eine Standard-WordPress-Site handelt, die für das ILS 890-Angebot in Frage kommt. Die Anfrage ist kostenlos."
+      },
+      {
+        "title": "Bestätigen Sie Umfang und Zugriff",
+        "description": "Wir stimmen vor jeder bezahlten Arbeit den Umfang und Preis ab und fordern nur den benötigten Zugang an."
+      },
+      {
+        "title": "Überprüfen, aktualisieren und berichten",
+        "description": "Wir führen vereinbarte Prüfungen und routinemäßige Korrekturen durch, überprüfen wichtige Funktionen und teilen klare Ergebnisse mit."
+      }
+    ],
+    "scopeTitle": "Klarer Spielraum. Keine überzogenen Versprechungen.",
+    "scopeText": "Das Angebot umfasst eine Standard-WordPress-Site und bis zu 3 Stunden Arbeit. Es umfasst die vereinbarte Sicherheitsüberprüfung und kompatible Routineaktualisierungen in diesem Zeitraum. WooCommerce-Shops, Incident Response, Malware-Bereinigung, Penetrationstests, kostenpflichtige Lizenzen, Code-Korrekturen und komplexe Upgrades sind nicht enthalten. Wenn an einer Website mehr Arbeit erforderlich ist, erstellen wir vor dem Fortfahren ein separates Angebot. Keine Sicherheitsüberprüfung kann eine unverwundbare Website garantieren.",
+    "faqTitle": "Gute Fragen, klare Antworten.",
+    "faq": [
+      {
+        "question": "Warum bezahlen, wenn ich einfach meinen Hosting-Anbieter fragen kann?",
+        "answer": "Sie können – und sollten – sie nach dem PHP-Patch-Status fragen. Dieser Schritt ist oft unkompliziert. Das kostenpflichtige Paket dient einer umfassenderen WordPress-Überprüfung: Versionen, Plugins, Rollen, Backups, Schutzmaßnahmen, routinemäßige Updates und Überprüfungen nach dem Update."
+      },
+      {
+        "question": "Beeinflusst PHP2Shell jede WordPress-Site?",
+        "answer": "Nein. Die Verfügbarkeit hängt von der PHP-Laufzeitumgebung und ihren Patches ab. Einige Hosts portieren Korrekturen zurück, ohne die angezeigte Version zu ändern. Wir prüfen, statt zu raten."
+      },
+      {
+        "question": "Werden alle Plugins für diesen Preis aktualisiert?",
+        "answer": "Kompatible Routine-Updates sind im Drei-Stunden-Umfang und nur nach Genehmigung und Sicherung enthalten. Komplexe Theme- oder Plugin-Upgrades erfordern einen separaten Kostenvoranschlag."
+      },
+      {
+        "question": "Umfasst dies auch WooCommerce-Shops?",
+        "answer": "Nein. Dieses Paket ist für Standard-WordPress-Sites, einschließlich Unternehmenswebsites, Blogs, Content-Portale und Zeitschriften. WooCommerce-Shops sind ausgeschlossen."
+      },
+      {
+        "question": "Wie viel kostet es?",
+        "answer": "Der Einführungspreis beträgt ILS 890 für eine berechtigte Standard-WordPress-Site und deckt bis zu drei Stunden vereinbarter Arbeit ab. Wir bestätigen die Eignung und den endgültigen Umfang, bevor eine Zahlung erforderlich ist."
+      },
+      {
+        "question": "Garantiert dies, dass meine Website sicher ist?",
+        "answer": "Nein. Hierbei handelt es sich um eine gezielte Wartungs- und Sicherheitsüberprüfung, nicht um Penetrationstests oder Vorfallforensik. Wir dokumentieren die Ergebnisse und empfehlen etwaige zusätzliche Arbeiten."
+      }
+    ],
+    "form": {
+      "title": "Fordern Sie das WordPress-Sicherheitspaket an",
+      "intro": "Einführungspreis: 890 ILS pro berechtigter Standard-Site. Erzählen Sie uns von Ihrer Website und wir bestätigen den Umfang, bevor mit der Zahlung oder den Arbeiten begonnen wird.",
+      "name": "Dein Name",
+      "email": "E-Mail-Adresse",
+      "website": "URL der WordPress-Website",
+      "details": "Gibt es etwas, was wir wissen sollten? (optional)",
+      "namePlaceholder": "Vollständiger Name",
+      "emailPlaceholder": "you@company.com",
+      "websitePlaceholder": "https://example.com",
+      "detailsPlaceholder": "Hosting-Anbieter, Probleme, Datum der letzten Aktualisierung…",
+      "submit": "Fordern Sie das Startpaket an",
+      "submitting": "Anfrage wird gesendet…",
+      "successTitle": "Ihre Sicherheitspaketanfrage wurde empfangen",
+      "successText": "Vielen Dank. Wir prüfen die Eignung der Website und antworten mit einem klaren Umfang und Kostenvoranschlag. Ohne Ihre Zustimmung erfolgt keine Belastung.",
+      "error": "Wir konnten Ihre Anfrage nicht senden. Bitte versuchen Sie es erneut oder senden Sie eine E-Mail an hello@cart-shift.com.",
+      "invalidUrl": "Geben Sie eine gültige Website-URL ein.",
+      "privacy": "Für die Anfrage ist keine Zahlung erforderlich. Ihre Daten werden ausschließlich zur Beantwortung verwendet. Bitte geben Sie keine Passwörter oder Administrator-Anmeldeinformationen weiter.",
+      "emailLink": "Oder schreiben Sie uns direkt eine E-Mail"
+    },
+    "navLabel": "WordPress-Sicherheitscheck",
+    "offer": {
+      "label": "WordPress-Sicherheit · Einführungsangebot",
+      "beforePrice": "Einführungspreis",
+      "price": "₪890",
+      "afterPrice": "für eine berechtigte WordPress-Site",
+      "detail": "Bis zu 3 Stunden · eine Website",
+      "approval": "Preis und Umfang vor Beginn der Arbeiten bestätigt",
+      "fitNote": "Für Standardinhalte und Unternehmenswebsites; WooCommerce ausgeschlossen.",
+      "includedTitle": "Im Paket enthalten",
+      "included": [
+        "Überprüfung des PHP-Patch-Status beim Host",
+        "Überprüfung von WordPress, Plugins und Themes",
+        "Backup-, Zugriffs- und grundlegende Sicherheitsprüfungen",
+        "Genehmigte Routineaktualisierungen innerhalb der vorgegebenen Zeit",
+        "Regressionsprüfungen und ein prägnanter Bericht"
+      ],
+      "excludedTitle": "Nicht im Lieferumfang enthalten",
+      "excluded": [
+        "Kompromittierungsreaktion oder Malware-Bereinigung",
+        "Komplexe Plugin-/Theme-Migrationen oder benutzerdefinierte Code-Korrekturen",
+        "Penetrationstests und kostenpflichtige Lizenzen",
+        "Arbeiten Sie länger als 3 Stunden ohne gesondertes Angebot"
+      ],
+      "disclosure": "Hierbei handelt es sich um eine Anfrage, nicht um eine Kauf- oder Zahlungsverpflichtung.",
+      "headline": "Ein intelligenterer Ausgangspunkt für die Sicherheit Ihrer Website."
+    },
+    "sectionLabels": {
+      "context": "01 / Der Kontext",
+      "coverage": "02 / Die Rezension",
+      "process": "03 / Der Prozess",
+      "next": "04 / Los geht's",
+      "faq": "05 / Fragen"
+    },
+    "visual": {
+      "title": "Was wir bewerten",
+      "subline": "WordPress-Wartung/Sicherheit",
+      "illustration": "Eine Veranschaulichung des Überprüfungsumfangs, kein Scanergebnis für eine bestimmte Site."
+    },
+    "conversion": {
+      "title": "Finden Sie heraus, was Ihre Website wirklich braucht.",
+      "description": "Teilen Sie die URL und Kontaktdaten Ihrer Website mit. Wir bestätigen, ob es zum Einführungspaket passt, und antworten mit einem vereinbarten Umfang und Preis – noch ohne Verpflichtung."
+    }
+  }
+}

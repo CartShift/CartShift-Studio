@@ -24,6 +24,7 @@ interface BlogPost {
     excerpt: string;
     category: string;
   };
+  translations?: { de?: { title: string; excerpt: string; category: string } };
 }
 
 interface BlogPageContentProps {
@@ -37,6 +38,11 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
+  const isLocalized = isHe || locale === 'de';
+  const localized = (post: BlogPost, field: 'title' | 'excerpt' | 'category'): string => {
+    if (locale === 'de') return post.translations?.de?.[field] || post[field];
+    return isHe ? post.translation?.[field] || post[field] : post[field];
+  };
 
   // State management
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -46,9 +52,9 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
   const postsPerPage = 9;
 
   const getCategoryDisplayName = (categoryKey: string): string => {
-    if (!isHe) return categoryKey;
+    if (!isLocalized) return categoryKey;
     const post = posts.find(p => p.category === categoryKey);
-    return post?.translation?.category || categoryKey;
+    return post ? localized(post, 'category') : categoryKey;
   };
 
   // Featured posts (latest 3)
@@ -71,8 +77,8 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(post => {
-        const title = isHe && post.translation?.title ? post.translation.title : post.title;
-        const excerpt = isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
+        const title = localized(post, 'title');
+        const excerpt = localized(post, 'excerpt');
         return title.toLowerCase().includes(query) || excerpt.toLowerCase().includes(query);
       });
     }
@@ -125,9 +131,9 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
 
             <div className="grid md:grid-cols-3 gap-6">
               {featuredPosts.map((post, index) => {
-                const title = isHe && post.translation?.title ? post.translation.title : post.title;
+                const title = localized(post, 'title');
                 const category =
-                  isHe && post.translation?.category ? post.translation.category : post.category;
+                  localized(post, 'category');
                 const imageAlt = post.imageAlt || title;
                 const formattedDate = new Date(post.date).toLocaleDateString(
                   getDateLocaleString(locale),
@@ -280,13 +286,11 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                   {paginatedPosts.map((post, index) => {
                     const shouldPrioritizeGridImage = index === 0;
                     const title =
-                      isHe && post.translation?.title ? post.translation.title : post.title;
+                      localized(post, 'title');
                     const category =
-                      isHe && post.translation?.category
-                        ? post.translation.category
-                        : post.category;
+                      localized(post, 'category');
                     const excerpt =
-                      isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt;
+                      localized(post, 'excerpt');
                     const imageAlt = post.imageAlt || title;
                     const formattedDate = new Date(post.date).toLocaleDateString(
                       getDateLocaleString(locale),

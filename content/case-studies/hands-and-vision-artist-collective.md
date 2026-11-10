@@ -203,6 +203,121 @@ he:
     ## מה השתנה
     
     לקולקטיב יש עכשיו פלטפורמה אחת לכמה כוונות שונות. קל יותר לגלות שירותים, לכל אמן מיוצג יש יעד משלו, הגלריה מספקת הוכחה ויזואלית ו-WooCommerce יכול לתמוך בעבודות לאספנות בלי להפוך את כל האתר לחנות.
+de:
+  title: Kollektive Plattform für Hands & Vision-Künstler
+  summary: Eine zweisprachige WordPress- und WooCommerce-Plattform für Hands & Vision, die Künstlerentdeckung, kreative Dienste, Galeriearbeit, Kontaktwege und Sammlerhandel in einem auffälligen visuellen System vereint.
+  industry: Kunst, Events und kreative Produktion
+  cta:
+    title: Eine kreative Plattform für mehrere Zielgruppen aufbauen?
+    description: Wir können Dienste, Künstler, Inhalte und Handel so strukturieren, dass jedes Publikum einen klaren Weg erhält, ohne die kreative Identität zu verlieren.
+  hero:
+    image: /images/case-studies/hands-and-vision-artist-collective/hero.jpg?v=20260630b
+    alt: Hands & Vision-Homepage mit der gemeinsamen Wortmarke, zweisprachiger Navigation und primären Handlungsaufforderungen
+    supportingCopy: Eine zweisprachige WordPress-Plattform, die ein multidisziplinäres Künstlerkollektiv, fünf kreative Servicepfade, Künstlerentdeckung, Galeriearbeit und Handel in einem ausdrucksstarken digitalen Zuhause vereint.
+  overview:
+    title: Einem multidisziplinären Kollektiv eine zusammenhängende digitale Bühne geben
+    summary: Hands & Vision umfasst Live-Kunst, Wandgemälde, digitale Arbeiten, Industrieobjekte, Bühnendesign, Künstlerdarstellungen und Sammlerstücke. Die Plattform verwandelt diesen Bereich in ein navigierbares System, ohne die Energie der Arbeit zu verflachen, indem sie starke Bilder mit klaren Service-, Künstler-, Galerie-, Kontakt- und Shoppfaden in Einklang bringt.
+  deliverables:
+  - title: Kollektiv-erste visuelle Identität
+    description: Das Erlebnis basiert auf beeindruckenden Kunstwerken, einem individuellen Hands & Vision-Zeichen und einer Palette aus Petrol, Flieder, Rosa und warmem Gelb, die dafür sorgt, dass sich sehr unterschiedliche Disziplinen dennoch als Teil eines Kollektivs fühlen.
+  - title: Fünf klare kreative Servicepfade
+    description: Strukturierte Industrieobjekte, Live-Event-Kunst, räumliche Wandkunst, digitale Kunst und Bühnenbild als eigenständige Angebote mit direkten Zugängen zu tieferen Serviceseiten.
+  - title: Künstlererkennungssystem
+    description: Organisierte das Kollektiv in spezielle Künstlerprofile, damit Besucher von der Gruppenidentität zu individuellen Praktiken, Stilen und Werken übergehen können.
+  - title: Galeriegeführtes Geschichtenerzählen
+    description: Erstellte einen bildorientierten Galerierhythmus, der Wandgemälden, Installationen, Live-Arbeiten, Objekten und digitalen Stücken genügend Raum zur Kommunikation gibt, bevor die Kopie die Oberhand gewinnt.
+  - title: Zweisprachiges RTL/LTR-Erlebnis
+    description: Unterstützte hebräische und englische Einstiegspunkte, wobei Navigation, Abstände, Inhaltshierarchie und Interaktionsmuster in beiden Leserichtungen kohärent bleiben.
+  - title: Handelstaugliches Fundament
+    description: Das redaktionelle Erlebnis wurde mit den Shop- und Warenkorbpfaden von WooCommerce verknüpft, sodass Sammlerstücke im selben Ökosystem wie Dienstleistungen und Künstlervertretung angesiedelt werden können.
+  gallery:
+  - image: /images/case-studies/hands-and-vision-artist-collective/hero.jpg?v=20260630b
+    alt: Hands & Vision-Homepage mit der gemeinsamen Wortmarke, zweisprachiger Navigation und primären Handlungsaufforderungen
+    caption: Die Homepage öffnet sich mit der kollektiven Identität, zweisprachiger Navigation und zwei direkten Wegen zur Künstlersuche und Projektanfragen.
+  - image: /images/case-studies/hands-and-vision-artist-collective/gallery-01.jpg?v=20260630b
+    alt: Hands & Vision-Dienstleistungsseite mit zweisprachiger Navigation, redaktioneller Typografie und einem Industrieobjekt-Feature-Bild
+    caption: Die Dienstleistungsseite nutzt einen zurückhaltenden redaktionellen Charakter und große Projektbilder, um eine breite kreative Praxis in ein klares professionelles Angebot zu verwandeln.
+  - image: /images/case-studies/hands-and-vision-artist-collective/gallery-02.jpg?v=20260630b
+    alt: Hands & Vision-Galerieseite mit Künstlerfiltern und einem responsiven Mauerwerk-Grafikraster
+    caption: Die Galerie kombiniert Künstlerfilterung, sichtbare Sammlungszahlen und eine bildgesteuerte Mauerwerkskomposition, ohne das ruhige Navigationssystem der Website zu verlieren.
+  - image: /images/case-studies/hands-and-vision-artist-collective/gallery-03.jpg?v=20260630b
+    alt: Hands & Vision-Kunstshop mit zweisprachiger Navigation, Kategoriefiltern und der Eröffnungsproduktkollektion
+    caption: Der Shop überträgt die gleiche visuelle Sprache auf den Handel, indem er Kollektionsfilter und Produkterkundung mit dem redaktionellen Charakter der Hauptseite verbindet.
+  evidence:
+  - title: Das Angebot ist organisiert, ohne seine kreative Bandbreite einzubüßen
+    value: 5 Dienstleistungsbranchen
+    description: Fünf unterschiedliche Servicekategorien bieten Besuchern einen direkten Zugang zu der Art von Arbeit, die sie benötigen, und wahren gleichzeitig eine gemeinsame Identität auf der gesamten Website.
+    before: Gemischte kreative Disziplinen
+    after: Klare Servicearchitektur
+    tone: qualitative
+  - title: Einzelne Künstler sind innerhalb des Kollektivs auffindbar
+    value: 13 Künstlerprofile
+    description: Spezielle Profilrouten ermöglichen es der Homepage, die Liste vorzustellen und gleichzeitig jedem vertretenen Künstler ein eigenes, gezieltes Ziel zu bieten.
+    before: Nur kollektive Übersicht
+    after: Entdeckung auf Künstlerebene
+    tone: qualitative
+  - title: Hebräisch und Englisch teilen ein kohärentes System
+    value: Zweisprachig + RTL
+    description: Sprachwechsel, logisches Layoutverhalten und Inhalte, die zuerst auf Hebräisch basieren, unterstützen das lokale Publikum, ohne die Plattform für internationale Besucher zu schließen.
+    before: Erlebnis in eine Richtung
+    after: RTL- und LTR-Einstiegspunkte
+    tone: qualitative
+  - title: Dienstleistungen, Repräsentation, Galerie und Shop-Anbindung
+    value: Ein kreatives Ökosystem
+    description: Die Informationsarchitektur verknüpft Auftragsarbeiten, Künstlerentdeckung, visuelle Beweise, Kontakt und Sammlerhandel, anstatt sie als separate Websites zu behandeln.
+    before: Fragmentierte Publikumspfade
+    after: Vernetzte kreative Reise
+    tone: qualitative
+  results:
+  - metric: Diensterkennung
+    before: Gemischte Disziplinen
+    after: Fünf fokussierte Servicepfade
+    improvement: Strukturiert
+  - metric: Künstlerentdeckung
+    before: Kollektiver Überblick
+    after: Spezielle Künstlerprofile
+    improvement: Erweitert
+  - metric: Lokalisierung
+    before: Präsentation in eine Richtung
+    after: Hebräisches RTL und englisches LTR
+    improvement: Zweisprachig
+  - metric: Kommerzielle Reise
+    before: Separate Anfragen und Druckvorlagen
+    after: Services, Kontakt und Shop verbunden
+    improvement: Einheitlich
+  services:
+  - Benutzerdefiniertes WordPress-Theme
+  - WooCommerce-Integration
+  - RTL und zweisprachiges UX
+  - Informationsarchitektur
+  - Künstlerverzeichnis
+  - Galerie-Erlebnis
+  content: '
+
+    ## Die Herausforderung
+
+
+    Hands & Vision vereint kreative Auftragsdienstleistungen, Künstlervertretung, Galeriearbeit, zweisprachige Inhalte und Handel. Das Risiko bestand entweder in einer optisch beeindruckenden Website mit schwacher Navigation oder in einer stark strukturierten Website, die den Charakter des Kollektivs abflachte.
+
+
+    ## Plattformstruktur
+
+
+    Wir haben das Erlebnis nach einer klaren Hierarchie organisiert: kollektive Identität, fünf Dienstleistungsbereiche, individuelle Künstlerprofile, Galeriearbeit, Kontakt und Handel. Jeder Inhaltstyp hat eine definierte Rolle, sodass Dienstleistungskäufer verstehen können, was provisionspflichtig ist, während kunstorientierte Besucher die Arbeit dennoch durchstöbern können, ohne durch einen Trichter im Agenturstil gedrängt zu werden.
+
+
+    ## Zweisprachiges System
+
+
+    Hebräisch und Englisch haben dieselbe Inhaltsarchitektur mit logischem RTL- und LTR-Verhalten. Durch den Sprachwechsel entsteht kein zweites, unverbundenes Erlebnis, und Künstler-, Service- und Handelswege bleiben in beide Richtungen konsistent.
+
+
+    ## Was sich geändert hat
+
+
+    Das Kollektiv verfügt nun über eine Plattform für mehrere unterschiedliche Zwecke. Dienstleistungen sind leichter zu entdecken, vertretene Künstler haben spezielle Ziele, die Galerie bietet visuelle Beweise und WooCommerce kann Sammelwerke unterstützen, ohne die gesamte Website in einen Laden zu verwandeln.
+
+    '
 ---
 
 ## The Challenge

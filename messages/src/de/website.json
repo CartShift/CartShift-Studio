@@ -1,0 +1,2482 @@
+{
+  "marketing": {
+    "contactPrefill": {
+      "message": "Mein Laden{store} hat im Ladenanalysator {score}/100 Punkte erzielt.{focus} Ich würde gerne den richtigen Spielraum für Verbesserungen verstehen.",
+      "focusClause": " Der erste identifizierte Fokus war {focus}.",
+      "focusAreas": {
+        "performance": "Geschwindigkeit und Leistung",
+        "seo": "Suchsichtbarkeit",
+        "accessibility": "Zugänglichkeit",
+        "bestPractices": "technische Qualität",
+        "cart": "Warenkorb und Kasse",
+        "trust": "Käufervertrauen"
+      }
+    },
+    "unsubscribe": {
+      "successTitle": "Sie sind abgemeldet",
+      "successMessage": "Die Folgemaßnahmen zur Filialprüfung wurden eingestellt. Ihr ursprünglicher Bericht bleibt weiterhin in Ihrem Besitz.",
+      "errorTitle": "Wir konnten Sie nicht abmelden",
+      "errorMessage": "Der Link ist möglicherweise abgelaufen. Antworten Sie auf die E-Mail und wir entfernen Sie manuell.",
+      "invalidTitle": "Dieser Abmeldelink ist unvollständig",
+      "invalidMessage": "Öffnen Sie den Abmeldelink aus der ursprünglichen CartShift-E-Mail oder kontaktieren Sie uns direkt."
+    }
+  },
+  "hero": {
+    "tag": "Shopify-Entwicklung und Shop-Optimierung",
+    "titleLine1": "Machen Sie Ihren Shopify-Shop",
+    "titleLine2": "noch besser",
+    "description": "Produktseiten bleiben hinter den Erwartungen zurück? Ihr Shop lädt langsam? Die Lagerverwaltung braucht ständig manuelle Eingriffe? Wir analysieren die Hindernisse, priorisieren Verbesserungen und setzen sie ohne unnötigen Neuaufbau um.",
+    "primaryCta": "Kennenlerngespräch vereinbaren",
+    "secondaryCta": "Unsere Projekte ansehen",
+    "analyzerCta": "Kostenlose Expertenanalyse",
+    "scrollIndicator": "Scrollen und entdecken",
+    "intro": {
+      "title": "Shopify-Entwicklung mit geschäftlichem Verständnis",
+      "mission": "Erst analysieren. Dann das Richtige entwickeln.",
+      "features": {
+        "shopify": {
+          "label": "Shopify-Experten",
+          "desc": "Individuelle Themes und komplexe Integrationen für wachsende Shops."
+        },
+        "technical": {
+          "label": "Technische Exzellenz",
+          "desc": "Sauberer, wartbarer Code mit Fokus auf Geschwindigkeit und Stabilität."
+        },
+        "conversion": {
+          "label": "Fokus auf Conversion",
+          "desc": "Prioritäten auf Basis beobachteter Customer Journeys und verfügbarer Daten."
+        }
+      },
+      "paragraphs": [
+        "Nicht jedes Shop-Problem erfordert ein Redesign oder eine weitere App. Manchmal braucht eine Produktseite eine gezielte Anpassung, manchmal erschwert eine Integration die täglichen Abläufe. Wir beginnen mit dem, was für Ihr Unternehmen wirklich wichtig ist.",
+        "Wir betrachten Kaufprozesse, verfügbare Daten und technische Abläufe. Anschließend erklären wir Möglichkeiten, Einschränkungen und Prioritäten, bevor wir gemeinsam den Leistungsumfang festlegen.",
+        "Unsere Spezialität ist Shopify: Themes, Einkaufserlebnis, technisches SEO, B2B und Integrationen. Wir entwickeln auch WordPress- und individuelle Weblösungen, wenn sie zur Aufgabe passen."
+      ]
+    },
+    "platforms": {
+      "label": "Unser Fokus"
+    },
+    "illustration": {
+      "revenue": "Umsatz",
+      "conversion": "Conversion",
+      "activeUsers": "Aktive Nutzer",
+      "newOrder": "Neue Bestellung"
+    }
+  },
+  "heroForm": {
+    "title": "Kostenlose Beratung anfragen",
+    "subtitle": "Erzählen Sie uns von Ihrem Projekt. Wir melden uns persönlich, je nach Verfügbarkeit.",
+    "successTitle": "Vielen Dank!",
+    "successText": "Wir haben Ihre Anfrage erhalten und melden uns entsprechend unserer Verfügbarkeit.",
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "Ihr Name",
+      "nameRequired": "Bitte geben Sie Ihren Namen an.",
+      "email": "E-Mail",
+      "emailPlaceholder": "ihre@email.de",
+      "emailRequired": "Bitte geben Sie Ihre E-Mail-Adresse an.",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "interest": "Was möchten Sie umsetzen?",
+      "interestRequired": "Bitte wähle eine Option",
+      "selectOption": "Option auswählen",
+      "options": {
+        "shopify": "Shopify-Shop (Neuaufbau oder Wachstum)",
+        "wordpress": "WordPress-Website (Content, News, individuell)",
+        "consultation": "Noch unsicher – ich brauche Beratung"
+      }
+    },
+    "submit": "Kostenlose Beratung anfragen",
+    "submitting": "Wird gesendet …",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut oder kontaktiere uns direkt."
+  },
+  "about": {
+    "hero": {
+      "title": "Über CartShift Studio",
+      "subtitle": "Produktdenken. Technische Tiefe. Menschliche Zusammenarbeit.",
+      "badge": "Unsere Geschichte"
+    },
+    "story": {
+      "title": "Unsere Geschichte",
+      "content": [
+        "CartShift Studio ist ein kleines Produkt-, Handels- und Web-Engineering-Studio, das auf einer einfachen Idee basiert: Die beste digitale Arbeit entsteht, wenn Geschäftskontext, Produktentscheidungen und technische Ausführung eng zusammenpassen.",
+        "Yotam verfügt über mehr als ein Jahrzehnt Erfahrung in der Softwareentwicklung und in Produktionssystemen. Adi verbindet Entwicklung mit Geschäftsstrategie, Kundenführung und Publikumsverständnis. Gemeinsam entwickeln wir ein Problem aus dem Geschäftskontext zu einem Produkt, das in der realen Welt funktioniert.",
+        "Wir hören zuerst zu, definieren das eigentliche Problem und entwickeln dann das Richtige mit sauberer Ausführung, klarer Kommunikation und Raum für weitere Verbesserungen."
+      ]
+    },
+    "team": {
+      "title": "Wer wir sind",
+      "subtitle": "Die Leute hinter CartShift Studio",
+      "expertiseLabel": "Stärken",
+      "members": [
+        {
+          "name": "Yotam Faraggi",
+          "role": "Mitbegründer und leitender Produktingenieur",
+          "bio": "In Berlin ansässiger Senior Product Engineer mit mehr als 10 Jahren Erfahrung in der Entwicklung und dem Betrieb von Produktionssoftware. Ich arbeite am besten dort, wo Produktentscheidungen und technische Tiefe zusammenpassen müssen, über Full-Stack-Systeme, Handel, APIs, Integrationen, Daten, Cloud und KI hinweg. Bei CartShift übernehme ich die gleiche End-to-End-Verantwortung sowohl für die Arbeit unserer Kunden als auch für die Produkte, die wir selbst entwickeln.",
+          "expertise": "Produktentwicklung, Full-Stack, Shopify, APIs und Integrationen, KI-gestützte Produkte, Leistung und Zuverlässigkeit"
+        },
+        {
+          "name": "Adi Zelter",
+          "role": "Mitbegründer · Geschäftsstrategie und Webentwicklung",
+          "bio": "Adi verbindet die Entwicklung mit der geschäftlichen Seite jedes Projekts. Ihr Hintergrund in Musik und Nachtleben schärfte ihr Verständnis für Publikum, Erfahrung und Kommunikation; Heute wendet sie diese Perspektive auf die WordPress-Entwicklung, die Projektleitung und die direkte Kundenarbeit an. Sie sorgt dafür, dass die Arbeit nützlich, klar und mit dem dahinter stehenden Geschäftsziel verbunden ist.",
+          "expertise": "Geschäftsstrategie, WordPress-Entwicklung, Projektmanagement, Kundenbeziehungen, Zielgruppenerlebnis, digitales Wachstum"
+        }
+      ],
+      "portfolioLabel": "Yotams Portfolio",
+      "cvLabel": "Yotams Lebenslauf"
+    },
+    "values": {
+      "title": "Unsere Werte",
+      "subtitle": "Was alles antreibt, was wir tun",
+      "items": [
+        {
+          "title": "Klare Kommunikation",
+          "description": "Sie wissen immer, was passiert und warum. Einfache Sprache, ehrliche Empfehlungen und keine Überraschungen."
+        },
+        {
+          "title": "Design, das umwandelt",
+          "description": "Wir kümmern uns um die Details, die Zahlen bewegen: Hierarchie, Klarheit, Geschwindigkeit und einen Kaufprozess, der sich mühelos anfühlt."
+        },
+        {
+          "title": "Partner nach dem Start",
+          "description": "Der Start ist nicht die Ziellinie. Wir bleiben für Verbesserungen, Experimente, Korrekturen und neue Funktionen in Ihrer Nähe."
+        },
+        {
+          "title": "Ehrlichkeit zuerst",
+          "description": "Wenn Sie etwas nicht brauchen, sagen wir es Ihnen. Wenn etwas außerhalb des Rahmens liegt, planen wir es richtig."
+        }
+      ]
+    },
+    "expect": {
+      "title": "Was Sie wann erwarten können",
+      "titleSpan": "Arbeiten Sie mit uns",
+      "content": [
+        "Erwarten Sie nachdenkliche Fragen. Wir gehen auf Ihre Ziele, Kunden und Einschränkungen ein, damit wir das Richtige entwickeln können, nicht nur das, wonach Sie gefragt haben.",
+        "Erwarten Sie Sichtbarkeit. Sie erhalten Check-ins, Demos und klären die nächsten Schritte. Keine Blackboxen.",
+        "Erwarten Sie Dynamik nach dem Start. Wir helfen Ihnen bei der Optimierung, Iteration und Skalierung, während sich Ihr Unternehmen weiterentwickelt."
+      ]
+    },
+    "cta": {
+      "title": "Habe etwas Wertvolles",
+      "titleSpan": "richtig bauen?",
+      "description": "Ein Geschäft, eine Website, ein internes System oder eine Idee, die noch chaotisch ist. Wir können dabei helfen, das Problem zu definieren, den Umfang richtig zu dimensionieren und ihn in die Produktion zu überführen.",
+      "button": "Sprechen Sie mit uns"
+    }
+  },
+  "shopify": {
+    "hero": {
+      "title": "Shopify-Entwicklung und Shop-Verbesserungen",
+      "subtitle": "Beheben Sie Kauf- und Betriebskonflikte",
+      "description": "Produktseiten, technisches SEO, Inventar, B2B und Integrationen. Erst diagnostizieren, dann verbessern.",
+      "badge": "Shopify-Wachstumspartner"
+    },
+    "services": {
+      "title": "Unsere Shopify-Dienste",
+      "subtitle": "Vom ersten Build bis zum kontinuierlichen Wachstum",
+      "items": [
+        {
+          "title": "Strategie & Roadmap",
+          "description": "Klare Prioritäten, der richtige Plan und die richtigen Apps basierend auf Ihren Zielen, nicht auf Hype."
+        },
+        {
+          "title": "Shop-Design",
+          "description": "Ein Premium-Look, der zu Ihrer Marke passt und den Kunden den Kauf erleichtert."
+        },
+        {
+          "title": "Benutzerdefinierte Funktionen",
+          "description": "Bundles, Abonnements, Upsells, benutzerdefinierte Abschnitte, Automatisierungen. Sauber und wartungsfreundlich gebaut."
+        },
+        {
+          "title": "Geschwindigkeit und SEO",
+          "description": "Schnellere Ladezeiten, bessere Core Web Vitals, saubere Struktur und SEO-Grundlagen, die zusammenkommen."
+        },
+        {
+          "title": "Laufende Unterstützung",
+          "description": "Korrekturen, Verbesserungen, Experimente und neue Funktionen ohne das Agentur-Chaos."
+        },
+        {
+          "title": "Shop-Tuning",
+          "description": "Schon live? Wir prüfen Ihr Geschäft und liefern zuerst die Verbesserungen mit der größten Auswirkung."
+        }
+      ]
+    },
+    "why": {
+      "title": "Warum mit bauen?",
+      "titleSpan": "Wir?",
+      "items": [
+        "Konvertierung zuerst: Unser Design ist auf Klarheit und Aktion ausgerichtet, damit mehr Besucher zu Kunden werden.",
+        "Weniger Reibung: Wir kümmern uns um Code, Apps, Einstellungen und Randfälle. Sie erhalten einen gepflegten Laden und eine saubere Übergabe.",
+        "Maßgeschneidert: Egal, ob Sie Ihr erstes Produkt auf den Markt bringen oder einen großen Katalog verwalten, wir sorgen dafür, dass Ihr Setup schnell, stabil und wachstumsbereit ist."
+      ]
+    },
+    "learnMore": {
+      "title": "Erfahren Sie mehr über Shopify",
+      "description": "Entdecken Sie unsere umfassenden Leitfäden zur Entwicklung, Optimierung und Best Practices von Shopify.",
+      "links": [
+        {
+          "title": "Shopify SEO-Leitfaden",
+          "href": "/blog/shopify-seo-complete-guide"
+        },
+        {
+          "title": "Geschwindigkeitsoptimierung",
+          "href": "/blog/speed-up-shopify-store"
+        },
+        {
+          "title": "Plattformvergleich",
+          "href": "/blog/shopify-vs-woocommerce"
+        }
+      ]
+    },
+    "process": {
+      "title": "Unser Shopify-Entwicklungsprozess",
+      "subtitle": "Ein klarer Weg von der Idee bis zur Markteinführung",
+      "steps": [
+        {
+          "title": "Entdeckung & Strategie",
+          "description": "Wir beginnen damit, Ihre Geschäftsziele, Zielgruppe und aktuellen Herausforderungen zu verstehen. Durch ausführliche Beratungen identifizieren wir die richtigen Shopify-Apps, Theme-Ansätze und benutzerdefinierten Funktionen, die Sie zum Erreichen Ihrer Ziele benötigen. Diese Phase umfasst eine Wettbewerbsanalyse, die Erfassung technischer Anforderungen und die Erstellung einer Roadmap, die wirkungsvolle Verbesserungen priorisiert."
+        },
+        {
+          "title": "Design & Entwicklung",
+          "description": "Wir bauen Ihren Shop mit Fokus auf Conversion-Optimierung und Performance auf. Wir erstellen individuelle Themes oder passen bestehende an Ihre Marke an, implementieren alle notwendigen Funktionen, integrieren Zahlungsgateways und Versandlösungen und sorgen für mobile Reaktionsfähigkeit. Während der gesamten Entwicklung sehen Sie regelmäßig Demos und haben die Möglichkeit, Feedback zu geben."
+        },
+        {
+          "title": "Testen und Optimieren",
+          "description": "Vor der Einführung führen wir gründliche Tests auf allen Geräten und Browsern durch, optimieren die Seitenladegeschwindigkeiten, stellen sicher, dass SEO-Best Practices umgesetzt werden, und testen alle Checkout-Abläufe. Wir richten außerdem die Analyseverfolgung ein, konfigurieren E-Mail-Benachrichtigungen und bereiten Ihren Shop für die Produktion vor. Diese Phase stellt sicher, dass bei der Inbetriebnahme alles einwandfrei funktioniert."
+        },
+        {
+          "title": "Einführung und Support",
+          "description": "Wir kümmern uns um die technischen Aspekte der Live-Schaltung, einschließlich der Domäneneinrichtung, der SSL-Konfiguration und der abschließenden Migrationen. Nach der Einführung bieten wir Schulungen zur Verwaltung Ihres Shops an, bieten fortlaufende Supportpakete für Updates und Verbesserungen an und unterstützen Sie bei der Iteration auf der Grundlage echter Kundendaten und Leistungsmetriken."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Bereit dazu",
+      "titleSpan": "Umsatz steigern?",
+      "description": "Sagen Sie uns, wo Sie heute stehen, und wir zeigen Ihnen den schnellsten Weg nach vorne auf.",
+      "button": "Sprechen Sie über Shopify"
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "subtitle": "Alles, was Sie über unsere Shopify-Entwicklungsdienste wissen müssen",
+      "items": [
+        {
+          "question": "Welche Shopify-Entwicklungsdienste bieten Sie an?",
+          "answer": "Wir bieten umfassende Shopify-Entwicklungsdienste an, einschließlich Shop-Einrichtung und -Konfiguration, Entwicklung benutzerdefinierter Themes, App-Integration, Leistungsoptimierung, Migration von anderen Plattformen, laufende Wartung und Support sowie SEO-Optimierung für Shopify-Shops."
+        },
+        {
+          "question": "Wie lange dauert die Einrichtung eines Shopify-Shops?",
+          "answer": "Die Zeitpläne hängen vom aktuellen Shop, dem technischen Umfang, dem Zugriff und dem Überprüfungsprozess ab. Nach der Entdeckung liefern wir eine realistische Schätzung und Meilensteine."
+        },
+        {
+          "question": "Können Sie meinen bestehenden Shop zu Shopify migrieren?",
+          "answer": "Ja, wir sind auf E-Commerce-Migrationen spezialisiert. Wir können Ihren Shop von Magento, BigCommerce oder anderen Plattformen zu Shopify migrieren. Unser Migrationsprozess umfasst Datenübertragung, Produktmigration, Kundendatenmigration, Bestellhistorie (falls zutreffend) und Theme-Anpassung passend zu Ihrer Marke."
+        },
+        {
+          "question": "Bieten Sie nach der Eröffnung des Shops fortlaufenden Support?",
+          "answer": "Wir bieten zielgerichtete laufende Wartung und Verbesserungen, einschließlich Korrekturen, Funktionen, Leistung und Integrationen. Reaktionszeiten und Abdeckung werden gesondert vereinbart."
+        },
+        {
+          "question": "Wie viel kostet die Shopify-Entwicklung?",
+          "answer": "Die Preise hängen vom Umfang, dem vorhandenen Code, den Integrationen und den erforderlichen Tests ab. Nach der Entdeckung unterbreiten wir einen klaren Vorschlag, der wesentliche Arbeiten von optionalen Verbesserungen trennt."
+        },
+        {
+          "question": "Können Sie Shopify-Themen anpassen?",
+          "answer": "Ja, wir sind auf die Entwicklung benutzerdefinierter Shopify-Themes spezialisiert. Wir können bestehende Themes modifizieren oder völlig individuelle Themes von Grund auf erstellen, um sie an Ihre Markenidentität und Ihre Geschäftsanforderungen anzupassen. Unsere Themes sind auf Leistung, Konvertierung und mobile Reaktionsfähigkeit optimiert."
+        },
+        {
+          "question": "Helfen Sie bei Shopify SEO?",
+          "answer": "Ja, SEO-Optimierung ist ein entscheidender Bestandteil unserer Shopify-Entwicklungsdienste. Wir optimieren On-Page-Elemente, implementieren strukturierte Daten, verbessern die Website-Geschwindigkeit, sorgen für Mobilfreundlichkeit und bieten Strategien zur Inhaltsoptimierung, damit Ihr Shop in Suchmaschinen besser rankt."
+        },
+        {
+          "question": "Welche Zahlungsgateways können Sie integrieren?",
+          "answer": "Wir bewerten die von Shopify für Ihr Geschäft und Ihr Land unterstützten Zahlungsanbieter und helfen Ihnen dann bei der Konfiguration und dem Testen der geeigneten Optionen innerhalb der Plattformgrenzen."
+        },
+        {
+          "question": "Können Sie benutzerdefinierte Shopify-Apps erstellen?",
+          "answer": "Wenn Themes oder vorhandene Apps nicht ausreichen, können wir benutzerdefinierte Apps und Integrationen in die APIs von Shopify und die Funktionen Ihres Plans integrieren."
+        },
+        {
+          "question": "Wie fange ich mit Ihren Shopify-Entwicklungsdiensten an?",
+          "answer": "Der Einstieg ist einfach! Kontaktieren Sie uns einfach über unser Kontaktformular oder vereinbaren Sie einen kostenlosen Beratungstermin. Wir besprechen Ihre Projektanforderungen, beantworten alle Fragen und unterbreiten Ihnen ein detailliertes Angebot. Es gibt keine Verpflichtung und wir sind hier, um Ihnen zum Erfolg zu verhelfen."
+        }
+      ]
+    },
+    "editorial": {
+      "seoFocusAreas": [
+        {
+          "title": "Fokussierte Shopify-SEO-Audits",
+          "description": "Überprüfen Sie die Indexierung, Canonicals, die Inhaltshierarchie, die Suchabsicht und interne Links, um beobachtbare Blocker und Chancen zu identifizieren."
+        },
+        {
+          "title": "Leistung und zentrale Web-Vitalwerte",
+          "description": "Diagnostizieren Sie LCP, CLS, unnötiges JavaScript, umfangreiche Medien und App-Bloat und priorisieren Sie dann Änderungen, die das Kauferlebnis verbessern."
+        },
+        {
+          "title": "Sorgfältig geplante Migrationen",
+          "description": "Ordnen Sie wichtige SEO-URLs, Links und Inhalte zu, bevor Sie eine Plattform- oder Site-Struktur ändern, um Sichtbarkeitsrisiken zu reduzieren."
+        }
+      ],
+      "partnerReasons": [
+        "Automatisierte Tools können Wegbeschreibungen vorschlagen. Wir verbinden SEO, Erfahrung, Leistung und Geschäftsziele mit dem, was in Ihrem Shop überprüft werden kann.",
+        "Anstatt eine endlose Fehlerliste zu übergeben, priorisieren wir nach wahrscheinlichen Auswirkungen, Aufwand und Risiko und überprüfen dann das Ergebnis.",
+        "Das Team, das die Arbeit diagnostiziert, kann sie auch planen und umsetzen, ohne den Kontext zwischen Berater und Entwickler zu verlieren."
+      ],
+      "localTrust": {
+        "title": "Arbeiten in Englisch und Hebräisch",
+        "description": "Wir verstehen israelische Handelsteams und internationale Storefronts und passen Inhalte und Arbeitspraktiken an den jeweiligen Markt an.",
+        "primary": "Besprechen Sie Shopify-Verbesserungen",
+        "secondary": "Fordern Sie eine kostenlose Erstbewertung an"
+      }
+    }
+  },
+  "wordpress": {
+    "hero": {
+      "title": "WordPress, das auf Ihr Unternehmen zugeschnitten ist",
+      "subtitle": "Content-Sites, Unternehmenswebsites und Veröffentlichungsplattformen",
+      "description": "Wartbare WordPress-Sites, die für Verlags- und Geschäftsanforderungen erstellt wurden, einschließlich technischer Suchmaschinenoptimierung, Leistung und fortlaufendem Support. Bei Online-Shops liegt unser Fokus auf Shopify.",
+      "badge": "Experten für Webentwicklung"
+    },
+    "services": {
+      "title": "Unsere WordPress-Dienste",
+      "subtitle": "End-to-End-Entwicklung vom Design bis zur Bereitstellung",
+      "items": [
+        {
+          "title": "Benutzerdefinierte Websites",
+          "description": "Von Grund auf neu oder neu gestaltet. Basierend auf Ihrer Marke, Ihren Inhalten und Ihren Zielen."
+        },
+        {
+          "title": "Theme-Anpassung",
+          "description": "Lieben Sie ein Thema? Wir passen es richtig an, damit es einzigartig aussieht und wartungsfreundlich bleibt."
+        },
+        {
+          "title": "Benutzerdefinierte Funktionen",
+          "description": "Formulare, Mitgliedschaften, mehrsprachige Setups, Integrationen. Sicher und sauber gebaut."
+        },
+        {
+          "title": "Content-Management",
+          "description": "Auf Ihr Team zugeschnittene Inhaltstypen, Nachrichtenseiten und Veröffentlichungsworkflows."
+        },
+        {
+          "title": "Geschwindigkeit und Sicherheit",
+          "description": "Leistungssteigerungen plus sinnvolle, auf Ihre Bedürfnisse abgestimmte Sicherheit."
+        },
+        {
+          "title": "Seelenfrieden",
+          "description": "Wir kümmern uns um Updates, Backups und Korrekturen, damit Ihre Website fehlerfrei bleibt."
+        }
+      ]
+    },
+    "why": {
+      "title": "Websites, die funktionieren",
+      "titleSpan": "Für Sie",
+      "items": [
+        {
+          "strong": "Design + Leistung:",
+          "text": "Wunderschöne Optik, unterstützt durch solide Technik. Schnell, zugänglich und zuverlässig."
+        },
+        {
+          "strong": "Völlige Freiheit:",
+          "text": "Aktualisieren Sie Inhalte, tauschen Sie Bilder aus, fügen Sie Seiten hinzu, ohne einen Entwickler anzurufen."
+        },
+        {
+          "strong": "Gebaut, um gefunden zu werden:",
+          "text": "Saubere Struktur und Best-Practice-Grundlagen, damit Ihre Website für das Ranking bereit ist."
+        },
+        {
+          "strong": "Flexibel und skalierbar:",
+          "text": "Von einfachen Portfolios bis hin zu komplexen Websites, die darauf ausgelegt sind, mit Ihnen zu wachsen."
+        }
+      ]
+    },
+    "process": {
+      "title": "Unser WordPress-Entwicklungsprozess",
+      "subtitle": "Vom Konzept bis zur Markteinführung, Schritt für Schritt",
+      "steps": [
+        {
+          "title": "Planung & Architektur",
+          "description": "Wir beginnen damit, Ihre Content-Strategie, Ihre Zielgruppe und Ihre Geschäftsziele zu verstehen. Wir entwerfen die Informationsarchitektur, planen die Inhaltsstruktur und ermitteln das beste WordPress-Setup für Ihre Bedürfnisse. Dazu gehört die Auswahl geeigneter Themes, Plugins und benutzerdefinierter Entwicklungsanforderungen. Wir erstellen einen detaillierten Projektplan mit Zeitplänen und Meilensteinen."
+        },
+        {
+          "title": "Design & Entwicklung",
+          "description": "Wir erstellen benutzerdefinierte WordPress-Themes, die auf Ihre Marke zugeschnitten sind, oder passen bestehende Themes an Ihre Vision an. Wir entwickeln benutzerdefinierte Beitragstypen, Taxonomien und Content-Management-Workflows, die es Ihrem Team erleichtern, Inhalte zu veröffentlichen und zu verwalten. Wir implementieren alle notwendigen Funktionen, sorgen für ein responsives Design und optimieren von Grund auf auf Leistung und SEO."
+        },
+        {
+          "title": "Inhaltsmigration und -einrichtung",
+          "description": "Wenn Sie über vorhandene Inhalte verfügen, gehen wir den Migrationsprozess sorgfältig durch und bewahren dabei Formatierungen, Bilder und Metadaten. Wir richten Ihr Content-Management-System ein, konfigurieren Benutzerrollen und Berechtigungen und erstellen redaktionelle Workflows. Wir integrieren auch alle von Ihnen benötigten Dienste von Drittanbietern, wie z. B. E-Mail-Marketing-Plattformen, Analysetools oder Mitgliedschaftssysteme."
+        },
+        {
+          "title": "Einführung und Schulung",
+          "description": "Wir kümmern uns um die technische Bereitstellung, konfigurieren Hosting-Einstellungen, richten Backups und Sicherheitsmaßnahmen ein und sorgen dafür, dass alles für die Produktion optimiert ist. Nach dem Start bieten wir umfassende Schulungen zur Verwaltung Ihrer WordPress-Site an, bieten Dokumentation an und stellen fortlaufende Supportpakete für Updates, Sicherheitsüberwachung und zukünftige Verbesserungen bereit."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Brauchen Sie eine Website, die",
+      "titleSpan": "funktioniert einfach?",
+      "description": "Schön, funktional und einfach zu verwalten. Machen wir es möglich.",
+      "button": "Lass es uns bauen"
+    },
+    "learnMore": {
+      "title": "Vollständiger Leitfaden zur E-Commerce-Migration: So verlagern Sie Ihren Shop ohne Umsatzeinbußen",
+      "excerpt": "Erfahren Sie, wie Sie Ihren E-Commerce-Shop sicher und effizient migrieren. Schritt-für-Schritt-Anleitung zum Wechsel zwischen Plattformen, ohne Daten, SEO-Rankings oder Verkäufe zu verlieren.",
+      "category": "E-Commerce-Strategie",
+      "date": "2024-12-10",
+      "href": "/blog/complete-guide-ecommerce-migration"
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "subtitle": "Alles, was Sie über unsere WordPress-Entwicklungsdienste wissen müssen",
+      "items": [
+        {
+          "question": "Welche WordPress-Entwicklungsdienste bieten Sie an?",
+          "answer": "Wir erstellen WordPress-Content-Websites, Unternehmenswebsites und Veröffentlichungsplattformen, einschließlich Theme- und Plugin-Arbeit, technisches SEO, Leistung und Wartung."
+        },
+        {
+          "question": "Erstellen Sie E-Commerce-Sites mit WordPress?",
+          "answer": "Unsere WordPress-Dienste konzentrieren sich auf Unternehmenswebsites und Content-Plattformen. Wir bieten derzeit keine WooCommerce-Shop-Entwicklung an; Unsere Spezialisierung auf die Entwicklung von Online-Shops ist Shopify."
+        },
+        {
+          "question": "Wie lange dauert die Entwicklung einer WordPress-Site?",
+          "answer": "Der Zeitpunkt hängt vom Inhaltsvolumen, den Vorlagen, Integrationen und Genehmigungen ab. Nach der Entdeckung erstellen wir einen realistischen Zeitplan."
+        },
+        {
+          "question": "Können Sie meine bestehende WordPress-Site migrieren?",
+          "answer": "Ja. Wir können WordPress-Hosting-Umzüge oder Site-Migrationen planen, Backups, Inhalte, Medien und URLs überprüfen und die Übertragung vor der Übergabe validieren."
+        },
+        {
+          "question": "Bieten Sie WordPress-Hosting und -Wartung an?",
+          "answer": "Obwohl wir kein Hosting direkt anbieten, können wir zuverlässige Hosting-Anbieter empfehlen und alle WordPress-Wartungsaufgaben übernehmen, einschließlich Updates, Sicherheitsüberwachung, Backups, Leistungsoptimierung und technischer Support."
+        },
+        {
+          "question": "Wie viel kostet die WordPress-Entwicklung?",
+          "answer": "Die Preise hängen von der Seitenzahl, der Komplexität des Inhalts, dem Design und den Integrationen ab. Wir überprüfen die Anforderungen und schlagen vor Beginn der Arbeiten einen definierten Umfang vor."
+        },
+        {
+          "question": "Können Sie WordPress-Themes anpassen?",
+          "answer": "Absolut. Wir können bestehende WordPress-Themes modifizieren oder komplett individuelle Themes erstellen, die auf Ihre Marke zugeschnitten sind. Unsere Themes sind hinsichtlich Leistung, SEO, mobiler Reaktionsfähigkeit und Benutzererfahrung optimiert."
+        },
+        {
+          "question": "Helfen Sie bei der WordPress-Sicherheit?",
+          "answer": "Wir unterstützen sicherheitsorientierte Wartungsarbeiten wie WordPress- und Plugin-Updates, Backup-Prüfungen, Konfigurationsüberprüfungen und Hosting-Empfehlungen. Aktive Reaktion auf Vorfälle und Penetrationstests sind separate Spezialdienstleistungen."
+        },
+        {
+          "question": "Welche Arten von Websites eignen sich am besten für WordPress?",
+          "answer": "WordPress eignet sich für Veröffentlichungen, Nachrichtenseiten, Unternehmenswebsites, Portfolios und benutzerdefinierte Content-Workflows. Für neue Online-Shops bieten wir Shopify-Entwicklungsdienste an."
+        },
+        {
+          "question": "Wie fange ich mit Ihren WordPress-Entwicklungsdiensten an?",
+          "answer": "Der Einstieg ist einfach! Kontaktieren Sie uns über unser Kontaktformular oder vereinbaren Sie einen kostenlosen Beratungstermin. Wir besprechen Ihr Projekt, beantworten Fragen und unterbreiten Ihnen ein detailliertes Angebot. Es gibt keine Verpflichtung und wir setzen uns für Ihren Erfolg ein."
+        }
+      ]
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "Unser Blog",
+      "subtitle": "Praktische Einblicke, die Ihnen beim Ausbau Ihres Online-Geschäfts helfen",
+      "badge": "Neue Beiträge"
+    },
+    "content": {
+      "featuredPosts": "Empfohlene Beiträge",
+      "searchPlaceholder": "Artikel durchsuchen...",
+      "allCategories": "Alle",
+      "articles": "Artikel",
+      "articles_singular": "Artikel",
+      "sort": {
+        "newest": "Das Neueste zuerst",
+        "oldest": "Älteste zuerst",
+        "popular": "Am beliebtesten"
+      },
+      "noPostsFound": "Keine Beiträge gefunden",
+      "readingTime": "min",
+      "pagination": {
+        "previous": "Zurück",
+        "next": "Als nächstes"
+      },
+      "newsletter": {
+        "title": "Abonnieren Sie den Newsletter",
+        "description": "Erhalten Sie wöchentliche Tipps und Updates",
+        "placeholder": "Ihre E-Mail",
+        "subscribe": "Abonnieren",
+        "categories": "Kategorien"
+      }
+    },
+    "categories": "Kategorien:",
+    "noPosts": "Noch keine Beiträge. Schauen Sie bald wieder vorbei!",
+    "readMore": "Lesen Sie mehr",
+    "relatedPosts": {
+      "title": "Verwandte",
+      "span": "Beiträge"
+    }
+  },
+  "blogTeaser": {
+    "title": "Neueste Erkenntnisse",
+    "subtitle": "Tipps, Trends und Wachstums-Playbooks",
+    "readMore": "Lesen Sie mehr",
+    "viewAll": "Alle Beiträge anzeigen",
+    "new": "Neu",
+    "featured": "Hervorgehoben",
+    "readTime": "5 Minuten gelesen",
+    "posts": [
+      {
+        "title": "Warum Ihr E-Commerce-Shop nicht konvertiert (und wie Sie das herausfinden)",
+        "excerpt": "Verkehr, aber keine Verkäufe? Entdecken Sie die 12 versteckten Conversion-Killer, die Sie Tausende kosten können, und erfahren Sie, wie Sie genau diagnostizieren, was mit Ihrem Geschäft nicht stimmt.",
+        "href": "/blog/why-your-store-isnt-converting",
+        "date": "2025-01-13"
+      },
+      {
+        "title": "Optimierung der E-Commerce-Conversion-Rate: 20 bewährte Strategien, die funktionieren",
+        "excerpt": "Entdecken Sie 20 bewährte Strategien zur Steigerung Ihrer E-Commerce-Conversion-Rate. Erfahren Sie, wie Sie aus mehr Besuchern Kunden machen und Ihren Umsatz steigern.",
+        "href": "/blog/ecommerce-conversion-rate-optimization",
+        "date": "2024-12-20"
+      },
+      {
+        "title": "Vollständiger Leitfaden zur E-Commerce-Migration: So verlagern Sie Ihren Shop ohne Umsatzeinbußen",
+        "excerpt": "Erfahren Sie, wie Sie Ihren E-Commerce-Shop sicher und effizient migrieren. Schritt-für-Schritt-Anleitung zum Wechsel zwischen Plattformen, ohne Daten, SEO-Rankings oder Verkäufe zu verlieren.",
+        "href": "/blog/complete-guide-ecommerce-migration",
+        "date": "2024-12-10"
+      },
+      {
+        "title": "Beschleunigen Sie Ihren Shopify-Shop (ohne Ihr Theme zu zerstören)",
+        "excerpt": "Langsame Websites führen zu Umsatzeinbußen. Hier sind die praktischen Korrekturen, mit denen wir Ladezeiten verkürzen und Umbauten durchführen.",
+        "href": "/blog/speed-up-shopify-store",
+        "date": "2024-12-01"
+      }
+    ]
+  },
+  "portalTeaser": {
+    "badge": "Kundenportal",
+    "title": "Verwalten Sie Ihre Projekte",
+    "titleSpan": "mit einem einzigen Klick",
+    "description": "Ihr spezieller Bereich, um Anfragen zu verfolgen, den Fortschritt zu überprüfen, Dateien zu teilen und mit unserem Team in Verbindung zu bleiben – alles an einem Ort. Keine E-Mail-Ketten oder verlorenen Nachrichten mehr.",
+    "cta": "Entdecken Sie das Portal",
+    "secondaryCta": "Kontaktieren Sie uns",
+    "features": {
+      "requests": {
+        "title": "Anforderungsmanagement",
+        "description": "Senden und verfolgen Sie Anfragen ganz einfach"
+      },
+      "realtime": {
+        "title": "Echtzeit-Updates",
+        "description": "Sehen Sie den Fortschritt, während er geschieht"
+      },
+      "files": {
+        "title": "Dateifreigabe",
+        "description": "Teilen Sie Vermögenswerte sicher"
+      },
+      "updates": {
+        "title": "Sofortige Benachrichtigungen",
+        "description": "Verpassen Sie kein Update mehr"
+      }
+    },
+    "preview": {
+      "active": "Aktiv",
+      "pending": "Ausstehend",
+      "completed": "Abgeschlossen",
+      "request1": "Neugestaltung der Homepage",
+      "request2": "Produktfilter hinzufügen",
+      "request3": "Geschwindigkeitsoptimierung",
+      "liveUpdates": "Illustrative Vorschau der Benutzeroberfläche"
+    }
+  },
+  "storeAnalyzerTeaser": {
+    "badge": "Kostenloser Store-Analysator",
+    "title": "Steigern Sie die Qualität Ihres Shops",
+    "titleSpan": "Leistung",
+    "description": "Erhalten Sie in 1–2 Minuten eine umfassende Prüfung Ihres E-Commerce-Shops. Wir analysieren Leistung, SEO, Zugänglichkeit und Vertrauenssignale, um Ihnen dabei zu helfen, mehr Besucher zu konvertieren.",
+    "cta": "Analysieren Sie meinen Shop",
+    "features": {
+      "performance": {
+        "title": "Geschwindigkeitsanalyse",
+        "description": "Ladezeit und Core Web Vitals"
+      },
+      "seo": {
+        "title": "SEO-Audit",
+        "description": "Indizierung und Suchsichtbarkeit"
+      },
+      "trust": {
+        "title": "Vertrauenssignale",
+        "description": "Sicherheits- und Glaubwürdigkeitsprüfungen"
+      },
+      "conversion": {
+        "title": "Konvertierung",
+        "description": "UX und Best Practices"
+      }
+    }
+  },
+  "blogPost": {
+    "cta": {
+      "title": "Erkennen Sie dieses Problem ",
+      "titleSpan": "in Ihrem Shop?",
+      "description": "Eine gezielte Expertenbewertung hilft dabei, die Reibungspunkte zu erkennen und zu entscheiden, was zunächst verbessert werden sollte.",
+      "button": "Fordern Sie eine Expertenbewertung an"
+    },
+    "storeAnalyzerCta": {
+      "badge": "Kostenlose Expertenbewertung",
+      "title": "Sie fragen sich, was Ihren Shop zurückhält?",
+      "titleSpan": "Sollte sich zuerst verbessern?",
+      "description": "Ein CartShift-Spezialist prüft Ihre Anfrage und die öffentlich zugänglichen Store-Journeys, bevor er mit priorisierten Ergebnissen weitergeht. Dies ist kein automatischer Sofortbericht.",
+      "button": "Fordern Sie eine kostenlose Expertenbewertung an",
+      "stats": {
+        "analyzed": "3–5",
+        "analyzedLabel": "Vorrangige Erkenntnisse",
+        "avgTime": "Menschlich",
+        "avgTimeLabel": "Kapazitätsbasierte Reaktion"
+      }
+    },
+    "contextualAnalyzer": {
+      "speed": {
+        "title": "Könnte ein langsames Laden dazu führen, dass dieses Geschäft Kunden kostet?",
+        "description": "Wir untersuchen die Reibung beim mobilen Laden und priorisieren die nützlichsten Leistungsuntersuchungen, bevor wir Änderungen vornehmen.",
+        "button": "Fordern Sie eine Expertenbewertung an"
+      },
+      "seo": {
+        "title": "Möchten Sie technische SEO-Lücken in Ihrem Shop finden?",
+        "description": "Wir überprüfen öffentlich sichtbare Anzeichen von Indexierungs-, Website-Architektur- und Produkt- oder Sammlungsinhaltsproblemen.",
+        "button": "Fordern Sie eine Expertenbewertung an"
+      },
+      "conversion": {
+        "title": "Sie sind sich nicht sicher, was mehr Verkäufe blockiert?",
+        "description": "Wir gehen die Produktseiten und Kaufprozesse durch, um herauszufinden, wo Käufer möglicherweise an Schwung verlieren.",
+        "button": "Fordern Sie eine Expertenbewertung an"
+      },
+      "trust": {
+        "title": "Sehen Käufer genügend Gründe, dem Geschäft zu vertrauen?",
+        "description": "Wir werden prüfen, ob Produktdetails, Richtlinien und Sicherheit den Käufern die Entscheidungshilfe geben, die sie benötigen.",
+        "button": "Fordern Sie eine Expertenbewertung an"
+      },
+      "checkout": {
+        "title": "Könnten Reibungsverluste im Einkaufswagen oder an der Kasse zu Traffic-Verschwendung führen?",
+        "description": "Wir bewerten den Warenkorb und die öffentlich zugänglichen Schritte zur Zahlung und weisen auf mögliche Reibungsverluste hin.",
+        "button": "Fordern Sie eine Expertenbewertung an"
+      }
+    },
+    "relatedServices": {
+      "title": "Verwandte Dienstleistungen",
+      "description": "Entdecken Sie unsere Entwicklungsdienste für Shopify und WordPress.",
+      "shopifyTitle": "Erfahren Sie mehr über Shopify-Entwicklungsdienste",
+      "shopifyDescription": "Benötigen Sie Hilfe bei Ihrem Shopify-Shop? Unser Expertenteam kann Sie bei der Entwicklung, Optimierung und Migration unterstützen.",
+      "shopifyLink": "Shopify-Entwicklungsdienste",
+      "wordpressTitle": "Erfahren Sie mehr über WordPress-Entwicklungsdienste",
+      "wordpressDescription": "Suchen Sie nach WordPress-Entwicklung? Wir bieten maßgeschneiderte Lösungen für Content-Sites, Nachrichtenplattformen und maßgeschneiderte Websites.",
+      "wordpressLink": "WordPress-Entwicklungsdienste",
+      "shopifyServices": "Shopify-Dienste",
+      "wordpressServices": "WordPress-Dienste"
+    },
+    "content": {
+      "tableOfContents": "Inhalt",
+      "tableOfContentsFull": "Inhaltsverzeichnis",
+      "shareArticle": "Artikel teilen",
+      "sections": "Abschnitte",
+      "sections_singular": "Abschnitt",
+      "minRead": "Min. gelesen",
+      "share": "Teilen:",
+      "expertServices": "Expertendienste",
+      "keepReading": "Lesen Sie weiter"
+    }
+  },
+  "seo": {
+    "metadata": {
+      "title": "SEO-Dienstleistungen für Unternehmen | Technisches, lokales und Content-SEO",
+      "description": "Technisches, lokales und Content-SEO mit praktischer Umsetzung. Verbessern Sie Sichtbarkeit, qualifizierten Traffic und Conversions mit CartShift Studio.",
+      "keywords": [
+        "SEO-Dienstleistungen für Unternehmen",
+        "technische SEO-Dienstleistungen",
+        "lokale SEO-Dienste",
+        "SEO für kleine Unternehmen",
+        "Optimierung des Google-Unternehmensprofils",
+        "Onpage-SEO",
+        "SEO-Audit"
+      ]
+    },
+    "schema": {
+      "serviceName": "SEO-Dienstleistungen für Unternehmen",
+      "serviceDescription": "SEO-Strategie und praktische Umsetzung, die technisches SEO, Inhaltsstruktur, lokale Sichtbarkeit, Leistung, Analyse und Conversion-Messung umfasst."
+    },
+    "hero": {
+      "title": "SEO, das umgesetzt wird",
+      "subtitle": "Mehr Sichtbarkeit. Besser qualifizierter Verkehr. Klareres Wachstum.",
+      "description": "Wir kombinieren technisches SEO, Inhaltsstruktur, lokale Suche, Analysen und praktische Entwicklung, um Unternehmen dabei zu helfen, bei den Suchanfragen gefunden zu werden, die wichtig sind, und mehr Besuche in Anfragen, Buchungen und Verkäufe umzuwandeln.",
+      "seoH1": "SEO-Dienstleistungen für Unternehmen | Technisches, lokales und Content-SEO",
+      "consoleLabel": "SEARCH SIGNAL PIPELINE",
+      "signals": [
+        {
+          "title": "Suchabsicht",
+          "description": "Ordnen Sie die Nachfrage zu, auf die es ankommt"
+        },
+        {
+          "title": "Technische Lieferung",
+          "description": "Versenden Sie die Änderungen mit der größten Auswirkung"
+        },
+        {
+          "title": "Geschäftsergebnisse",
+          "description": "Verknüpfen Sie Besuche mit Leads, Buchungen oder Verkäufen"
+        }
+      ]
+    },
+    "breadcrumb": {
+      "home": "Zuhause",
+      "solutions": "Dienstleistungen",
+      "current": "SEO"
+    },
+    "differentiator": {
+      "title": "Wir hören nicht bei Empfehlungen auf",
+      "description": "Ein Audit ist nur dann sinnvoll, wenn die richtigen Korrekturen verstanden, priorisiert und versendet werden. CartShift verbindet SEO-Strategie mit technischer Entwicklung, Inhaltsstruktur, Leistung, Analyse und Conversion-Denken, sodass die Arbeit von einem Bericht auf die Website übergeht.",
+      "positioning": "SEO-Strategie und -Umsetzung für Unternehmen, die mehr als einen Bericht benötigen.",
+      "capabilities": [
+        {
+          "title": "Diagnostizieren Sie, was die Sicht blockiert",
+          "description": "Wir untersuchen technische Einschränkungen, Suchabsichten, Inhaltsstruktur, lokale Signale und Messlücken, um herauszufinden, was die Website tatsächlich zurückhält."
+        },
+        {
+          "title": "Priorisieren Sie die Arbeit nach geschäftlichen Auswirkungen",
+          "description": "Die Probleme werden nach ihrem wahrscheinlichen Wert, Risiko, Aufwand und ihrer Beziehung zu den für das Unternehmen wichtigen Suchanfragen und Conversions geordnet."
+        },
+        {
+          "title": "Implementieren, messen und iterieren",
+          "description": "Wir können vereinbarte Verbesserungen liefern, das Ergebnis validieren und echte Such- und Konvertierungsdaten verwenden, um den nächsten nützlichen Schritt zu steuern."
+        }
+      ]
+    },
+    "services": {
+      "title": "SEO-Arbeit, durchgängig vernetzt",
+      "subtitle": "Ein praktischer Service, der die technischen Grundlagen, die von Menschen entdeckten Inhalte, die lokale Sichtbarkeit, das Website-Erlebnis und die Messungen abdeckt, die für eine sichere Verbesserung erforderlich sind.",
+      "items": [
+        {
+          "title": "Technisches SEO",
+          "description": "Machen Sie die Website für Suchmaschinen einfacher zu crawlen, zu verstehen und zu indizieren, ohne vermeidbare Migrations- oder Duplizierungsrisiken zu schaffen.",
+          "details": [
+            "Kriechbarkeit",
+            "Indizierung",
+            "Kanonische Texte",
+            "Sitemap und Roboter",
+            "Weiterleitungen",
+            "Strukturierte Daten",
+            "Migrationsschutz"
+          ]
+        },
+        {
+          "title": "Onpage- und Content-SEO",
+          "description": "Richten Sie Seiten an der tatsächlichen Suchabsicht aus und erstellen Sie einen klareren Pfad zwischen Themen, Diensten und Conversion-Aktionen.",
+          "details": [
+            "Zuordnung von Schlüsselwörtern und Suchabsichten",
+            "Titel und Beschreibungen",
+            "Seitenhierarchie",
+            "Service- und Landingpages",
+            "Interne Verlinkung",
+            "Verbesserung bestehender Inhalte"
+          ]
+        },
+        {
+          "title": "Lokales SEO und Google-Unternehmensprofil",
+          "description": "Stärken Sie die lokale Relevanz und sorgen Sie dafür, dass Geschäftsinformationen überall dort konsistenter sind, wo Kunden einen Anbieter auswählen.",
+          "details": [
+            "Kategorien",
+            "Dienstleistungen",
+            "Konsistenz von Geschäftsinformationen",
+            "Bewertungsstrategie",
+            "Lokale Zitate",
+            "Standort- und Einzugsgebietsseiten"
+          ]
+        },
+        {
+          "title": "Leistung und zentrale Web-Vitalwerte",
+          "description": "Reduzieren Sie Erfahrungs- und Rendering-Probleme, die sich auf Besucher, Crawling-Effizienz und organische Zielseitenleistung auswirken.",
+          "details": [
+            "LCP",
+            "CLS",
+            "Schwere Medien",
+            "Redundantes JavaScript",
+            "Mobile Nutzbarkeit",
+            "Geschwindigkeit der Website"
+          ]
+        },
+        {
+          "title": "Analyse und Conversion-Tracking",
+          "description": "Verknüpfen Sie die organische Sichtbarkeit mit den sinnvollen Aktionen, die ein Besuch hervorrufen sollte, indem Sie ein für das Unternehmen geeignetes Messsetup verwenden.",
+          "details": [
+            "Google Search Console",
+            "GA4",
+            "Formular- und Buchungsumwandlungen",
+            "Anrufe und Anfragen",
+            "Organische Landingpage-Leistung"
+          ]
+        },
+        {
+          "title": "Kontinuierliches SEO-Wachstum",
+          "description": "Verbessern Sie sich kontinuierlich, da sich die Suchnachfrage, die Konkurrenz, die Website und das Unternehmen selbst im Laufe der Zeit ändern.",
+          "details": [
+            "Überwachung",
+            "Wettbewerbsmöglichkeiten",
+            "Seitenverbesserungen",
+            "Neue Suchmöglichkeiten",
+            "Monatliche Priorisierung und Berichterstattung"
+          ]
+        }
+      ]
+    },
+    "audiences": {
+      "title": "Basierend auf dem Geschäftsmodell",
+      "subtitle": "Die gleiche SEO-Checkliste passt nicht für jede Website. Wir gestalten die Arbeit danach, wie Kunden das Unternehmen entdecken, bewerten und auswählen.",
+      "items": [
+        {
+          "title": "Lokale und Dienstleistungsunternehmen",
+          "description": "Für Unternehmen, die qualifizierte Anrufe, Anfragen, Besuche oder Buchungen aus lokalen und serviceorientierten Suchen benötigen."
+        },
+        {
+          "title": "E-Commerce und Online-Shops",
+          "description": "Für Geschäfte, die Kollektion und Produktsichtbarkeit, technische Größe, Leistung, Merchandising und Umsatzmessung in Einklang bringen."
+        },
+        {
+          "title": "B2B- und Lead-Generierungs-Websites",
+          "description": "Für längere Überlegungsreisen, bei denen der richtige organische Besuch zu einem qualifizierten Gespräch werden sollte."
+        },
+        {
+          "title": "Content- und Verlagsunternehmen",
+          "description": "Für Websites, bei denen Informationsarchitektur, redaktionelle Qualität, Auffindbarkeit und interne Verlinkung zusammenarbeiten müssen."
+        },
+        {
+          "title": "SaaS- und Startup-Websites",
+          "description": "Für sich entwickelnde Produkte, die eine klare Suchpositionierung, technisch einwandfreie Seiten und messbare Akquisitionspfade benötigen."
+        }
+      ],
+      "note": "Wir behaupten nicht, dass es für jede Branche ein festes Playbook gibt. Die Strategie ändert sich mit dem Geschäftsmodell, der Customer Journey, der Wettbewerbslandschaft und der Website."
+    },
+    "pricing": {
+      "title": "Klare Startumfänge",
+      "subtitle": "Wählen Sie einen fokussierten Einstiegspunkt und verfeinern Sie dann den Umfang entsprechend der Website, den Zielen, dem Zugriff und den Implementierungsanforderungen.",
+      "customScope": "Benutzerdefinierter Bereich",
+      "recommended": "Empfohlen",
+      "packages": [
+        {
+          "name": "SEO-Audit",
+          "price": "Ab 390 € einmalig",
+          "description": "Eine gezielte Diagnose und ein priorisierter Plan für Teams, die vor der Umsetzung Klarheit benötigen.",
+          "includes": [
+            "Technische Überprüfung und Indexierbarkeitsprüfung",
+            "Basislinie für die Suchsichtbarkeit",
+            "Keyword- und Mitbewerber-Snapshot",
+            "Prioritäts-Roadmap",
+            "Schriftliche Feststellungen",
+            "60-minütige Review-Sitzung"
+          ]
+        },
+        {
+          "name": "SEO-Stiftung",
+          "price": "Ab 790 € einmalig",
+          "description": "Prüfung, Einrichtung und praktische Umsetzung einer vereinbarten ersten Welle vorrangiger Verbesserungen.",
+          "includes": [
+            "Alles im SEO-Audit",
+            "Überprüfung/Einrichtung der Search Console und der Analyse",
+            "Implementierung vereinbarter vorrangiger technischer Korrekturen",
+            "On-Page-Optimierung für bis zu fünf Schlüsselseiten",
+            "Verbesserungen bei der internen Verlinkung",
+            "Relevante strukturierte Daten",
+            "Lokale Suchbasis, sofern relevant"
+          ]
+        },
+        {
+          "name": "SEO-Wachstum",
+          "price": "Ab 590 €/Monat",
+          "description": "Ein wiederkehrender Verbesserungszyklus für Unternehmen, die bereit sind, den organischen Fortschritt zu messen, zu lernen und zu steigern.",
+          "includes": [
+            "Laufende technische und On-Page-Verbesserungen",
+            "Ranking, organischer Traffic und Conversion-Überwachung",
+            "Eine vorrangige Seiten- oder Inhaltsoptimierung pro Monat",
+            "Gegebenenfalls Verbesserungen des lokalen und Google-Unternehmensprofils",
+            "Überwachung von Wettbewerbern und Chancen",
+            "Monatlicher Bericht und Strategiegespräch"
+          ]
+        }
+      ],
+      "notesTitle": "Preishinweise",
+      "notes": [
+        "Preise sind Ausgangspunkte; Der endgültige Preis hängt von der Größe und dem Umfang der Website ab.",
+        "Gegebenenfalls kommt die Mehrwertsteuer hinzu.",
+        "SEO-Wachstum funktioniert am besten nach einem Audit oder einer gleichwertigen Entdeckung.",
+        "Bezahlte Anzeigen und gekaufte Links sind nicht enthalten, sofern sie nicht gesondert aufgeführt sind.",
+        "Die Produktion von großvolumigen Inhalten ist nicht enthalten, es sei denn, dies wird separat festgelegt.",
+        "Die kostenlose Store-Bewertung zeigt erste Chancen während des Kaufprozesses auf; Ein bezahltes SEO-Audit ist eine separate, tiefergehende Untersuchung der organischen Suche."
+      ]
+    },
+    "process": {
+      "title": "Von der Grundlinie bis zur kontinuierlichen Verbesserung",
+      "subtitle": "Ein vierstufiger Ablauf, der Entscheidungen nachvollziehbar macht und jedem Umsetzungsschritt eine klare Begründung gibt.",
+      "deliverableLabel": "Was Sie erhalten",
+      "items": [
+        {
+          "title": "Entdeckung und Basislinie",
+          "description": "Wir richten uns nach Geschäftszielen, vorrangigen Zielgruppen, wertvollen Conversions, bekannten Einschränkungen und dem aktuellen Such-Footprint.",
+          "deliverable": "Eine gemeinsame Basislinie, eine Zugangscheckliste und eine Definition der messbaren Ergebnisse."
+        },
+        {
+          "title": "Priorisierte Roadmap",
+          "description": "Die Ergebnisse werden nach Auswirkung, Aufwand, Abhängigkeit und Risiko geordnet, sodass die nächste Arbeit wirtschaftlich und technisch sinnvoll ist.",
+          "deliverable": "Eine sequenzierte Roadmap mit klaren Prioritäten, Gründen, Eigentümern und Umsetzungsumfang."
+        },
+        {
+          "title": "Umsetzung",
+          "description": "Wir liefern die vereinbarten technischen, On-Page-, lokalen, Leistungs- oder Tracking-Verbesserungen und validieren sie nach der Veröffentlichung.",
+          "deliverable": "Implementierte Änderungen, Qualitätsprüfungen und eine Aufzeichnung darüber, was sich geändert hat und warum."
+        },
+        {
+          "title": "Messung und Iteration",
+          "description": "Such- und Konvertierungssignale werden im Kontext überprüft und dann zur Auswahl der nächsten nützlichen Verbesserung anstelle von Verfolgungsrauschen verwendet.",
+          "deliverable": "Eine praktische Leistungsüberprüfung und die nächsten priorisierten Maßnahmen."
+        }
+      ]
+    },
+    "measurement": {
+      "title": "Messen Sie Ergebnisse, nicht nur Positionen",
+      "description": "Rankings können nützlichen Kontext liefern, aber die Berichterstattung sollte die Sichtbarkeit mit qualifizierten Besuchen und den für das Unternehmen wichtigen Aktionen verknüpfen. Wir definieren den richtigen Messsatz während der Entdeckung und halten ihn fokussiert genug, um Entscheidungen zu leiten.",
+      "note": "Nicht jede Kennzahl gilt für jedes Unternehmen. Der Messplan spiegelt die Website, den Trichter und die verfügbaren Daten wider.",
+      "metricsLabel": "Mögliche SEO-Leistungsmetriken",
+      "metrics": [
+        "Suchimpressionen",
+        "Qualifizierte organische Klicks",
+        "Sichtbarkeit für Prioritätssuchen",
+        "Anfragen",
+        "Anrufe",
+        "Buchungen",
+        "Verkäufe",
+        "Conversion-Rate von organischen Landingpages"
+      ]
+    },
+    "faq": {
+      "title": "SEO-Fragen, klar beantwortet",
+      "subtitle": "Was Sie vor der Auswahl eines Audits, eines Implementierungsumfangs oder einer laufenden SEO-Arbeit erwarten können.",
+      "items": [
+        {
+          "question": "Wie lange dauert es, bis SEO Ergebnisse zeigt?",
+          "answer": "SEO-Zeitpläne variieren je nach Ausgangspunkt der Website, Konkurrenz, technischen Einschränkungen, Suchnachfrage und der Geschwindigkeit der Implementierung. Einige technische Verbesserungen können schnell validiert werden, während sich aussagekräftige Sichtbarkeit und Geschäftsergebnisse normalerweise über mehrere Monate entwickeln. Wir legen eine Ausgangsbasis fest und berichten über den Fortschritt, ohne eine allgemeingültige Frist zu erfinden."
+        },
+        {
+          "question": "Garantieren Sie den ersten Platz?",
+          "answer": "Nein. Suchrankings werden von Suchmaschinen kontrolliert und von Wettbewerbern, Algorithmen, Nachfrage und vielen Faktoren beeinflusst, die keine Agentur garantieren kann. Wir verpflichten uns zu evidenzbasierten Prioritäten, sorgfältiger Umsetzung, transparenter Messung und kontinuierlicher Verbesserung."
+        },
+        {
+          "question": "Mit welchen Website-Plattformen kann CartShift arbeiten?",
+          "answer": "Wir sind dort am stärksten, wo wir Änderungen direkt prüfen und umsetzen können, darunter Shopify, WordPress und moderne benutzerdefinierte Websites. Wir können auch andere Plattformen prüfen, bestätigen jedoch den technischen Zugang und die Implementierungsbeschränkungen, bevor wir den Umfang festlegen."
+        },
+        {
+          "question": "Ist lokales SEO enthalten?",
+          "answer": "Lokales SEO wird einbezogen, sofern es zum Geschäftsmodell und zum vereinbarten Paket passt. Die Arbeit kann das Google-Unternehmensprofil, Kategorien, Dienste, Konsistenz von Geschäftsinformationen, Bewertungsstrategie, Zitate sowie Standort- oder Servicebereichsseiten umfassen."
+        },
+        {
+          "question": "Schreibt CartShift SEO-Inhalte?",
+          "answer": "Wir können die Seitenstruktur, die Suchabsicht, Kurzbeschreibungen, Texte auf der Seite, Titel, Beschreibungen, interne Links und ausgewählte Prioritätsseiten verbessern. Die Produktion umfangreicher Artikel oder Landingpages wird separat angeboten, sodass Erwartungen, Fachwissen und Qualitätskontrollen klar bleiben."
+        },
+        {
+          "question": "Welchen Zugang benötigen Sie?",
+          "answer": "Der Zugriff hängt vom Umfang ab und kann das Website-CMS oder die Codebasis, die Google Search Console, GA4, den Tag Manager, das Google Business-Profil, das Hosting und relevante Berichtstools umfassen. Wir fordern den minimalen praktischen Zugang und einigen uns vor Beginn der Arbeiten über die Berechtigungen."
+        },
+        {
+          "question": "Können Sie mit unserem bestehenden Entwickler- oder Marketingteam zusammenarbeiten?",
+          "answer": "Ja. Wir können direkt umsetzen, mit einem internen oder externen Team zusammenarbeiten oder klar dokumentierte Tickets und Abnahmeprüfungen bereitstellen. Eigentum und Übergaben werden während der Entdeckung vereinbart, sodass die Arbeit zwischen Strategie und Veröffentlichung nicht ins Stocken gerät."
+        },
+        {
+          "question": "Was ist der Unterschied zwischen einem SEO-Audit und laufendem SEO?",
+          "answer": "Ein Audit legt die Ausgangslage fest, identifiziert Probleme und Chancen und erstellt eine priorisierte Roadmap. Kontinuierliches SEO fügt einen wiederkehrenden Implementierungs- und Messzyklus hinzu, damit die Website auf neue Daten, Wettbewerber, Inhaltsanforderungen und Geschäftsprioritäten reagieren kann."
+        },
+        {
+          "question": "Gibt es einen langfristigen Vertrag?",
+          "answer": "Einmalige Audit- und Foundation-Pakete begründen keine dauerhafte Verpflichtung. Alle wiederkehrenden SEO-Growth-Aufträge, Kündigungsfristen und Mindestlaufzeiten werden im Angebot vor Beginn der Arbeiten klar angegeben; Es gibt keine künstliche Dringlichkeit oder versteckte Erneuerung."
+        },
+        {
+          "question": "Wie wird der endgültige SEO-Preis berechnet?",
+          "answer": "Die endgültige Preisgestaltung spiegelt die Website-Größe, die Plattformkomplexität, die Anzahl der Standorte oder Märkte, den aktuellen technischen Zustand, das Inhaltsvolumen, den Analysereifegrad, den Zugriff, die Implementierungsverantwortung und das Arbeitstempo wider. Die aufgeführten Preise sind Richtwerte, gefolgt von einem schriftlichen Leistungsumfang vor der Genehmigung."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Beginnen Sie mit einer gezielten SEO-Überprüfung",
+      "description": "Sagen Sie uns, wofür Ihr Unternehmen gefunden werden muss, was heute nicht funktioniert und wozu ein wertvoller organischer Besuch führen sollte.",
+      "button": "Buchen Sie eine SEO-Beratung"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Sagen Sie uns, was besser funktionieren muss.",
+      "subtitle": "Probleme mit Ihrem Shop oder ein neues Projekt?",
+      "description": "Teilen Sie uns die Details mit und wir werden je nach unserer Verfügbarkeit und der Art Ihrer Anfrage antworten.",
+      "badge": "Lass uns reden"
+    },
+    "title": "Kontaktinformationen",
+    "emailLabel": "E-Mail",
+    "quickResponseTitle": "Persönliche Antwort",
+    "quickResponseText": "Wir prüfen Anfragen persönlich und reagieren entsprechend unserer Verfügbarkeit.",
+    "scheduleTitle": "Möchten Sie an einem Anruf teilnehmen?",
+    "scheduleText1": "Wir können ein kostenloses 30-minütiges Informationsgespräch durchführen, um Ziele, Umfang und nächste Schritte zu besprechen.",
+    "scheduleText2": "Erwähnen Sie es in Ihrer Nachricht und wir vereinbaren einen für Sie passenden Zeitpunkt.",
+    "scheduleNow": "Jetzt planen",
+    "scheduleMeeting": "Besprechung planen",
+    "whatsappDescription": "Bevorzugen Sie Instant Messaging? Erreichen Sie uns über WhatsApp.",
+    "whatsappMessageText": "Hallo! Ich würde gerne Kontakt aufnehmen.",
+    "sendMessage": "Nachricht senden",
+    "form": {
+      "title": "Senden Sie uns eine Nachricht",
+      "nameLabel": "Name",
+      "namePlaceholder": "Ihr Name",
+      "nameRequired": "Name ist erforderlich",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "your@email.com",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "messageRequired": "Nachricht ist erforderlich",
+      "projectTypeRequired": "Bitte wählen Sie einen Projekttyp aus",
+      "companyLabel": "Firma/Website (optional)",
+      "companyPlaceholder": "Ihr Unternehmen oder Ihre Website",
+      "projectTypeLabel": "Wobei benötigen Sie Hilfe?",
+      "selectOption": "Wählen Sie eine Option",
+      "options": {
+        "shopify": "Shopify-Shop",
+        "wordpress": "WordPress-Website",
+        "seo": "SEO und organisches Wachstum",
+        "consultation": "Allgemeine Beratung",
+        "other": "Andere"
+      },
+      "messageLabel": "Erzählen Sie uns von Ihrem Projekt",
+      "messagePlaceholder": "Teilen Sie uns ein paar Details zu Ihrem Projekt mit ...",
+      "submitButton": "Nachricht senden",
+      "submitting": "Senden...",
+      "privacy": "Wir verwenden Ihre Daten ausschließlich zur Beantwortung Ihrer Anfrage.",
+      "successTitle": "Vielen Dank!",
+      "successText": "Vielen Dank – wir haben Ihre Nachricht erhalten und werden nach Prüfung der Details antworten.",
+      "sendAnother": "Senden Sie eine weitere Nachricht"
+    }
+  },
+  "pricing": {
+    "hero": {
+      "title": "Einfache, transparente Preisgestaltung",
+      "subtitle": "Keine versteckten Gebühren. Keine Überraschungen.",
+      "description": "Wählen Sie ein Paket, das Ihren Anforderungen entspricht, oder lassen Sie uns etwas Individuelles zusammenstellen.",
+      "badge": "Preise"
+    },
+    "popularBadge": "Am beliebtesten",
+    "packages": {
+      "quickLaunch": {
+        "name": "Schnellstart",
+        "description": "Bringen Sie Ihren Shopify-Shop mit einer bewährten Grundlage schnell zum Leben.",
+        "price": "Ab 2.500 $",
+        "timeline": "1-2 Wochen",
+        "features": [
+          "Einrichtung und Konfiguration des Shopify-Shops",
+          "Themenauswahl und grundlegende Anpassung",
+          "Wesentliche App-Integrationen",
+          "Zahlungs- und Versandeinrichtung",
+          "Grundlegendes SEO-Setup",
+          "Trainingseinheit"
+        ],
+        "cta": "Legen Sie los"
+      },
+      "growthUpgrade": {
+        "name": "Wachstums-Upgrade",
+        "description": "Optimieren Sie Ihren bestehenden Shop für bessere Leistung und Conversions.",
+        "price": "Ab 3.500 $",
+        "timeline": "2-4 Wochen",
+        "popular": true,
+        "features": [
+          "Vollständiges Site-Audit (Geschwindigkeit, SEO, UX)",
+          "Leistungsoptimierung",
+          "Konvertierungsverbesserungen",
+          "App-Bereinigung und -Optimierung",
+          "Optimierung des mobilen Erlebnisses",
+          "30 Tage Post-Launch-Support"
+        ],
+        "cta": "Jetzt upgraden"
+      },
+      "customBuild": {
+        "name": "Benutzerdefinierter Build",
+        "description": "Eine vollständig maßgeschneiderte Lösung, die auf Ihre individuellen Bedürfnisse zugeschnitten ist.",
+        "price": "Ab 8.000 $",
+        "timeline": "4-8 Wochen",
+        "features": [
+          "Benutzerdefinierte Entdeckung und Strategie",
+          "Benutzerdefinierte Theme-Entwicklung",
+          "Erweiterte Funktionen und Integrationen",
+          "Leistungsoptimierung",
+          "SEO-Grundlage",
+          "60 Tage Post-Launch-Support"
+        ],
+        "cta": "Lass uns reden"
+      },
+      "storeAudit": {
+        "name": "Store-Audit",
+        "description": "Ein kostenpflichtiger tiefer Einblick über die kostenlose Erstbewertung hinaus mit einem dokumentierten Aktionsplan.",
+        "price": "$500",
+        "timeline": "3-5 Tage",
+        "features": [
+          "60-minütige Video-Komplettlösung",
+          "Geschwindigkeitsanalyse mit spezifischen Korrekturen",
+          "SEO-Überprüfung und Empfehlungen",
+          "Konvertierungsmöglichkeiten",
+          "Priorisierter Aktionsplan",
+          "Nachfolgendes Frage-und-Antwort-Gespräch"
+        ],
+        "cta": "Buchen Sie ein Audit"
+      }
+    },
+    "included": {
+      "title": "Was immer enthalten ist",
+      "items": [
+        "Direkte Kommunikation mit erfahrenen Entwicklern",
+        "Regelmäßige Fortschrittsaktualisierungen und Demos",
+        "Sauberer, dokumentierter Code",
+        "Supportzeitraum nach der Markteinführung",
+        "Leistungsoptimierung",
+        "Mobile-First-Ansatz"
+      ]
+    },
+    "notIncluded": {
+      "title": "Was ist getrennt?",
+      "items": [
+        "Laufender monatlicher Support (siehe Wartungspläne)",
+        "Abonnementkosten für Apps von Drittanbietern",
+        "Stockfotografie und Texterstellung",
+        "Domain- und Hostinggebühren"
+      ]
+    },
+    "faq": {
+      "title": "Fragen zur Preisgestaltung",
+      "items": [
+        {
+          "question": "Bieten Sie Zahlungspläne an?",
+          "answer": "Ja, bei Projekten über 5.000 US-Dollar teilen wir die Zahlungen in der Regel in Meilensteine auf: 40 % für den Start, 30 % für die Designgenehmigung und 30 % für den Start."
+        },
+        {
+          "question": "Was passiert, wenn mein Projekt nicht in diese Pakete passt?",
+          "answer": "Das sind Ausgangspunkte. Wir legen den Umfang Ihres Projekts genau fest und erstellen ein individuelles Angebot, das auf Ihren spezifischen Anforderungen basiert."
+        },
+        {
+          "question": "Gibt es versteckte Gebühren?",
+          "answer": "Nein. Wir bieten transparent an. Wenn sich während des Projekts etwas ergibt, das den Umfang ändert, besprechen wir es vor weiteren Arbeiten."
+        },
+        {
+          "question": "Was ist in diesen Preisen nicht enthalten?",
+          "answer": "Kosten für Drittanbieter wie App-Abonnements, Themes (sofern gekauft), Domain-Registrierung und laufendes Hosting fallen separat an. Wir werden in Ihrem Angebot alles klar darlegen."
+        },
+        {
+          "question": "Wie unterscheidet sich die kostenlose Expertenbewertung vom kostenpflichtigen Store-Audit?",
+          "answer": "Bei der kostenlosen Rezension handelt es sich um einen gezielten ersten Blick auf die Seiten öffentlicher Geschäfte mit priorisierten Beobachtungen. Das bezahlte Audit geht tiefer und sein Umfang, seine Ergebnisse und seine Vorgehensweise werden im Angebot vereinbart. Sie können mit der kostenlosen Rezension beginnen, ohne sich auf bezahlte Arbeit festzulegen."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ich bin mir nicht sicher, welches Paket",
+      "titleSpan": "ist das Richtige für Sie?",
+      "description": "Buchen Sie ein kostenloses 30-minütiges Gespräch. Wir erfahren mehr über Ihr Projekt und empfehlen Ihnen den besten weiteren Weg.",
+      "button": "Buchen Sie einen kostenlosen Anruf"
+    },
+    "freeReview": {
+      "eyebrow": "Nicht bereit für ein vollständiges Audit?",
+      "title": "Beginnen Sie mit einer kostenlosen Expertenbewertung",
+      "description": "Ein erster Blick auf Ihre öffentliche Kaufreise ist kostenlos. Das kostenpflichtige Store-Audit umfasst eine gesondert vereinbarte tiefergehende Analyse, Dokumentation und eine Komplettlösung.",
+      "cta": "Fordern Sie eine kostenlose Rezension an"
+    }
+  },
+  "maintenance": {
+    "hero": {
+      "title": "Wartung und Support",
+      "subtitle": "Sorgen Sie dafür, dass Ihr Geschäft reibungslos läuft",
+      "description": "Monatliche Pläne, die Aktualisierungen, Überwachung und Verbesserungen umfassen, damit Sie sich auf Ihr Geschäft konzentrieren können.",
+      "badge": "Support-Pläne"
+    },
+    "plans": {
+      "essential": {
+        "name": "Grundlegende Pflege",
+        "price": "299 $/Monat",
+        "description": "Grundlegende Wartung, um Ihr Geschäft gesund zu halten.",
+        "features": [
+          "Monatlicher Gesundheitscheck (Geschwindigkeit, Sicherheit, Verfügbarkeit)",
+          "Software- und Theme-Updates",
+          "Monatliche Backup-Überprüfung",
+          "Grundlegende Leistungsüberwachung",
+          "E-Mail-Support (48-Stunden-Antwort)",
+          "1 Stunde Support/Fixes pro Monat"
+        ],
+        "cta": "Holen Sie sich Essential"
+      },
+      "growth": {
+        "name": "Wachstumspflege",
+        "price": "599 $/Monat",
+        "popular": true,
+        "description": "Proaktive Unterstützung für wachsende Geschäfte.",
+        "features": [
+          "Alles in Essential, plus:",
+          "Bis zu 5 Stunden Entwicklung/Support",
+          "Bevorzugter E-Mail-Support (24-Stunden-Antwort)",
+          "Zweiwöchentliche Check-in-Anrufe",
+          "Konvertierungsüberwachung",
+          "Vierteljährliche Leistungsüberprüfung"
+        ],
+        "cta": "Holen Sie sich Wachstum"
+      },
+      "premium": {
+        "name": "Premium-Pflege",
+        "price": "1.199 $/Monat",
+        "description": "Full-Service-Unterstützung für großvolumige Geschäfte.",
+        "features": [
+          "Alles im Wachstum, plus:",
+          "Bis zu 12 Stunden Entwicklung/Support",
+          "Notfallunterstützung am selben Tag",
+          "Wöchentliche Check-in-Anrufe",
+          "A/B-Tests und Optimierung",
+          "Dedizierter Account Manager"
+        ],
+        "cta": "Holen Sie sich Premium"
+      }
+    },
+    "coverage": {
+      "title": "Was ist abgedeckt?",
+      "technical": {
+        "title": "Technische Wartung",
+        "items": [
+          "Regelmäßige Software-/Plugin-Updates",
+          "Sicherheitsüberwachung und Patches",
+          "Backup-Management",
+          "Überwachung der Betriebszeit"
+        ]
+      },
+      "support": {
+        "title": "Support und Korrekturen",
+        "items": [
+          "Fehlerbehebungen und Fehlerbehebung",
+          "Inhaltsaktualisierungen und -änderungen",
+          "Kleinere Funktionsanpassungen",
+          "Unterstützung für Drittanbieter-Apps"
+        ]
+      },
+      "performance": {
+        "title": "Leistung",
+        "items": [
+          "Geschwindigkeitsüberwachung",
+          "Leistungsoptimierung",
+          "Core Web Vitals-Tracking",
+          "Monatliche Berichterstattung"
+        ]
+      }
+    },
+    "terms": {
+      "title": "Bedingungen",
+      "items": [
+        "Monatlich kündbar, jederzeit mit einer Frist von 30 Tagen kündbar",
+        "Die Stunden verlängern sich nicht",
+        "Zusätzliche Stunden werden mit 150 $/Stunde in Rechnung gestellt"
+      ]
+    },
+    "faq": {
+      "title": "Support-Fragen",
+      "items": [
+        {
+          "question": "Was passiert, wenn ich mehr Stunden benötige, als in meinem Plan vorgesehen sind?",
+          "answer": "Zusätzliche Stunden werden mit 150 $/Stunde berechnet. Wir informieren Sie immer, bevor zusätzliche Arbeiten erledigt werden."
+        },
+        {
+          "question": "Kann ich Pläne ändern?",
+          "answer": "Ja, Sie können jederzeit ein Upgrade oder Downgrade durchführen. Änderungen werden zu Beginn Ihres nächsten Abrechnungszeitraums wirksam."
+        },
+        {
+          "question": "Was gilt als Notfall?",
+          "answer": "Website nicht verfügbar, Kasse defekt oder Sicherheitsvorfälle. Mitglieder des Premium-Plans erhalten bei Notfällen noch am selben Tag Hilfe."
+        },
+        {
+          "question": "Unterstützen Sie Geschäfte, die Sie nicht gebaut haben?",
+          "answer": "Ja, wir übernehmen die Wartung bestehender Filialen. Wir führen zunächst eine erste Überprüfung durch, um Ihr Setup zu verstehen."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Benötigen Sie eine individuelle Anpassung",
+      "titleSpan": "Supportbedingungen?",
+      "description": "Für größere Geschäfte oder spezifische Anforderungen können wir einen individuellen Plan erstellen.",
+      "button": "Besprechen Sie den individuellen Plan"
+    }
+  },
+  "work": {
+    "hero": {
+      "title": "Unsere Arbeit",
+      "subtitle": "Redaktionelle Fallstudien rund um die Marken, die hinter dem Build stehen.",
+      "description": "Die geleistete Arbeit, die getroffenen Entscheidungen und die tatsächlichen Bildschirme. Wo Ergebnisse nicht verifiziert sind, beschreiben wir qualitative Veränderungen, ohne Metriken zu erfinden.",
+      "badge": "Ausgewählte Arbeit",
+      "featuredLabel": "Empfohlenes Projekt"
+    },
+    "filters": {
+      "all": "Alle Projekte",
+      "shopify": "Shopify",
+      "wordpress": "WordPress",
+      "webApps": "Web-Apps"
+    },
+    "platformLabels": {
+      "shopify": "Shopify",
+      "wordpress": "WordPress",
+      "webApp": "Web-App"
+    },
+    "cta": {
+      "title": "Durch ein Ähnliches arbeiten",
+      "titleSpan": "Store-Challenge?",
+      "description": "Werfen wir einen Blick auf das aktuelle Setup, die Herausforderung und welchen Umfang sinnvoll ist.",
+      "button": "Starten Sie Ihr Projekt"
+    },
+    "viewProject": "Projekt anzeigen",
+    "empty": {
+      "title": "Keine Projekte gefunden",
+      "description": "Versuchen Sie, den Filter zu ändern, um weitere Projekte anzuzeigen."
+    },
+    "caseStudy": {
+      "backToWork": "Zurück zur Arbeit",
+      "challenge": "Die Herausforderung",
+      "solution": "Die Lösung",
+      "results": "Die Ergebnisse",
+      "metric": "Metrisch",
+      "before": "Vorher",
+      "after": "Nachher",
+      "change": "Veränderung",
+      "clientSays": "Was der Kunde sagt",
+      "readyToStart": "Bereit zum Start?",
+      "ctaText": "Lassen Sie uns über Ihr Projekt sprechen",
+      "ctaButton": "Buchen Sie einen Anruf"
+    },
+    "detail": {
+      "client": "Client",
+      "industry": "Industrie",
+      "platform": "Platform",
+      "duration": "Dauer",
+      "services": "Dienstleistungen",
+      "projectOverview": "Projektübersicht",
+      "whatWeShipped": "Was wir versendet haben",
+      "selectedScreens": "Ausgewählte Bildschirme",
+      "evidenceTitle": "Beweise und Wandel",
+      "clientQuote": "Kundenangebot",
+      "projectNotes": "Projektnotizen",
+      "visitSite": "Besuchen Sie die Live-Site",
+      "galleryHint": "Echte Homepage- und Produkt-/Inhaltsbildschirme, die von der Live-Site erfasst und hier als visuelle Quelle der Wahrheit verwendet werden.",
+      "openImage": "Erweitern Sie Screenshot",
+      "previousScreen": "Zurück",
+      "nextScreen": "Als nächstes",
+      "startProject": "Starten Sie Ihr Projekt",
+      "wantResults": "Möchten Sie ähnliche Ergebnisse?",
+      "wantResultsDesc": "Lassen Sie uns Ihr Projekt besprechen und sehen, wie wir Ihnen beim Wachstum helfen können.",
+      "getConsultation": "Holen Sie sich eine kostenlose Beratung",
+      "viewMore": "Weitere Projekte anzeigen",
+      "noProjects": "Keine Projekte gefunden",
+      "noProjectsDesc": "Versuchen Sie, den Filter zu ändern, um weitere Projekte anzuzeigen.",
+      "overviewEyebrow": "Der Brief",
+      "deliveryEyebrow": "Lieferung",
+      "evidenceEyebrow": "Projektnachweise",
+      "evidenceResultsTitle": "Beweise und Ergebnisse",
+      "whatChangedTitle": "Was sich geändert hat",
+      "notesEyebrow": "Tieferer Kontext"
+    },
+    "filtersNote": "Projekte können in mehr als einer Kategorie erscheinen."
+  },
+  "testimonials": {
+    "title": "Unsere Kunden",
+    "subtitle": "Was Kunden über die Zusammenarbeit sagen",
+    "items": [
+      {
+        "quote": "CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben einen Shop für uns entwickelt, der Kunden informiert und gleichzeitig das Einkaufen mühelos macht. Allein unser Produktquiz hat verändert, wie Kunden die passenden Produkte finden.",
+        "author": "Danielle Shamir",
+        "company": "I Love My Honeypot",
+        "role": "Gründerin",
+        "industry": "Gesundheit und Wellness",
+        "rating": 5
+      },
+      {
+        "quote": "CartShift Studio hat Alondon in einen anspruchsvollen, leistungsstarken Community-Hub verwandelt. Die neue Architektur bewältigt unsere komplexen Inhalte nahtlos und bietet gleichzeitig ein hochwertiges Leseerlebnis, das unsere Zielgruppe wirklich anspricht.",
+        "author": "Carmel Faraggi",
+        "company": "Alondon",
+        "role": "Redaktion",
+        "industry": "Digitales Publizieren",
+        "rating": 5
+      },
+      {
+        "quote": "Die Zusammenarbeit mit CartShift Studio war für unser Studio ein echter Wendepunkt. Sie haben einen eleganten, hochwertigen digitalen Katalog erstellt, der unsere Schmuckkollektion perfekt präsentiert. Die einfache Bedienung für unsere Kunden hat unsere Buchungseffizienz und Onlineverkäufe deutlich verbessert.",
+        "author": "Tom Robinson",
+        "company": "Stiletto Piercing",
+        "role": "Inhaber",
+        "industry": "Schmuck und Körperkunst",
+        "rating": 5
+      }
+    ],
+    "viewProject": "Projekt ansehen"
+  },
+  "whyChoose": {
+    "title": "Warum CartShift?",
+    "subtitle": "Ein kleines Studio, das selbst anpackt – mit fundierter Entwicklungserfahrung.",
+    "items": [
+      {
+        "title": "Direkt mit den Entwicklern arbeiten",
+        "description": "Sie arbeiten direkt mit den Menschen zusammen, die die Lösung planen und umsetzen.",
+        "icon": "target"
+      },
+      {
+        "title": "Erst denken, dann programmieren",
+        "description": "Wir hinterfragen unnötige Entwicklungen und suchen nach der kleinsten wartbaren Lösung.",
+        "icon": "handshake"
+      },
+      {
+        "title": "Technische Abwägungen transparent machen",
+        "description": "Wir erklären Optionen, Kosten, Einschränkungen und Risiken in verständlicher Sprache.",
+        "icon": "bolt"
+      },
+      {
+        "title": "Langfristig gedacht",
+        "description": "Performance, Barrierefreiheit, technisches SEO und Wartbarkeit berücksichtigen wir von Anfang an.",
+        "icon": "chart-up"
+      },
+      {
+        "title": "Sichtbare Fortschritte",
+        "description": "Klare Meilensteine, Dokumentation und Updates – ohne den geschäftlichen Kontext zu verlieren.",
+        "icon": "eye"
+      }
+    ]
+  },
+  "servicesOverview": {
+    "title": "Was könnte in Ihrem Shop besser funktionieren?",
+    "subtitle": "Erst das Geschäftsproblem verstehen, dann die technische Lösung wählen.",
+    "shopify": {
+      "title": "Shopify-Entwicklung und -Optimierung",
+      "description": "Wir verbessern bestehende Shops, Produktseiten, mobile Kaufprozesse sowie Bestell- und Lagerabläufe, ohne zu ersetzen, was bereits funktioniert.",
+      "features": [
+        "Shop-Einrichtung und Design",
+        "Individuelle Funktionen",
+        "Geschwindigkeit optimieren",
+        "Unterstützung beim Wachstum"
+      ]
+    },
+    "wordpress": {
+      "title": "WordPress-Entwicklung und -Betreuung",
+      "description": "Wartbare Content-Websites, Magazine und Unternehmensseiten. Performance, technisches SEO, Updates und Sicherheitsbetreuung.",
+      "features": [
+        "Individuelles Design",
+        "Einfach zu bearbeiten",
+        "Wartung und Sicherheit",
+        "SEO-optimiert"
+      ]
+    },
+    "seo": {
+      "title": "SEO und organisches Wachstum",
+      "description": "Technisches, lokales und Content-SEO – mit direkter Umsetzung und Messung anhand relevanter Geschäftsziele.",
+      "features": [
+        "Technisches, lokales und Content-SEO",
+        "Direkte Umsetzung",
+        "Such- und Conversion-Messung",
+        "Wachstum nach Wirkung priorisieren"
+      ]
+    }
+  },
+  "ctaBanner": {
+    "badge": "Mit einer Analyse beginnen",
+    "titlePart1": "Könnte in Ihrem Shop",
+    "titlePart2": "etwas besser laufen?",
+    "description": "Sagen Sie uns, wo es in Ihrem Shop hakt. Wir prüfen Ihre Anfrage und melden uns mit ersten priorisierten Erkenntnissen und praktischen Möglichkeiten – unverbindlich.",
+    "button": "Kostenlose Expertenanalyse anfragen"
+  },
+  "footer": {
+    "description": "CartShift Studio hilft Shopify-Shops dabei, Kaufabläufe, technisches SEO, Leistung, B2B-Workflows und Integrationen zu verbessern. Direkte Zusammenarbeit, klare Prioritäten und pragmatische Umsetzung.",
+    "solutions": "Lösungen",
+    "company": "Unternehmen",
+    "rights": "Alle Rechte vorbehalten.",
+    "newsletter": {
+      "title": "Bleiben Sie auf dem Laufenden",
+      "description": "Erhalten Sie E-Commerce-Tipps und Neuigkeiten in Ihrem Posteingang.",
+      "placeholder": "Ihre E-Mail",
+      "subscribe": "Abonnieren",
+      "success": "Danke fürs Abonnieren!",
+      "submitting": "Abonnieren...",
+      "error": "Konnte nicht abonniert werden. Bitte versuchen Sie es erneut.",
+      "sslSecured": "SSL-gesichert",
+      "shopifyPartner": "Shopify-Entwicklung"
+    },
+    "links": {
+      "shopify": "Shopify-Lösungen",
+      "wordpress": "WordPress-Lösungen",
+      "seo": "SEO-Dienstleistungen",
+      "about": "Über uns",
+      "blog": "Blog",
+      "contact": "Kontakt",
+      "privacy": "Datenschutzrichtlinie",
+      "terms": "Nutzungsbedingungen"
+    }
+  },
+  "process": {
+    "title": "So arbeiten wir",
+    "subtitle": "Klare Entscheidungen, dokumentierte Arbeit und ein vereinbarter Leistungsumfang.",
+    "steps": {
+      "discovery": {
+        "title": "Das Problem verstehen",
+        "description": "Hindernisse für Kunden und Mitarbeitende erkennen und festlegen, was wir überprüfen können."
+      },
+      "design": {
+        "title": "Priorisieren und planen",
+        "description": "Voraussichtliche Wirkung, Aufwand und Risiken abwägen, bevor wir den Leistungsumfang vereinbaren."
+      },
+      "develop": {
+        "title": "Entwickeln und testen",
+        "description": "Die vereinbarten Änderungen umsetzen und die relevanten Nutzerwege testen."
+      },
+      "launch": {
+        "title": "Veröffentlichen und lernen",
+        "description": "Die Veröffentlichung koordinieren, Änderungen prüfen und gemeinsam die nächsten Verbesserungen festlegen."
+      }
+    }
+  },
+  "stats": {
+    "title": "Unsere Wirkung",
+    "subtitle": "Arbeit und Beweise sind wichtiger als unbestätigte Zahlen.",
+    "projects": {
+      "label": "Gelieferte Projekte"
+    },
+    "satisfaction": {
+      "label": "Kundenzufriedenheit"
+    },
+    "years": {
+      "label": "Jahre Erfahrung"
+    },
+    "support": {
+      "label": "Support verfügbar"
+    }
+  },
+  "industries": {
+    "title": "Branchen",
+    "whyWorkWithUs": "Warum mit uns zusammenarbeiten?",
+    "benefitsTailored": "Auf Ihre Branche zugeschnittene Vorteile",
+    "ourServices": "Unsere Leistungen",
+    "everythingNeeded": "Alles, was Sie brauchen, um online erfolgreich zu sein",
+    "readyToGetStarted": "Bereit zum Einstieg?",
+    "projects": "Projekte",
+    "satisfaction": "Zufriedenheit",
+    "avgGrowth": "Durchschnittliches Wachstum",
+    "support": "Unterstützung",
+    "getFreeQuote": "Holen Sie sich ein kostenloses Angebot",
+    "viewOurWork": "Sehen Sie sich unsere Arbeit an",
+    "ctaDescription": "Lassen Sie uns Ihr Projekt besprechen und sehen, wie wir Ihnen beim Wachstum helfen können",
+    "proof": {
+      "title": "Wie wir Ihre Branche angehen",
+      "description": "Wir gehen von der tatsächlichen Customer Journey und den Abläufen aus, nicht von einem versprochenen Branchenmaßstab.",
+      "steps": [
+        {
+          "title": "Verstehen Sie den Kontext",
+          "description": "Überprüfen Sie repräsentative Seiten, Fragen von Käufern und die Systeme, die das Unternehmen unterstützen."
+        },
+        {
+          "title": "Wählen Sie die richtigen Verbesserungen",
+          "description": "Trennen Sie dringende Blockaden von „nice-to-have“-Änderungen mit einer praktischen Arbeitsreihenfolge."
+        },
+        {
+          "title": "Umsetzen und prüfen",
+          "description": "Liefern Sie vereinbarte Verbesserungen und validieren Sie relevante Reisen anhand der verfügbaren Informationen."
+        }
+      ]
+    }
+  },
+  "industriesContent": {
+    "fashion": {
+      "title": "Mode & Bekleidung",
+      "subtitle": "E-Commerce, der fasziniert",
+      "description": "Produktpräsentation, klare Größenangaben und mobile Erlebnisse rund um Kaufentscheidungen.",
+      "badge": "Mode"
+    },
+    "food": {
+      "title": "Essen und Trinken",
+      "subtitle": "Von der Küche zum Kunden",
+      "description": "Klare Menüinformationen, Online-Bestellungen und praktische Einkaufsmöglichkeiten.",
+      "badge": "Essen"
+    },
+    "health": {
+      "title": "Gesundheit und Wohlbefinden",
+      "subtitle": "Helfen Sie Ihren Kunden, besser zu leben",
+      "description": "Klare Produktinformationen und verantwortungsvolle Einkaufserlebnisse für Wellness-Marken.",
+      "badge": "Gesundheit"
+    },
+    "tech": {
+      "title": "Technologie und SaaS",
+      "subtitle": "Machen Sie komplexe Produkte verständlicher",
+      "description": "Produktseiten und Zielseiten mit einem klaren nächsten Schritt für jede Zielgruppe.",
+      "badge": "Techn"
+    },
+    "arts": {
+      "title": "Kunst und Handwerk",
+      "subtitle": "Präsentieren Sie Ihre Kreationen",
+      "description": "Creator-Websites und Stores mit klaren Pfaden von der Entdeckung bis zur Anfrage oder zum Kauf.",
+      "badge": "Kunst"
+    },
+    "local": {
+      "title": "Lokale Unternehmen",
+      "subtitle": "Bringen Sie Ihr Unternehmen online",
+      "description": "Wartbare Websites für lokale Unternehmen mit klaren Diensten und Kontaktpfaden.",
+      "badge": "Lokal"
+    },
+    "benefits": [
+      {
+        "title": "Klarere Kaufprozesse",
+        "description": "Helfen Sie Kunden, relevante Informationen zu finden, die Eignung des Produkts zu beurteilen und zur Kasse zu gelangen."
+      },
+      {
+        "title": "Nützliche Leistungsverbesserungen",
+        "description": "Identifizieren Sie Ressourcen- und Workflow-Engpässe und priorisieren Sie dann praktische Lösungen."
+      },
+      {
+        "title": "Vertrauenswürdige Produktinformationen",
+        "description": "Stellen Sie Richtlinien, Produktinformationen und Kaufbedingungen dort zur Verfügung, wo Käufer sie benötigen."
+      },
+      {
+        "title": "Entwickelt für Ihr Publikum und Ihr Team",
+        "description": "Gestalten Sie Seiten und Arbeitsabläufe rund um Kundenfragen und reale betriebliche Anforderungen."
+      }
+    ],
+    "services": [
+      "Individuelles Website-Design und -Entwicklung",
+      "Integration des Zahlungssystems",
+      "Suchmaschinenoptimierung (SEO)",
+      "Produkt- und Bestandsverwaltung",
+      "Analyse- und Tracking-Einrichtung",
+      "Laufender Support und Wartung"
+    ]
+  },
+  "analyzer": {
+    "nav": {
+      "tools": "Werkzeuge",
+      "storeAnalyzer": "Store-Analysator"
+    },
+    "hero": {
+      "title": "Kostenloser Store-Analysator",
+      "subtitle": "Verliert Ihr Geschäft Umsätze?",
+      "description": "Erhalten Sie in 1–2 Minuten eine umfassende Prüfung Ihres E-Commerce-Shops. Entdecken Sie Leistungsprobleme, SEO-Lücken und Conversion-Möglichkeiten.",
+      "badge": "Kostenloses Tool"
+    },
+    "intents": {
+      "conversion": {
+        "label": "Konvertierung",
+        "headline": "Erhalten Sie Traffic, aber nicht genügend Verkäufe?",
+        "description": "Finden Sie die Reibungspunkte, die die Conversions und den Umsatz Ihres Shops kosten."
+      },
+      "speed": {
+        "label": "Mobile Geschwindigkeit",
+        "headline": "Möglicherweise verliert Ihr Shop Kunden, bevor er geladen wird.",
+        "description": "Überprüfen Sie die Leistungsprobleme auf Mobilgeräten, die dazu führen, dass Käufer früher abreisen."
+      },
+      "seo": {
+        "label": "SEO",
+        "headline": "Können Suchmaschinen Ihren Shop verstehen?",
+        "description": "Bevor Sie weitere Inhalte erstellen, decken Sie die technischen und inhaltlichen Lücken auf, die die Entdeckung einschränken."
+      },
+      "trust": {
+        "label": "Vertrauen des Käufers",
+        "headline": "Sehen Käufer genügend Gründe, sich beim Kauf sicher zu fühlen?",
+        "description": "Finden Sie die Lücken in Bezug auf Nachweise, Richtlinien und Versicherungen in Ihrem Geschäft."
+      },
+      "checkout": {
+        "label": "Kasse",
+        "headline": "Fallen Kunden vor der Bezahlung ab?",
+        "description": "Bevor Sie mehr für Anzeigen ausgeben, überprüfen Sie den Warenkorb und den Checkout-Pfad auf Reibungsverluste."
+      }
+    },
+    "intentPicker": {
+      "label": "Wählen Sie einen optionalen Analyseschwerpunkt"
+    },
+    "relatedArticles": "Verwandte Leitfäden zur Shop-Verbesserung",
+    "form": {
+      "title": "Analysieren Sie Ihren Shop",
+      "subtitle": "Erhalten Sie Ihren kostenlosen Bericht in 1–2 Minuten",
+      "urlLabel": "Ihre Shop-URL",
+      "urlPlaceholder": "https://your-store.com",
+      "urlRequired": "Shop-URL ist erforderlich",
+      "urlInvalid": "Bitte geben Sie eine gültige URL ein",
+      "emailLabel": "E-Mail-Adresse",
+      "emailPlaceholder": "you@example.com",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "emailHint": "Ihren ausführlichen Bericht senden wir Ihnen hier zu",
+      "newsletterLabel": "Schicken Sie mir auch gelegentlich Wachstumstipps (optional)",
+      "submitButton": "Analysieren Sie meinen Shop (kostenlos)",
+      "analyzing": "Analysieren...",
+      "tryAgain": "Versuchen Sie es erneut",
+      "submitFailed": "Die Analyse konnte nicht gestartet werden. Bitte versuchen Sie es erneut.",
+      "privacy": "Wir verwenden Ihre Daten, um diesen Bericht zu versenden. Marketingaktualisierungen bedürfen einer gesonderten Zustimmung."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Wir konnten diesen Shop nicht analysieren.",
+        "suggestion": "Bitte überprüfen Sie die URL und versuchen Sie es erneut."
+      },
+      "network": {
+        "title": "Es konnte keine Verbindung zum Shop hergestellt werden.",
+        "suggestion": "Überprüfen Sie, ob die URL korrekt ist und der Shop online ist."
+      },
+      "networkConnection": {
+        "title": "Netzwerkverbindung fehlgeschlagen.",
+        "suggestion": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+      },
+      "timeout": {
+        "title": "Die Analyse hat zu lange gedauert.",
+        "suggestion": "Der Laden ist möglicherweise langsam. Bitte versuchen Sie es gleich noch einmal."
+      },
+      "validation": {
+        "title": "Ungültige Shop-URL.",
+        "suggestion": "Bitte geben Sie eine gültige Shop-URL ein (z. B. https://example.com)."
+      },
+      "rateLimit": {
+        "title": "Zu viele Anfragen.",
+        "suggestion": "Bitte warten Sie eine Minute, bevor Sie es erneut versuchen."
+      },
+      "captcha": {
+        "title": "Die Captcha-Überprüfung ist fehlgeschlagen.",
+        "suggestion": "Bitte aktualisieren Sie die Seite und versuchen Sie es erneut."
+      },
+      "server": {
+        "title": "Es ist ein Serverfehler aufgetreten.",
+        "suggestion": "Unser Team wurde benachrichtigt. Bitte versuchen Sie es später noch einmal."
+      }
+    },
+    "features": {
+      "performance": {
+        "title": "Leistungsanalyse",
+        "description": "Ladezeiten und Core Web Vitals"
+      },
+      "seo": {
+        "title": "SEO-Audit",
+        "description": "Meta-Tags, Struktur und Indizierung"
+      },
+      "accessibility": {
+        "title": "Barrierefreiheit",
+        "description": "WCAG-Konformität und Benutzerfreundlichkeit"
+      },
+      "bestPractices": {
+        "title": "Best Practices",
+        "description": "Sicherheit, HTTPS und moderne Standards"
+      },
+      "cart": {
+        "title": "Warenkorb und Kasse",
+        "description": "Conversion-Optimierung"
+      },
+      "trust": {
+        "title": "Vertrauenssignale",
+        "description": "Bewertungen, Abzeichen und Richtlinien"
+      }
+    },
+    "trust": {
+      "free": "Für immer kostenlos",
+      "instant": "Ergebnisse auf dem Bildschirm",
+      "secure": "Sicher und privat",
+      "expert": "Experteneinblicke"
+    },
+    "whatYouGet": {
+      "title": "Was Sie bekommen",
+      "description": "Eine umfassende Analyse, die alle Aspekte des Erfolgs Ihres Shops abdeckt."
+    },
+    "stats": {
+      "categories": "Audit-Kategorien",
+      "durationValue": "1–2 Min",
+      "durationLabel": "Typische Laufzeit",
+      "freeValue": "Kostenlos",
+      "reportFormat": "PDF-E-Mail-Bericht"
+    },
+    "howItWorks": {
+      "title": "Wie es funktioniert",
+      "step1": {
+        "title": "Geben Sie Ihre URL ein",
+        "description": "Fügen Sie Ihre Shop-URL und E-Mail-Adresse ein"
+      },
+      "step2": {
+        "title": "Wir analysieren",
+        "description": "Unsere Engine scannt über 40 Datenpunkte"
+      },
+      "step3": {
+        "title": "Erhalten Sie Ergebnisse",
+        "description": "Sehen Sie sich die Ergebnisse auf dem Bildschirm an und erhalten Sie das vollständige PDF per E-Mail"
+      }
+    },
+    "steps": {
+      "connecting": "Verbindung zum Shop wird hergestellt...",
+      "performance": "Leistung analysieren...",
+      "seo": "SEO prüfen...",
+      "ux": "UX bewerten...",
+      "trust": "Vertrauenssignale werden überprüft...",
+      "generating": "Bericht wird erstellt...",
+      "complete": "Analyse abgeschlossen!"
+    },
+    "analyzing": {
+      "title": "Analysieren Sie Ihren Shop",
+      "durationHint": "Dies dauert in der Regel 1–2 Minuten, abhängig von der Geschwindigkeit des Geschäfts und den Live-Prüfungen.",
+      "inProgress": "In Bearbeitung",
+      "finishing": "Schluss machen",
+      "phaseLabel": "Bühne: {phase}",
+      "tip": "Wir führen Lighthouse, HTML-Heuristiken und Konvertierungsprüfungen durch. Ihr vollständiger PDF-Bericht kommt per E-Mail.",
+      "phases": {
+        "connecting": "Verbinden",
+        "performance": "Leistung",
+        "seo": "SEO",
+        "ux": "UX",
+        "trust": "Vertrauen",
+        "generating": "Bericht"
+      }
+    },
+    "sections": {
+      "performance": "Leistung",
+      "seo": "Technisches SEO",
+      "accessibility": "Barrierefreiheit",
+      "bestPractices": "Best Practices",
+      "cart": "Warenkorb und Kasse",
+      "trust": "Vertrauen und Glaubwürdigkeit"
+    },
+    "results": {
+      "title": "Ihr Store-Gesundheitsbericht",
+      "overallScore": "Gesamtpunktzahl",
+      "breakdown": "Punkteaufschlüsselung",
+      "emailSent": "Umfassender Bericht gesendet!",
+      "emailPendingTitle": "PDF-Bericht unterwegs",
+      "emailPendingDescription": "Ihre Ergebnisse auf dem Bildschirm sind fertig. Das vollständige PDF erhalten Sie in der Regel innerhalb weniger Minuten. Überprüfen Sie bei Bedarf den Spam.",
+      "emailUnavailableTitle": "Bildschirmbericht bereit",
+      "emailUnavailableDescription": "Die E-Mail-Zustellung ist für diese Umgebung nicht konfiguriert. Ihre vollständigen Ergebnisse finden Sie auf dieser Seite.",
+      "emailDelayedTitle": "Bericht gespeichert; E-Mail kann sich verzögern",
+      "emailDelayedDescription": "Ihre Ergebnisse werden auf dem Bildschirm angezeigt. Wenn das PDF nicht innerhalb weniger Minuten eintrifft, überprüfen Sie den Spam oder führen Sie den Analysator erneut aus.",
+      "partialDataNotice": "Da einige Live-Leistungsdaten nicht verfügbar waren, werden in Teilen dieses Berichts HTML-basierte Schätzungen verwendet. Das per E-Mail verschickte PDF spiegelt denselben Analyselauf wider.",
+      "deeperScanUnavailableNotice": "Für diesen Durchlauf waren keine browserbasierten Kategorien-, Produkt- und Warenkorb-Interaktionsstichproben verfügbar, daher bleibt die Zuverlässigkeit der Checkout-Empfehlungen geringer, sofern sie nicht explizit überprüft wird.",
+      "coverage": {
+        "title": "Was dieser Bericht beinhaltet",
+        "cachedNote": "Ergebnisse, die von einem kürzlich zwischengespeicherten Lauf für diese URL geladen wurden.",
+        "status": {
+          "active": "enthalten",
+          "partial": "geschätzt",
+          "unavailable": "übersprungen"
+        },
+        "reasons": {
+          "browser_disabled": "Die Browserautomatisierung ist für diese Laufzeit deaktiviert.",
+          "browser_launch_failed": "Die Browserautomatisierung konnte in der Live-Laufzeit nicht gestartet werden.",
+          "browser_sampling_failed": "Die Browserautomatisierung wurde gestartet, das Sampling konnte jedoch nicht abgeschlossen werden.",
+          "pagespeed_unavailable": "Da keine PageSpeed-Daten verfügbar waren, wurden statische Fallback-Prüfungen verwendet.",
+          "no_product_urls": "Über sichtbare Homepage-Links wurden keine Produkt-URLs gleichen Ursprungs entdeckt.",
+          "product_sampling_failed": "Es wurden Produkt-URLs gefunden, die Produktseiten-Erfassung konnte jedoch nicht abgeschlossen werden.",
+          "deep_scan_no_samples": "Es wurden keine verwendbaren Kategorie-, Produkt- oder Warenkorbproben gesammelt.",
+          "competitor_no_verified_data": "Es wurde eine Marktanalyse durchgeführt, es konnten jedoch keine direkten Wettbewerber verifiziert werden.",
+          "competitor_failed": "Die Marktanalyse scheiterte, bevor verwertbare Beweise erbracht wurden.",
+          "email_pending": "Die PDF-Lieferung befindet sich in der Warteschlange und kann in Kürze eintreffen.",
+          "email_failed": "Die PDF-Übermittlung ist bei diesem Lauf fehlgeschlagen.",
+          "email_unconfigured": "Die PDF-E-Mail-Zustellung ist nicht konfiguriert.",
+          "lead_failed": "Die Lead-Erfassung ist für diesen Lauf fehlgeschlagen.",
+          "lead_unconfigured": "Die Lead-Erfassung ist nicht konfiguriert."
+        },
+        "items": {
+          "lighthouse": {
+            "label": "Leuchtturm",
+            "hint": "Das Google PageSpeed Mobile Lab punktet, wenn die API verfügbar ist."
+          },
+          "visual": {
+            "label": "Visuelle UX",
+            "hint": "Mobil- und Desktop-Aufnahmen, wenn Browser-Automatisierung verfügbar ist."
+          },
+          "product": {
+            "label": "Produktseite",
+            "hint": "Beispielhafte Produktkonvertierungssignale von einem Live-Seitenbesuch."
+          },
+          "deeperScan": {
+            "label": "Tieferer Scan",
+            "hint": "Stichproben von Kategorieseiten, Produktseiten und Warenkorbinteraktionen, wenn Browserautomatisierung verfügbar ist."
+          },
+          "competitors": {
+            "label": "Marktsignale",
+            "hint": "Hinweise zu Kategorien und Mitbewerbern über Homepage-Links."
+          },
+          "email": {
+            "label": "PDF-E-Mail",
+            "hint": "Vollständiger Berichtsversand in Ihrem Posteingang."
+          },
+          "lead": {
+            "label": "Lead gespeichert",
+            "hint": "Ihre Kontaktdaten wurden für die Nachverfolgung und den PDF-Bericht gespeichert."
+          }
+        }
+      },
+      "screenshotsInEmail": "Vorschauen für Mobilgeräte und Desktops finden Sie in Ihrem PDF-E-Mail-Bericht (hier weggelassen, um die Seite schnell zu halten).",
+      "screenshotsUnavailable": "Für diesen Lauf wurden keine visuellen Vorschauen erfasst. Überprüfen Sie Ihre E-Mails, ob Puppeteer auf unserem Berichtsserver ausgeführt wurde.",
+      "checkInbox": "Schauen Sie in Ihrem Posteingang nach, um die ausführliche Analyse mit umsetzbaren Empfehlungen und einer 30-Tage-Roadmap zu erhalten",
+      "share": "Ergebnisse teilen",
+      "copied": "Kopiert!",
+      "priorityFixes": "Prioritätskorrekturen",
+      "nextActions": "Nächste Aktionen",
+      "prioritySubtitle": "Konzentrieren Sie sich zunächst auf die vertrauenswürdigsten Maßnahmen zur Grundursache.",
+      "status": {
+        "excellent": "Ausgezeichnet",
+        "good": "Gut",
+        "warning": "Braucht Arbeit",
+        "critical": "Kritisch",
+        "excellentDesc": "Spitzenleistung!",
+        "goodDesc": "Solides Fundament.",
+        "warningDesc": "Raum für Optimierung.",
+        "criticalDesc": "Sofortiges Handeln erforderlich."
+      },
+      "greatJob": "Tolle Arbeit! Ihr Shop ist optimiert.",
+      "strongScoreWithIssues": "Starkes Fundament, {count} vorrangige Verbesserungsbereiche",
+      "strongScoreWithIssuesDesc": "Die Bewertung ist gut und der Bericht trennt nun die gemessenen Ergebnisse von Schätzungen und Abdeckungslücken.",
+      "issuesFound": "{count} vorrangige Verbesserungsbereiche gefunden",
+      "issuesFound_singular": "{count} Prioritätsverbesserungsbereich gefunden",
+      "readyToScale": "Ihr Shop ist bereit für die Skalierung.",
+      "losingSales": "Diese Probleme kosten Sie wahrscheinlich Conversions.",
+      "evidenceGroundedIssues": "Diese Empfehlungen basieren auf verifizierten Befunden oder klar gekennzeichneten Schätzungen aus diesem Scan.",
+      "estimatedOpportunitiesDesc": "Der Scan ergab Chancen, wobei Vertrauensetiketten zeigten, was noch einer eingehenderen Überprüfung bedarf.",
+      "needsImprovement": "Verbesserungsbedarf",
+      "analyzedOn": "Analysiert am {platform}",
+      "verifiedBenchmark": "Verifiziert: besser als {percentile} % der {count} ähnlichen Geschäfte",
+      "resultId": "Ergebnis-ID: #{id}",
+      "impactLabel": "Auswirkung: {impact} • {section}",
+      "topIssues": "({count} Prioritätselemente)",
+      "dontLetIssuesHurtSales": "Überprüfen Sie die Ergebnisse",
+      "planNextVerifiedFixes": "Planen Sie die Verbesserungen mit der nächsten Priorität",
+      "expertsCanFix": "Überprüfen Sie diese {count} vorrangigen Verbesserungsbereiche mit einem Experten, bevor Sie Zeit für die Implementierung festlegen.",
+      "expertsCanFix_singular": "Überprüfen Sie diesen {count} vorrangigen Verbesserungsbereich mit einem Experten, bevor Sie Zeit für die Implementierung festlegen.",
+      "trustedBy": "Mehr als 50 Geschäfte vertrauen darauf",
+      "fullReportSent": "Ihr ausführlicher Bericht wurde verschickt! Es umfasst detaillierte Ergebnisse, schrittweise Korrekturen, eine Core Web Vitals-Analyse und einen priorisierten 30-Tage-Aktionsplan.",
+      "analyzeDifferentUrl": "Analysieren Sie eine andere URL"
+    },
+    "market": {
+      "title": "Marktintelligenz",
+      "subtitle": "Vertrauensbewusste Kategorie- und Wettbewerbssignale",
+      "position": "Marktposition",
+      "noVerifiedData": "Keine verifizierten Wettbewerberdaten",
+      "positions": {
+        "leader": "Anführer",
+        "challenger": "Herausforderer",
+        "niche": "Nische",
+        "unknown": "Unbekannt"
+      },
+      "confidence": {
+        "high": "Hohes Selbstvertrauen",
+        "medium": "Mittleres Selbstvertrauen",
+        "low": "Geringes Vertrauen"
+      },
+      "categories": {
+        "beauty": "Schönheit und Körperpflege",
+        "hair": "Haarpflege",
+        "fashion": "Mode",
+        "home": "Haushaltswaren",
+        "electronics": "Elektronik",
+        "food": "Essen und Trinken",
+        "health": "Gesundheit und Wohlbefinden",
+        "jewelry": "Schmuck",
+        "sports": "Sport & Outdoor",
+        "general": "Allgemeiner Handel"
+      },
+      "summaryWithCandidates": "Die Kandidaten basieren auf realen Domains, auf die der analysierte Shop verweist, und nicht auf zufälligen Kategorieschätzungen.",
+      "summaryNoCandidates": "Der Analysator fand Kategoriesignale, aber nicht genügend Beweise, um direkte Konkurrenten sicher zu benennen.",
+      "evidence": "Beweise",
+      "detectedCategory": "Erkannte Kategorie: {category}",
+      "noCategory": "Keine starke Produktkategorie erkannt",
+      "candidatesFound": "{count} Mitbewerberkandidaten aus Seitenverweisen gefunden",
+      "noDirectCompetitors": "Keine direkten Konkurrenten in Homepage-Links gefunden",
+      "competitorCandidates": "Mögliche Konkurrenten",
+      "possibleCompetitors": "Mögliche Konkurrenten",
+      "similarity": "Ähnlichkeit",
+      "confidenceScore": "Vertrauen",
+      "visibleAnchor": "Ankertext: {text}",
+      "sourceSection": "Abschnitt: {section}",
+      "categoryOverlap": "Überlappung: {overlap}",
+      "noCompetitors": "Auf der gescannten Seite konnten keine direkten Konkurrenten sicher identifiziert werden."
+    },
+    "ai": {
+      "title": "Bereitschaft für Inhalte und strukturierte Daten",
+      "subtitle": "Vertrauensbewusste Inhalts-, Metadaten- und strukturierte Datenprüfungen",
+      "status": {
+        "ready": "Bereit",
+        "needs_improvement": "Verbesserungsbedarf",
+        "not_optimized": "Nicht optimiert"
+      },
+      "scoreHelp": "Höhere Werte bedeuten, dass die gescannten Seiten klarere Entitäten, Inhalte und strukturierte Fakten offenbaren. Es handelt sich nicht um einen verifizierten Ranking-Score für die KI-Suche.",
+      "productSchemaStatus": "Produktschema: {status}; Produktseiten gescannt: {count}",
+      "schemaStatus": {
+        "not_scanned": "nicht gescannt",
+        "not_applicable": "nicht anwendbar",
+        "not_verified": "nicht verifiziert",
+        "present": "vorhanden",
+        "partial": "teilweise",
+        "missing": "fehlt",
+        "invalid": "ungültig"
+      },
+      "limitations": {
+        "productPagesNotScanned": "Die Produktseiten wurden nicht gescannt, daher ist die Abdeckung der Produktdaten nicht vollständig überprüft.",
+        "productPagesNotVerified": "Es wurden weniger als die angeforderten Produktseitenbeispiele bestätigt, daher ist die Produktdatenabdeckung nicht vollständig überprüft.",
+        "generic": "Diese Einschränkung erfordert eine gründlichere Prüfung, bevor sie als verifiziert betrachtet werden kann."
+      },
+      "structuredData": "Strukturierte Daten (JSON-LD)",
+      "noSchema": "Keine strukturierten Daten gefunden",
+      "readability": "Lesbarkeit",
+      "socialContext": "Sozialer Kontext"
+    },
+    "product": {
+      "title": "Qualität der Produktseite",
+      "subtitle": "Conversion-Audit einer Beispielproduktseite",
+      "conversionScore": "Conversion-Score",
+      "analyzed": "Analysiert",
+      "buyButton": "Schaltfläche „Kaufen“.",
+      "aboveFold": "Oberhalb der Falte",
+      "belowFold": "Unterhalb der Falte",
+      "gallery": "Galerie",
+      "images": "{count} Bilder",
+      "socialProof": "Sozialer Beweis",
+      "reviewsFound": "Bewertungen gefunden",
+      "noReviews": "Keine Bewertungen",
+      "content": "Inhalt",
+      "detailed": "Ausführlich",
+      "brief": "Kurz",
+      "checkoutFlow": "Checkout-Ablauf",
+      "cartStatus": {
+        "detected": "Erkannt",
+        "clickable": "Anklickbar",
+        "redirected_to_cart": "Zum Warenkorb weitergeleitet",
+        "unknown": "Unbekannt"
+      }
+    },
+    "deeperScan": {
+      "title": "Tiefergehende Scan-Beweise",
+      "subtitle": "Beispiele für Kategorie-, Produkt- und Warenkorbinteraktionen, die zur Qualifizierung von Checkout-Empfehlungen verwendet werden",
+      "categoryPages": "Kategorieseiten",
+      "productPages": "Produktseiten",
+      "cartInteraction": "Warenkorb-Interaktion",
+      "succeeded": "{count} erfolgreich",
+      "attempted": "{count} versucht",
+      "available": "Verfügbar",
+      "notVerified": "Nicht verifiziert",
+      "cartVerified": "Die Warenkorb- oder Checkout-Benutzeroberfläche wurde nach einem Add-to-Cart-Versuch überprüft.",
+      "unavailableTitle": "Tieferer Scan nicht verfügbar",
+      "unavailableText": "Für diesen Lauf war keine browserbasierte Stichprobe von Kategorie-, Produkt- und Warenkorbinteraktionen verfügbar, sodass die Kaufempfehlungen weiterhin auf Beweise mit geringerer Konfidenz beschränkt bleiben.",
+      "evidence": "Beweise"
+    },
+    "visualAnalysis": {
+      "title": "Visuelle UX-Analyse",
+      "subtitle": "Überprüfung der Designqualität und der mobilen Reaktionsfähigkeit",
+      "capturedPreviews": "Aufgenommene Vorschauen",
+      "brandPalette": "Markenfarbpalette",
+      "mobileResponsiveness": "Mobile Reaktionsfähigkeit"
+    },
+    "common": {
+      "detected": "Erkannt",
+      "missing": "Fehlt"
+    },
+    "roadmap": {
+      "title": "30-Tage-Aktionsplan",
+      "subtitle": "Eine praktische Reihenfolge der Vorgänge basierend auf den bei diesem Scan erkannten Problemen.",
+      "weeks": {
+        "week1": {
+          "title": "Woche 1",
+          "focus": "Blocker beheben"
+        },
+        "week2": {
+          "title": "Woche 2",
+          "focus": "Geschwindigkeit und Stabilität"
+        },
+        "week3": {
+          "title": "Woche 3",
+          "focus": "Suche und Zugänglichkeit"
+        },
+        "week4": {
+          "title": "Woche 4",
+          "focus": "Vertrauen und Bekehrung"
+        }
+      }
+    },
+    "impact": {
+      "high": "Hohe Wirkung",
+      "medium": "Mittlere Wirkung",
+      "low": "Geringe Auswirkungen"
+    },
+    "recommendations": {
+      "getHelp": "Holen Sie sich kompetente Hilfe",
+      "evidence": "Beweise",
+      "nextAction": "Nächste Aktion",
+      "noEvidence": "Für diesen älteren Berichtspunkt wurden keine zusätzlichen Beweise erfasst.",
+      "measuredEvidence": "Gemessene Lighthouse-Labornachweise aus {count} betroffenen Audit(s).",
+      "productSampleEvidence": "Belege aus {count} bestätigten Beispielproduktseiten.",
+      "limitedEvidence": "Dieses Element muss einer gründlicheren Prüfung unterzogen werden, bevor es als verifiziert behandelt werden kann.",
+      "effort": {
+        "quick": "Schnelle Lösung",
+        "medium": "Mäßiger Aufwand",
+        "advanced": "Erweiterter Fix"
+      },
+      "items": {
+        "meta_description": {
+          "title": "Fügen Sie eine suchbereite Meta-Beschreibung hinzu",
+          "description": "Suchmaschinen und KI-Antwortmaschinen nutzen die Beschreibung, um die Seite zu verstehen und die Klickrate zu beeinflussen.",
+          "action": "Schreiben Sie eine eindeutige Beschreibung mit 140–160 Zeichen für die Homepage, die das Angebot, die Zielgruppe und den Hauptgrund für den Kauf nennt."
+        },
+        "robots_txt": {
+          "title": "Korrigieren Sie die Crawling-Regeln für robots.txt",
+          "description": "Ungültige robots.txt-Anweisungen können Crawler daran hindern, wichtige Produkt-, Kategorie- oder Asset-URLs zu erkennen.",
+          "action": "Validieren Sie /robots.txt, entfernen Sie nicht unterstützte Anweisungen und stellen Sie sicher, dass wichtige Seiten und Assets nicht blockiert sind."
+        },
+        "color_contrast": {
+          "title": "Verbessern Sie kontrastarmen Text",
+          "description": "Ein geringer Kontrast erschwert die Lesbarkeit wichtiger Texte und Schaltflächen, insbesondere auf Mobilgeräten und für Benutzer mit eingeschränktem Sehvermögen.",
+          "action": "Passen Sie die Vordergrund-/Hintergrundfarbpaare an, um den WCAG AA-Kontrast zu erfüllen: 4,5:1 für normalen Text und 3:1 für großen Text."
+        },
+        "image_alt": {
+          "title": "Fügen Sie den Bildern beschreibenden Alternativtext hinzu",
+          "description": "Produkt- und Inhaltsbilder ohne Alternativtext verlieren den Barrierefreiheitskontext und verringern die Klarheit der Bildsuche.",
+          "action": "Fügen Sie prägnanten Alternativtext zu aussagekräftigen Bildern hinzu und lassen Sie rein dekorative Bilder mit alt=\"\" leer."
+        },
+        "button_name": {
+          "title": "Schaltflächen, die nur Namenssymbole enthalten",
+          "description": "Schaltflächen ohne verständliche Namen sind für Benutzer von Bildschirmleseprogrammen und automatisierten Assistenten verwirrend.",
+          "action": "Fügen Sie sichtbaren Text oder Aria-Label-Werte zu jeder Schaltfläche hinzu, insbesondere zu Warenkorb-, Menü-, Such- und Karussell-Steuerelementen."
+        },
+        "link_name": {
+          "title": "Machen Sie Links verständlich",
+          "description": "Generische oder leere Links machen die Navigation unklar und schwächen das semantische Verständnis der Seite.",
+          "action": "Ersetzen Sie vage Link-Beschriftungen durch zielspezifischen Text und fügen Sie Aria-Beschriftungen hinzu, wenn ein Symbol der einzige sichtbare Inhalt ist."
+        },
+        "label": {
+          "title": "Verknüpfen Sie Beschriftungen mit Formularfeldern",
+          "description": "Unbeschriftete Eingaben beeinträchtigen die Zugänglichkeit und können das Ausfüllen von Checkout- und Newsletter-Formularen verlangsamen.",
+          "action": "Verwenden Sie sichtbare Beschriftungen oder aria-label/aria-labelledby für jede Formulareingabe, Auswahl und jeden Textbereich."
+        },
+        "server_response_time": {
+          "title": "Reduzieren Sie die Antwortzeit des Servers",
+          "description": "Eine langsame Serverantwort verzögert jeden späteren Lademeilenstein und macht den bezahlten Datenverkehr weniger effizient.",
+          "action": "Aktivieren Sie Seiten-Caching, überprüfen Sie Hosting-Ressourcen, verschieben Sie umfangreiche Plugins/Apps aus dem kritischen Pfad und fügen Sie CDN-Caching hinzu."
+        },
+        "largest_contentful_paint": {
+          "title": "Beschleunigen Sie das größte sichtbare Element",
+          "description": "Ein langsames Hero-Image oder ein langsamer Hauptinhaltsblock verzögert den Moment, in dem Käufer das Gefühl haben, dass die Seite nutzbar ist.",
+          "action": "Identifizieren Sie das tatsächliche LCP-Element und seinen Ladepfad, bevor Sie Vorlade- oder Bildänderungen anwenden."
+        },
+        "lighthouse_initial_page_load": {
+          "title": "Verbessern Sie die Leistung beim ersten Laden der Seite",
+          "description": "Lighthouse hat im getesteten Laborlauf langsame frühe Lademeilensteine gemessen.",
+          "action": "Identifizieren Sie das tatsächliche LCP-Element und seinen Ladepfad, bevor Sie Vorlade- oder Bildänderungen anwenden."
+        },
+        "lighthouse_js_execution": {
+          "title": "Reduzieren Sie die JavaScript-Ausführung und die Haupt-Thread-Arbeit",
+          "description": "Lighthouse hat im getesteten Labordurchlauf JavaScript- oder Rendering-Arbeiten gemessen, die die Interaktion verzögern können.",
+          "action": "Verwenden Sie die Aufgabenaufteilung von Lighthouse, um ungenutzten Theme-/App-Code zu entfernen, unkritische Tags von Drittanbietern zurückzustellen und die Arbeit aufzuteilen, bevor Menüs, Filter und Produktaktionen verwendbar sind."
+        },
+        "lighthouse_layout_stability": {
+          "title": "Stabilisieren Sie das Layout während des Ladens",
+          "description": "Der Leuchtturm hat die Layoutbewegung oberhalb der Durchgangsschwelle gemessen.",
+          "action": "Reservieren Sie die Abmessungen für Bilder, Einbettungen, Banner und Sticky Bars, die von Lighthouse identifiziert werden, bevor sie geladen werden."
+        },
+        "lighthouse_server_response": {
+          "title": "Reduzieren Sie die Antwortzeit des Servers",
+          "description": "Lighthouse hat eine langsame anfängliche Serverreaktion für die getestete Seite gemessen.",
+          "action": "Überprüfen Sie das Ganzseiten-Caching, Hosting-Ressourcen, CDN-Cache-Regeln und Plugins/Apps, die vor der ersten HTML-Antwort ausgeführt werden."
+        },
+        "total_blocking_time": {
+          "title": "Reduzieren Sie die JavaScript-Blockierungszeit",
+          "description": "Starkes JavaScript blockiert die Interaktion und führt dazu, dass Filter, Menüs und Aktionen zum Hinzufügen zum Warenkorb verzögert wirken.",
+          "action": "Entfernen Sie nicht verwendete Skripte, verschieben Sie Tags von Drittanbietern, teilen Sie große Pakete auf und prüfen Sie die auf jeder Seite geladenen Apps/Plugins."
+        },
+        "cumulative_layout_shift": {
+          "title": "Verhindern Sie Layoutverschiebungen",
+          "description": "Unerwartete Bewegungen können zu Fehlklicks führen und dazu führen, dass sich Produktseiten instabil anfühlen.",
+          "action": "Reservieren Sie Breite/Höhe für Bilder, Einbettungen, Banner und Sticky Bars, bevor sie geladen werden."
+        },
+        "document_title": {
+          "title": "Fügen Sie einen beschreibenden Seitentitel hinzu",
+          "description": "Der Seitentitel ist eines der stärksten Signale für Sucheinträge und Browser-Registerkarten.",
+          "action": "Fügen Sie einen eindeutigen Titel mit weniger als 60 Zeichen hinzu, der den Namen des Geschäfts und das Hauptprodukt-/Kategorieversprechen enthält."
+        },
+        "h1": {
+          "title": "Fügen Sie eine klare H1-Überschrift hinzu",
+          "description": "Ein klares H1 hilft Käufern, Suchmaschinen und unterstützenden Technologien, das Seitenthema zu verstehen.",
+          "action": "Fügen Sie oben auf der Startseite ein sichtbares H1 hinzu, das das Geschäft oder die Hauptkollektion beschreibt."
+        },
+        "ai_structured_data": {
+          "title": "Fügen Sie KI-lesbare strukturierte Daten hinzu",
+          "description": "KI-Antwortmaschinen, Rich-Suchergebnisse und Einkaufsoberflächen benötigen strukturierte Fakten, um Produkte, Organisationsdetails, Breadcrumbs und FAQs zu verstehen.",
+          "action": "Fügen Sie gegebenenfalls gültiges JSON-LD für Produkt, Organisation, BreadcrumbList, Website und FAQPage hinzu und validieren Sie es dann mit Rich Results und Schemavalidatoren."
+        },
+        "ai_product_schema": {
+          "title": "Produktschema zu verkaufbaren Seiten hinzufügen",
+          "description": "Das Produktschema hilft Such-, Einkaufs- und KI-Antwortoberflächen, Preis, Verfügbarkeit, Bewertungen, Bilder und Produktidentität zu verstehen.",
+          "action": "Fügen Sie Produkt JSON-LD zu Produktvorlagen mit Namen, Bild, Beschreibung, SKU, Angeboten, Verfügbarkeit, Preis, Währung, Preis und Gesamtbewertung hinzu, wenn Bewertungen vorhanden sind."
+        },
+        "ai_social_metadata": {
+          "title": "Fügen Sie Freigabe- und Vorschau-Metadaten hinzu",
+          "description": "Metadaten von Open Graph und Twitter-Karten verbessern die Zusammenfassung von Produkten und Kollektionen, wenn sie von Oberflächen im Assistentenstil geteilt, gecrawlt oder zitiert werden.",
+          "action": "Fügen Sie og:title, og:description, og:image, og:url, twitter:card und produktspezifische Vorschau-Metadaten zu wichtigen Storefront-Vorlagen hinzu."
+        },
+        "ai_content_clarity": {
+          "title": "Erleichtern Sie der KI das Zusammenfassen von Seiten",
+          "description": "Durch dünne oder schlecht strukturierte Inhalte können Suchmaschinen und KI-Antwortsysteme weniger verlässliche Fakten über Ihre Produkte, Richtlinien und Unterscheidungsmerkmale angeben.",
+          "action": "Fügen Sie klare H2-Abschnitte, prägnante Produkt-/Kategorieerklärungen, FAQ-Blöcke, Richtlinienzusammenfassungen und Aufzählungslisten hinzu, die Kauffragen direkt beantworten."
+        },
+        "script_count": {
+          "title": "Reduzieren Sie JavaScript in der Storefront",
+          "description": "Zu viele Skripte verlangsamen das Rendern und können Menüs, Filter und Add-to-Cart-Interaktionen verzögern.",
+          "action": "Prüfen Sie Theme-/App-Skripte, entfernen Sie nicht verwendete Tags und verschieben Sie alles, was nicht für das erste Rendern benötigt wird."
+        },
+        "lazy_loading": {
+          "title": "Lazy Load von Below-Fold-Bildern",
+          "description": "Bilder unterhalb des ersten Ansichtsfensters sollten nicht mit kritischen Inhalten um die anfängliche Bandbreite konkurrieren.",
+          "action": "Fügen Sie „loading=\"lazy\" zu Bildern im unteren Bereich hinzu, während das Heldenbild eifrig/vorgeladen bleibt."
+        },
+        "html_lang": {
+          "title": "Legen Sie die Seitensprache fest",
+          "description": "Sprachmetadaten helfen Screenreadern dabei, Inhalte korrekt auszusprechen, und unterstützen Suchmaschinen bei der Klassifizierung der Seite.",
+          "action": "Fügen Sie dem <html>-Element das richtige lang-Attribut hinzu, z. B. lang=\"he\" oder lang=\"en\"."
+        },
+        "viewport": {
+          "title": "Fügen Sie ein mobiles Ansichtsfenster-Tag hinzu",
+          "description": "Ohne ein Viewport-Tag stellen mobile Browser den Shop möglicherweise auf Desktop-Breite dar und sorgen für ein schlechtes Einkaufserlebnis.",
+          "action": "Fügen Sie <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> zum Dokumentkopf hinzu."
+        },
+        "cart_visible": {
+          "title": "Sorgen Sie dafür, dass der Warenkorb leicht zu finden ist",
+          "description": "Ein versteckter Einkaufswagen sorgt für Ärger bei wiederkehrenden Käufern und sorgt dafür, dass sich der Kaufvorgang weniger vorhersehbar anfühlt.",
+          "action": "Fügen Sie in der Kopfzeile einen dauerhaften Warenkorb-Einstiegspunkt mit einem klaren Symbol, einer zugänglichen Beschriftung und einer Artikelanzahl hinzu."
+        },
+        "add_to_cart_missing": {
+          "title": "Machen Sie die Kaufaktion unverkennbar",
+          "description": "Wenn Käufer nicht sofort erkennen können, wie sie einen Artikel in den Warenkorb legen können, wird die Produktabsicht vor Beginn des Bezahlvorgangs durchsickern.",
+          "action": "Verwenden Sie auf Produktkarten und Produktseiten eine kontrastreiche Schaltfläche „In den Warenkorb“ oder „Jetzt kaufen“, wobei deaktivierte Status nur für nicht verfügbare Varianten reserviert sind."
+        },
+        "checkout_path_missing": {
+          "title": "Stellen Sie einen vorhersehbaren Checkout-Pfad bereit",
+          "description": "Ein klarer Weg vom Warenkorb zur Kasse verringert das Zögern und verhindert Sackgassen beim Einkaufen.",
+          "action": "Stellen Sie sicher, dass Einkaufswagenformulare, Mini-Warenkorbschubladen und Kassenschaltflächen sichtbare Etiketten verwenden und mit einem echten Einkaufswagen oder Kassenweg verknüpft sind."
+        },
+        "checkout_flow_not_verified": {
+          "title": "Checkout-Ablauf nicht verifiziert",
+          "description": "Die Qualität des Checkout-Ablaufs wurde bei diesem Scan nicht getestet.",
+          "action": "Führen Sie einen tiefergehenden Scan durch, bei dem Kategorieseiten, Produktseiten, das Verhalten beim Hinzufügen zum Warenkorb, die Benutzeroberfläche des Warenkorbs und Einstiegspunkte für den Checkout überprüft werden, bevor Sie Checkout-Empfehlungen aussprechen."
+        },
+        "payment_cues_missing": {
+          "title": "Akzeptierte Zahlungsmethoden anzeigen",
+          "description": "Zahlungshinweise verringern die Risikowahrnehmung, bevor Käufer zur Kasse gehen.",
+          "action": "Fügen Sie Logos für akzeptierte Zahlungen oder Wallet-Etiketten in der Nähe des Warenkorbs, der Checkout-Schaltfläche und der Fußzeile hinzu."
+        },
+        "visual_contrast_audit": {
+          "title": "Beheben Sie sichtbare Kontrastrisiken",
+          "description": "Ein geringer Kontrast erschwert das Lesen von Merchandising-, Preis- und Kassentexten auf echten Geräten.",
+          "action": "Überprüfen Sie die erfasste Seite anhand der WCAG AA und passen Sie die Text-, Schaltflächen- und Abzeichenfarben an, bis der normale Text einen Kontrast von 4,5:1 erreicht."
+        },
+        "mobile_layout_friction": {
+          "title": "Beseitigen Sie Reibungsverluste beim mobilen Einkaufen",
+          "description": "Probleme mit dem mobilen Layout verlangsamen das Surfen, Tippen und Bezahlen, sodass der Traffic am wahrscheinlichsten abbricht.",
+          "action": "Entfernen Sie den horizontalen Überlauf, ändern Sie die Größe kleiner Tippziele auf mindestens 44 Pixel und testen Sie Produktkarten, Menüs, Einkaufswagenschubladen und Checkout-CTAs erneut mit einer Breite von 320–390 Pixel."
+        },
+        "checkout_trust": {
+          "title": "Fügen Sie Checkout-Vertrauenshinweise hinzu",
+          "description": "Vertrauenshinweise in der Nähe von Kaufaktionen verringern das Zögern von Käufern, Zahlungsdetails einzugeben.",
+          "action": "Platzieren Sie sichere Zahlungs-, Rückgabe-, Garantie- oder Garantienachrichten in der Nähe von Einkaufswagen- und Kasseneingangspunkten."
+        },
+        "reviews": {
+          "title": "Zeigen Sie Kundenrezensionen oder Bewertungen an",
+          "description": "Social Proof hilft neuen Käufern, Qualität, Größe, Service und Liefervertrauen zu bestätigen.",
+          "action": "Fügen Sie Rezensionsausschnitte, Sternebewertungen, Erfahrungsberichte oder UGC in der Nähe von Produkt- und Kollektionsentscheidungspunkten hinzu."
+        },
+        "privacy_policy": {
+          "title": "Datenschutzbestimmungen sichtbar machen",
+          "description": "Sichtbare Richtlinien schaffen Vertrauen und helfen Käufern zu verstehen, wie mit ihren Informationen umgegangen wird.",
+          "action": "Verknüpfen Sie die Seiten „Datenschutz“, „Rückgabe“, „Versand“ und „AGB“ aus der Fußzeile und den angrenzenden Bereichen zur Kasse."
+        },
+        "accessibility_audit": {
+          "title": "Führen Sie eine vollständige Prüfung der Barrierefreiheit durch",
+          "description": "Der Fallback-Analysator konnte nicht genügend Details zur Barrierefreiheit sammeln, um WCAG-Risiken zu überprüfen.",
+          "action": "Führen Sie eine browserbasierte Barrierefreiheitsprüfung durch und beheben Sie Tastatur-, Beschriftungs-, Alternativtext- und Kontrastfehler."
+        },
+        "mixed_content": {
+          "title": "Entfernen Sie gemischte Inhalte von sicheren Seiten",
+          "description": "HTTP-Assets auf einer HTTPS-Storefront können von Browsern blockiert werden, Produktmedien beschädigen und das Vertrauen der Käufer schwächen.",
+          "action": "Ersetzen Sie alle http://-Assets, Stylesheets, Skripte, Bilder und kanonischen Storefront-Links durch HTTPS- oder protokollrelative URLs von vertrauenswürdigen Hosts."
+        },
+        "insecure_form_action": {
+          "title": "Sichern Sie jede Formularübermittlung",
+          "description": "Formulare, die an HTTP gesendet werden, können während der Übertragung E-Mails, Kontodetails oder Checkout-Übergabedaten offenlegen.",
+          "action": "Verschieben Sie Newsletter-, Konto-, Warenkorb- und Checkout-Formularaktionen auf HTTPS-Endpunkte und stellen Sie sicher, dass Weiterleitungen niemals auf HTTP heruntergestuft werden."
+        }
+      }
+    },
+    "recommendationGroups": {
+      "measuredFindings": {
+        "title": "Gemessene Laborbefunde",
+        "subtitle": "Lighthouse-Laborergebnisse für die getestete URL. Sie sind für den Lauf zuverlässig, nicht jedoch Felddaten."
+      },
+      "verifiedFixes": {
+        "title": "Verifizierte Korrekturen",
+        "subtitle": "Von Lighthouse unterstützte Artikel, gerenderte Browserprüfungen oder Beispielproduktseiten."
+      },
+      "estimatedOpportunities": {
+        "title": "Geschätzte Chancen",
+        "subtitle": "Nützliche Signale aus statischem HTML oder Heuristiken, die vor größeren Arbeiten validiert werden sollten."
+      },
+      "needsDeeperScan": {
+        "title": "Benötigt einen tiefergehenden Scan",
+        "subtitle": "Bereiche, in denen dieser Lauf nicht über ausreichende Beweise verfügte, um eine eindeutige Empfehlung auszusprechen."
+      }
+    },
+    "confidence": {
+      "measured": "Gemessene Labordaten",
+      "verified": "Verifiziert",
+      "estimated": "Geschätzt aus statischem HTML",
+      "insufficient_evidence": "Unzureichende Beweise",
+      "unavailable": "Nicht verfügbar"
+    },
+    "primaryIssue": {
+      "speed": {
+        "title": "Ihre größte Chance ist die mobile Leistung.",
+        "description": "Langsames Laden führt zu Abbrüchen, bevor Käufer das Angebot bewerten können. Fordern Sie drei priorisierte Geschwindigkeitskorrekturen an.",
+        "cta": "Erhalten Sie 3 priorisierte Geschwindigkeitskorrekturen"
+      },
+      "seo": {
+        "title": "SEO-Lücken können die Auffindbarkeit einschränken.",
+        "description": "Lösen Sie die wichtigsten technischen und inhaltlichen Signale, bevor Sie weitere Inhalte veröffentlichen.",
+        "cta": "Holen Sie sich einen priorisierten SEO-Aktionsplan"
+      },
+      "trust": {
+        "title": "Kunden benötigen möglicherweise stärkere Gründe, um sich beim Kauf sicher zu fühlen.",
+        "description": "Eine kurze Expertenbewertung kann die wichtigsten Beweis-, Richtlinien- und Bestätigungslücken priorisieren.",
+        "cta": "Holen Sie sich eine Vertrauens- und Conversion-Bewertung"
+      },
+      "product_page": {
+        "title": "Produktseiten können zu Entscheidungskonflikten führen.",
+        "description": "Sehen Sie sich die Seite mit den größten Chancen an, um Wert, Lieferung, Retouren und den Kaufvorgang zu klären.",
+        "cta": "Sehen Sie sich meine vorrangige Produktseite an"
+      },
+      "checkout": {
+        "title": "Kunden stehen möglicherweise kurz vor der Zahlung.",
+        "description": "Priorisieren Sie die Warenkorb-, Zahlungs- und Versandprobleme, die die Kaufabsicht unterbrechen.",
+        "cta": "Holen Sie sich eine Bewertung der Reibungsverluste an der Kasse"
+      },
+      "general_conversion": {
+        "title": "Ihr Shop bietet mehrere Conversion-Möglichkeiten.",
+        "description": "Verwandeln Sie die stärksten Erkenntnisse in einen gezielten 30-Tage-Verbesserungsplan.",
+        "cta": "Erstellen Sie meinen 30-Tage-Verbesserungsplan"
+      }
+    },
+    "humanReview": {
+      "title": "Rezension zum Human Store",
+      "description": "Ein Experte überprüft den Kontext des Analysators und sendet drei priorisierte Empfehlungen. Kein Treffen erforderlich.",
+      "button": "Fordern Sie eine Human Store-Bewertung an",
+      "email": "E-Mail-Adresse",
+      "platform": "Platform (optional)",
+      "primaryGoal": "Hauptziel (optional)",
+      "monthlyTraffic": "Monatlicher Traffic-Bereich (optional)",
+      "monthlyRevenue": "Monatlicher Umsatzbereich (optional)",
+      "biggestConcern": "Größte Sorge (optional)",
+      "anonymousConsent": "Ich stimme zu, dass CartShift ausgewählte Erkenntnisse aus dieser Prüfung als pädagogisches Beispiel anonym weitergeben darf.",
+      "namedConsent": "CartShift darf meinen Shop namentlich erwähnen und verlinken (gilt nur, wenn auch die anonyme Freigabeberechtigung ausgewählt ist).",
+      "capacity": "Begrenzte wöchentliche Rezensionsplätze. Anfragen werden auf Eignung und Kapazität geprüft.",
+      "submit": "Fordern Sie 3 priorisierte Empfehlungen an",
+      "submitting": "Anfrage wird gesendet…",
+      "confirmation": "Anfrage erhalten. Wir überprüfen den Store-Kontext und antworten per E-Mail, wenn ein wöchentlicher Slot verfügbar ist.",
+      "error": "Die Überprüfungsanfrage konnte nicht gesendet werden."
+    },
+    "cta": {
+      "title": "Sind Sie bereit, Ihren Shop zu verbessern?",
+      "description": "Sie sind sich nicht sicher, was Sie zuerst reparieren sollen? Führen Sie den Analysator aus und erhalten Sie einen priorisierten Startpunkt.",
+      "bookCall": "Buchen Sie ein kostenloses Strategiegespräch",
+      "bookStrategyCall": "Buchen Sie einen Strategieanruf",
+      "getQuote": "Holen Sie sich ein Angebot für Top-Korrekturen ein",
+      "fixIssues": "Überprüfen Sie die Ergebnisse",
+      "analyzeAnother": "Analysieren Sie einen anderen Shop",
+      "analyzeNow": "Analysieren Sie jetzt meinen Shop"
+    }
+  },
+  "clientPortalPage": {
+    "hero": {
+      "badge": "Kundenportal",
+      "title": "Ihre Projekte,",
+      "titleSpan": "Ein Dashboard",
+      "subtitle": "Verwalten Sie alles an einem Ort",
+      "description": "Keine verstreuten E-Mails, verlorenen Dateien oder unklaren Zeitpläne mehr. Unser Kundenportal bietet Ihnen vollständigen Einblick in Ihre Projekte, von der ersten Anfrage bis zur endgültigen Lieferung."
+    },
+    "features": {
+      "title": "Alles was Sie brauchen",
+      "subtitle": "Leistungsstarke Funktionen, die das Projektmanagement mühelos machen",
+      "items": [
+        {
+          "icon": "requests",
+          "title": "Anforderungsmanagement",
+          "description": "Senden Sie neue Anfragen, verfolgen Sie den Fortschritt und erhalten Sie Updates, ohne eine einzige E-Mail zu senden."
+        },
+        {
+          "icon": "realtime",
+          "title": "Echtzeit-Updates",
+          "description": "Beobachten Sie die Entwicklung Ihres Projekts in Echtzeit. Sehen Sie sofort genau, in welchem ​​Stadium sich jede Anfrage befindet."
+        },
+        {
+          "icon": "files",
+          "title": "Sichere Dateifreigabe",
+          "description": "Laden Sie Assets hoch, laden Sie Ergebnisse herunter und bewahren Sie alle Projektdateien an einem sicheren Ort auf."
+        },
+        {
+          "icon": "notifications",
+          "title": "Intelligente Benachrichtigungen",
+          "description": "Lassen Sie sich benachrichtigen, wenn Meilensteine erreicht sind, Bewertungen fertig sind oder wenn wir Ihre Eingaben benötigen."
+        },
+        {
+          "icon": "analytics",
+          "title": "Projektanalyse",
+          "description": "Verfolgen Sie abgeschlossene Arbeiten, ausstehende Anfragen und den Gesamtzustand des Projekts auf einen Blick."
+        },
+        {
+          "icon": "collaboration",
+          "title": "Teamzusammenarbeit",
+          "description": "Laden Sie Teammitglieder zur Zusammenarbeit ein. Durch den gemeinsamen Zugriff auf Projekte bleiben alle auf dem Laufenden."
+        }
+      ]
+    },
+    "benefits": {
+      "title": "Warum Kunden",
+      "titleSpan": "Ich liebe es",
+      "items": [
+        "Keine E-Mail-Ketten mehr, die nach diesem einen Anhang suchen",
+        "Rund um die Uhr Zugriff auf Ihren Projektstatus von jedem Gerät aus",
+        "Klare Sicht auf Zeitpläne und Ergebnisse",
+        "Sofortige Feedbackschleifen: Kommentieren Sie die Ergebnisse direkt",
+        "Der gesamte Projektverlauf in einem durchsuchbaren Archiv",
+        "Eigener Arbeitsbereich für jedes Projekt",
+        "Schnellere Abwicklung durch optimierte Kommunikation",
+        "Seelenfrieden, weil Sie wissen, dass nichts untergeht"
+      ]
+    },
+    "howItWorks": {
+      "title": "Wie es funktioniert",
+      "subtitle": "Der Einstieg ist einfach. So nutzen Sie das Portal.",
+      "steps": [
+        {
+          "title": "Erstellen Sie Ihr Konto",
+          "description": "Sobald Sie Kunde werden, erhalten Sie eine Einladung zur Einrichtung Ihres Portalkontos. Es dauert weniger als 2 Minuten."
+        },
+        {
+          "title": "Senden Sie Anfragen",
+          "description": "Brauchen Sie etwas gebaut, repariert oder verbessert? Senden Sie eine Anfrage mit allen Details. Hängen Sie Dateien an, legen Sie Prioritäten fest und beschreiben Sie, was Sie benötigen."
+        },
+        {
+          "title": "Verfolgen Sie den Fortschritt",
+          "description": "Beobachten Sie, wie Ihre Anfrage unseren Workflow durchläuft. Sie werden sehen, wann wir beginnen, wann es geprüft wird und wann es für Sie bereit ist."
+        },
+        {
+          "title": "Überprüfen und genehmigen",
+          "description": "Wenn die Ergebnisse fertig sind, überprüfen Sie sie direkt im Portal. Hinterlassen Sie Kommentare, fordern Sie Änderungen an oder genehmigen Sie mit einem Klick."
+        }
+      ]
+    },
+    "preview": {
+      "title": "Sehen Sie es in Aktion",
+      "subtitle": "Ein kleiner Einblick in Ihr Projekt-Dashboard",
+      "stats": {
+        "active": "Aktiv",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen"
+      },
+      "requests": [
+        "Neugestaltung der Homepage in Arbeit",
+        "Produktfilterfunktion: Überprüfung ausstehend",
+        "Geschwindigkeitsoptimierung: bereit zur Genehmigung"
+      ]
+    },
+    "cta": {
+      "title": "Bereit zur Rationalisierung",
+      "titleSpan": "Ihre Projekte?",
+      "description": "Schließen Sie sich den Kunden an, die sich vom E-Mail-Chaos verabschiedet haben. Ihr Portal wartet.",
+      "primaryButton": "Zugangsportal",
+      "secondaryButton": "Kontaktieren Sie uns"
+    }
+  },
+  "featuredWork": {
+    "eyebrow": "Ausgewählte Projekte",
+    "title": "Was passiert, wenn wir mit dem richtigen Problem beginnen?",
+    "description": "Ausgewählte Projekte aus E-Commerce und Content: die Herausforderung, die Lösung und was sich tatsächlich verändert hat.",
+    "readMore": "Projekt ansehen",
+    "viewAll": "Alle Projekte ansehen"
+  }
+}

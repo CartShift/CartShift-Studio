@@ -10,13 +10,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const isHe = locale === 'he';
   return genMeta({
-    title: isHe ? 'סקירת חנות אונליין מקצועית בחינם | CartShift' : 'Free Expert Ecommerce Store Review | CartShift Studio',
-    description: isHe
+    title: locale === 'de' ? 'Kostenlose Expertenanalyse für Onlineshops | CartShift Studio' : isHe ? 'סקירת חנות אונליין מקצועית בחינם | CartShift' : 'Free Expert Ecommerce Store Review | CartShift Studio',
+    description: locale === 'de'
+      ? 'Fordern Sie eine persönliche Shop-Analyse von CartShift an – mit nachvollziehbaren Prioritäten für Shopify, UX, SEO und Kaufhindernisse statt einer pauschalen Sofortbewertung.'
+      : isHe
       ? 'סקירה אישית של החנות שלכם בידי מומחי CartShift, ממצאים מבוססים והמלצות מעשיות לשיפור UX, Shopify, SEO והמרות.'
       : 'Request a personal store review from CartShift specialists. Get evidence-backed priorities for Shopify, UX, SEO and buying friction without a generic instant score.',
     url: '/free-store-review',
-    keywords: isHe ? ['סקירת חנות בחינם','בדיקת חנות שופיפיי','שיפור חנות אונליין'] : ['expert store review','free shopify audit','ecommerce store review'],
-  }, locale as 'en'|'he');
+    keywords: locale === 'de' ? ['kostenlose Shop-Analyse', 'Shopify-Shop prüfen', 'E-Commerce-Optimierung'] : isHe ? ['סקירת חנות בחינם','בדיקת חנות שופיפיי','שיפור חנות אונליין'] : ['expert store review','free shopify audit','ecommerce store review'],
+  }, locale as 'en' | 'he' | 'de' | 'de');
 }
 
 const areas = [
@@ -33,9 +35,9 @@ export default async function FreeStoreReviewPage({
   const { locale } = await params;
   const { focus, service } = await searchParams;
   const subscriptionInterest = service === 'shopify-subscriptions';
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   // All display copy, including the form and FAQ, shares the same translation source.
-  const t = await getTranslations({ locale: locale as 'en' | 'he', namespace: 'storeReview' });
+  const t = await getTranslations({ locale: locale as 'en' | 'he' | 'de', namespace: 'storeReview' });
   const steps = (['request', 'review', 'next'] as const).map(key => ({
     title: t(`steps.${key}.title`),
     description: t(`steps.${key}.description`),
@@ -70,7 +72,9 @@ export default async function FreeStoreReviewPage({
             initialNotes={subscriptionInterest
               ? (locale === 'he'
                 ? 'אני מעוניין/ת לבדוק הקמת מנויים ואספקה חוזרת בחנות Shopify שלי.'
-                : 'I would like to explore Shopify subscriptions and repeat-delivery options for my store.')
+                : locale === 'de'
+                  ? 'Ich möchte Shopify-Abonnements und regelmäßige Lieferungen für meinen Shop prüfen lassen.'
+                  : 'I would like to explore Shopify subscriptions and repeat-delivery options for my store.')
               : undefined}
           />
         </div>

@@ -64,7 +64,8 @@
     "test:analyzer:all": "node scripts/test-analyzer.js --unit --live",
     "test:analyzer:unit": "vitest run tests/services/analyzer.test.ts tests/services/competitor-service.test.ts tests/services/cart-analyzer-advanced.test.ts tests/services/scraper.test.ts tests/api/analyze-store.route.test.ts tests/utils/safe-store-fetch.test.ts tests/utils/store-url.test.ts tests/lib/analyzer-progress.test.ts tests/hooks/use-analyzer-progress.test.tsx tests/services/analyzer-response.test.ts tests/services/ai-readiness.test.ts tests/services/analyzer-best-practices-fallback.test.ts tests/validation/analyze-store.test.ts tests/scripts/test-analyzer.test.ts",
     "audit:portal:projects": "tsx scripts/audit-project-integrity.ts",
-    "pwa:icons": "node scripts/ensure-pwa-icons.mjs"
+    "pwa:icons": "node scripts/ensure-pwa-icons.mjs",
+    "i18n:de:check": "node scripts/check-german-parity.cjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

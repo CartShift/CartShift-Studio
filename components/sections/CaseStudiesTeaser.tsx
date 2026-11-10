@@ -6,7 +6,7 @@ import { getTranslations } from 'next-intl/server';
 
 interface CaseStudiesTeaserProps {
   caseStudies: CaseStudyMeta[];
-  locale: 'en' | 'he';
+  locale: 'en' | 'he' | 'de';
 }
 
 export async function CaseStudiesTeaser({ caseStudies, locale }: CaseStudiesTeaserProps) {

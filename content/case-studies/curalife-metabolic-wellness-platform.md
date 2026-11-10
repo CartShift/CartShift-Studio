@@ -197,4 +197,97 @@ he:
     - 'תשתיות GCP'
     - 'חוויית דיגיטל הלת׳'
     - 'אופטימיזציית ביצועים'
+de:
+  title: CuraLife Metabolic Wellness-Plattform
+  summary: Leitete die digitale Forschung und Entwicklung für CuraLife im gesamten Shopify-Commerce, einem HIPAA-konformen Telemedizin-Trichter, digitalen Gesundheitserlebnissen und der Integrationsschicht, die die Akquise mit der Leistungserbringung verband.
+  industry: Gesundheit und Wohlbefinden
+  duration: 4 Jahre 5 Monate
+  attribution: Die Arbeit wurde von Yotam Faraggi während seiner internen Rolle als Full-Stack-Entwickler und Forschungs- und Entwicklungsleiter bei CuraLife von Juli 2021 bis November 2025 geleitet.
+  cta:
+    title: Aufbau eines komplexen Shopify- oder digitalen Gesundheitsökosystems?
+    description: Wir können Handel, Produktflüsse, Integrationen und Infrastruktur in einem wartbaren System verbinden.
+  hero:
+    image: /images/case-studies/curalife-metabolic-wellness-platform/hero.jpg
+    alt: CuraLife-Homepage, die Nahrungsergänzungsmittel-Merchandising und Ernährungsberatung kombiniert
+    supportingCopy: Leitete die digitale Forschung und Entwicklung von CuraLife in den Bereichen E-Commerce, Telemedizin-Akquise und Betriebssysteme und half der Marke, vom Verkauf von Nahrungsergänzungsmitteln zu einer breiteren Plattform für metabolische Wellness zu expandieren.
+  overview:
+    title: Verbindung von Nahrungsergänzungsmitteln, klinischer Beratung und sicherer Einnahme in einem Produktsystem
+    summary: Dieses Engagement ging weit über den typischen Ladenbau hinaus. Wir haben an öffentlichen Akquiseseiten, sicherem Patienten-Onboarding, Shopify-Commerce, HubSpot-Integrationen und der erforderlichen Infrastruktur gearbeitet, damit sich die gesamte Reise sowohl für Kunden als auch für das interne Team zuverlässig anfühlt.
+  deliverables:
+  - title: HIPAA-konformer Patientenaufnahmetrichter
+    description: Entwickelte einen sicheren Registrierungsablauf für die Telemedizin in Next.js und TypeScript auf GCP, der das Onboarding im Gesundheitswesen mit hoher Vertrauenswürdigkeit ohne Einbußen bei der Benutzerfreundlichkeit unterstützen soll.
+  - title: Robuste Shopify + HubSpot-Architektur
+    description: Entwarf einen mehrschichtigen Integrationsclient, der Storefront-Aktivitäten, CRM-Datensätze und betriebliche Arbeitsabläufe verbindet.
+  - title: Ernährungsberater und digitale Gesundheitserwerbsreisen
+    description: Das öffentliche Erlebnis wurde über das Merchandising von Nahrungsergänzungsmitteln hinaus erweitert, um versicherungspflichtige Einstiegspunkte für Ernährungsberater und eine breitere digitale Gesundheitsentdeckung zu unterstützen.
+  - title: Leistung und mobile Modernisierung
+    description: Leitung der Frontend-Modernisierung der Kauf- und Onboarding-Abläufe mit Schwerpunkt auf Wartbarkeit und mobiler UX.
+  - title: Sichere Cloud-Bereitstellung
+    description: Bereitstellung und Wartung der GCP-Grundlage, die für eine datenschutzbewusste Produktbereitstellung, Zuverlässigkeit und langfristige Iteration erforderlich ist.
+  gallery:
+  - image: /images/case-studies/curalife-metabolic-wellness-platform/hero.jpg
+    alt: CuraLife-Homepage mit Wellness-Hero und Ernährungsberater-Call-to-Action
+    caption: Die Homepage vereint klinische Glaubwürdigkeit, Supplement-Merchandising und Ernährungsdienstleistungen, ohne den ersten Bildschirm zu überfordern.
+  - image: /images/case-studies/curalife-metabolic-wellness-platform/gallery-01.jpg
+    alt: CuraLife-Ernährungsberater-Landingpage mit Hervorhebung der versicherten Pflege
+    caption: Durch die Akquisitionsabläufe durch Ernährungsberater wird ein komplexeres Pflegeangebot zugänglich, unmittelbar und leicht verständlich.
+  - image: /images/case-studies/curalife-metabolic-wellness-platform/gallery-02.jpg
+    alt: Digitale Gesundheitsseite von CuraLife mit App-gesteuerten Überwachungsvisualisierungen
+    caption: Digitales Gesundheits-Storytelling erweitert die Marke vom Produktverkauf zu einem umfassenderen Pflege- und Überwachungs-Ökosystem.
+  - image: /images/case-studies/curalife-metabolic-wellness-platform/gallery-03.jpg
+    alt: Auf der CuraLife-Homepage werden Nahrungsergänzungsmittel sowie Unterstützung durch Ernährungsberater vorgestellt
+    caption: Ergänzungs- und Serviceblöcke wurden als eine zusammenhängende Reise statt als separate, getrennte Angebote zusammengefasst.
+  evidence:
+  - title: Sichere telemedizinische Aufnahme
+    value: Patientenaufnahmefluss
+    description: Aufbau eines Telemedizin-Aufnahmeflusses, der die patientenseitige Registrierung, Backend-Integrationen und Cloud-Infrastruktur umfasst.
+    context: Umgesetzt mit Next.js, TypeScript und Google Cloud Platform.
+    before: Separate Einstiegspunkte
+    after: Integrierter Ansaugstrom
+    tone: qualitative
+  - title: Shopify–HubSpot-Integration
+    value: Vernetzter Handel und CRM
+    description: Entworfen und implementiert einen mehrschichtigen Integrations-Client, der Shopify, HubSpot und interne Workflows verknüpft.
+    context: Integrationsarchitektur für Handel, CRM und betriebliche Prozesse.
+    before: Vorheriger Synchronisierungspfad
+    after: Strukturierter Integrationsclient
+    tone: qualitative
+  - title: Frontend-Modernisierung
+    value: Modernes Frontend
+    description: Neu gestaltete kundenorientierte Journeys mit Next.js, React und TypeScript, mit Augenmerk auf mobile UX und Wartbarkeit.
+    context: Modernisierung der Implementierung; Es wird kein Geschwindigkeitsmaßstab geltend gemacht.
+    before: Legacy-Frontend
+    after: Modernes Next.js-Frontend
+    tone: qualitative
+  - title: Vernetzte Kundenreisen
+    value: Vernetztes Onboarding
+    description: Vernetzter Handel, Entdeckung im Gesundheitswesen und Reisen zur Patientenaufnahme im Produkterlebnis.
+    before: Vom Handel geleitete Erfahrung
+    after: Handels- und Pflegefluss
+    tone: qualitative
+  results:
+  - metric: Telemedizin-Trichter
+    before: Separate Einstiegspunkte
+    after: Integrierter Ansaugstrom
+    improvement: Arbeitsablauf bei der Patientenaufnahme
+  - metric: Integrationsschicht
+    before: Vorheriger Synchronisierungspfad
+    after: Integrationsclient
+    improvement: Shopify–HubSpot-Integration
+  - metric: Frontend
+    before: Legacy-Frontend
+    after: Modernes Next.js-Frontend
+    improvement: Frontend-Modernisierung
+  - metric: Patienten-Onboarding
+    before: Vom Handel geleitete Erfahrung
+    after: Verbundene Reise
+    improvement: Handels- und Pflegefluss
+  services:
+  - Next.js-Entwicklung
+  - Shopify-Entwicklung
+  - HubSpot-Integration
+  - GCP-Infrastruktur
+  - Digitale Gesundheits-UX
+  - Leistungsoptimierung
+  content: ''
 ---

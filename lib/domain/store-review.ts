@@ -8,7 +8,7 @@ export const storeReviewRequestSchema = z.object({
   storeUrl: z.string().trim().min(4).max(2048),
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(320),
-  locale: z.enum(['en', 'he']).default('en'),
+  locale: z.enum(['en', 'he', 'de']).default('en'),
   focus: storeReviewFocusSchema.optional(),
   notes: z.string().trim().max(1000).optional(),
   marketingOptIn: z.boolean().default(false),

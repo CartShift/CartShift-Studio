@@ -24,6 +24,7 @@ interface BlogPost {
     excerpt: string;
     category: string;
   };
+  translations?: { de?: { title: string; excerpt: string; category: string } };
 }
 
 interface BlogTeaserProps {
@@ -38,9 +39,9 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
 
   const displayPosts = posts
     ? posts.map(post => ({
-        title: isHe && post.translation?.title ? post.translation.title : post.title,
-        excerpt: isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt,
-        category: isHe && post.translation?.category ? post.translation.category : post.category,
+        title: (locale === 'de' && post.translations?.de?.title) || (isHe && post.translation?.title ? post.translation.title : post.title),
+        excerpt: (locale === 'de' && post.translations?.de?.excerpt) || (isHe && post.translation?.excerpt ? post.translation.excerpt : post.excerpt),
+        category: (locale === 'de' && post.translations?.de?.category) || (isHe && post.translation?.category ? post.translation.category : post.category),
         date: post.date,
         href: `/blog/${post.slug}`,
         image: post.image,

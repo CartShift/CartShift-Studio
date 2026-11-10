@@ -17,8 +17,10 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe ? 'פורטל לקוחות | פרויקטים, בקשות וקבצים | CartShift Studio' : 'Client Portal | Projects, Files & Requests | CartShift Studio',
-      description: isHe
+      title: locale === 'de' ? 'Kundenportal | Projekte, Dateien und Anfragen | CartShift Studio' : isHe ? 'פורטל לקוחות | פרויקטים, בקשות וקבצים | CartShift Studio' : 'Client Portal | Projects, Files & Requests | CartShift Studio',
+      description: locale === 'de'
+        ? 'Ein eigener Arbeitsbereich für CartShift-Kunden, um Projekte und Anfragen zu verfolgen, Dateien zu teilen und Ergebnisse zu prüfen.'
+        : isHe
         ? 'מרחב עבודה ללקוחות CartShift למעקב אחר פרויקטים ובקשות, שיתוף קבצים וסקירת תוצרים.'
         : 'A dedicated CartShift client workspace for project tracking, requests, files and deliverables.',
       url: '/tools/client-portal',
@@ -33,7 +35,7 @@ export async function generateMetadata({
         'project transparency',
       ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
@@ -43,21 +45,22 @@ export default async function ClientPortalPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
-      { name: locale === 'he' ? 'כלים' : 'Tools', url: '/tools' },
-      { name: locale === 'he' ? 'פורטל לקוחות' : 'Client Portal', url: '/tools/client-portal' },
+      { name: locale === 'he' ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'כלים' : locale === 'de' ? 'Tools' : 'Tools', url: '/tools' },
+      { name: locale === 'he' ? 'פורטל לקוחות' : locale === 'de' ? 'Kundenportal' : 'Client Portal', url: '/tools/client-portal' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const softwareSchema = generateSoftwareApplicationSchema({
     name: 'CartShift Client Portal',
-    description:
-      'A dedicated client portal for managing projects, tracking requests, sharing files, and staying connected with your development team.',
+    description: locale === 'de'
+      ? 'Ein Kundenportal zum Verwalten von Projekten, Verfolgen von Anfragen, Teilen von Dateien und für die Zusammenarbeit mit dem Entwicklungsteam.'
+      : 'A dedicated client portal for managing projects, tracking requests, sharing files, and staying connected with your development team.',
     url: '/tools/client-portal',
     operatingSystem: 'Any',
     applicationCategory: 'BusinessApplication',
@@ -65,7 +68,7 @@ export default async function ClientPortalPage({
       price: '0',
       priceCurrency: 'USD',
     },
-    locale: locale as 'en' | 'he',
+    locale: locale as 'en' | 'he' | 'de',
   });
 
   return (

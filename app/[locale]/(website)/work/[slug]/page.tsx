@@ -14,7 +14,7 @@ import { CaseStudyDetailContent } from '@/components/sections/CaseStudyDetailCon
 export async function generateStaticParams() {
   const slugs = getCaseStudySlugs();
 
-  return routing.locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale => slugs.map(slug => ({ locale, slug })));
 }
 
 export async function generateMetadata({
@@ -24,40 +24,41 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const isHe = locale === 'he';
+  const isDe = locale === 'de';
   const caseStudy = getCaseStudyBySlug(slug, locale);
 
   if (!caseStudy) {
     return genMeta(
       {
-        title: isHe ? 'הפרויקט לא נמצא' : 'Case Study Not Found',
+        title: isHe ? 'הפרויקט לא נמצא' : isDe ? 'Projekt nicht gefunden' : 'Case Study Not Found',
         description: isHe
           ? 'הפרויקט המבוקש לא נמצא.'
-          : 'The requested case study could not be found.',
+          : isDe ? 'Das angeforderte Projekt wurde nicht gefunden.' : 'The requested case study could not be found.',
         url: `/work/${slug}`,
         noindex: true,
       },
-      locale as 'en' | 'he'
+      locale as 'en' | 'he' | 'de'
     );
   }
 
   const keywords = [
     caseStudy.platform.toLowerCase(),
     caseStudy.industry.toLowerCase(),
-    isHe ? 'מקרה בוחן' : 'case study',
-    isHe ? 'פיתוח מסחר אלקטרוני' : 'e-commerce development',
-    `${caseStudy.platform} ${isHe ? 'פיתוח' : 'development'}`,
+    isHe ? 'מקרה בוחן' : isDe ? 'Fallstudie' : 'case study',
+    isHe ? 'פיתוח מסחר אלקטרוני' : isDe ? 'E-Commerce-Entwicklung' : 'e-commerce development',
+    `${caseStudy.platform} ${isHe ? 'פיתוח' : isDe ? 'Entwicklung' : 'development'}`,
   ];
 
   return genMeta(
     {
-      title: `${caseStudy.title} | ${isHe ? 'מקרה בוחן' : 'Case Study'}`,
+      title: `${caseStudy.title} | ${isHe ? 'מקרה בוחן' : isDe ? 'Projektbeispiel' : 'Case Study'}`,
       description: caseStudy.summary,
       url: `/work/${slug}`,
       type: 'article',
       image: caseStudy.hero.image,
       keywords,
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
@@ -67,7 +68,7 @@ export default async function CaseStudyPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   const caseStudy = getCaseStudyBySlug(slug, locale);
 
   if (!caseStudy) {
@@ -77,20 +78,21 @@ export default async function CaseStudyPage({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cart-shift.com';
 
   const isHe = locale === 'he';
+  const isDe = locale === 'de';
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: isHe ? 'בית' : 'Home', url: '/' },
-      { name: isHe ? 'פרויקטים' : 'Work', url: '/work' },
+      { name: isHe ? 'בית' : isDe ? 'Startseite' : 'Home', url: '/' },
+      { name: isHe ? 'פרויקטים' : isDe ? 'Projekte' : 'Work', url: '/work' },
       { name: caseStudy.title, url: `/work/${slug}` },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const articleSchema = generateArticleSchema({
     title: caseStudy.title,
     description: caseStudy.summary,
     url: `${siteUrl}/${locale}/work/${slug}`,
-    locale: locale as 'en' | 'he',
+    locale: locale as 'en' | 'he' | 'de',
     category: caseStudy.industry,
     image: caseStudy.hero.image ? `${siteUrl}${caseStudy.hero.image}` : undefined,
   });

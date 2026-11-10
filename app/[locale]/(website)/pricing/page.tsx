@@ -19,8 +19,10 @@ export async function generateMetadata({
   const isHe = locale === 'he';
   return genMeta(
     {
-      title: isHe ? 'מחירים והיקפי עבודה לפיתוח Shopify | CartShift Studio' : 'Shopify Development Pricing & Project Scopes | CartShift Studio',
-      description: isHe
+      title: locale === 'de' ? 'Shopify-Entwicklung: Preise und Projektumfang | CartShift Studio' : isHe ? 'מחירים והיקפי עבודה לפיתוח Shopify | CartShift Studio' : 'Shopify Development Pricing & Project Scopes | CartShift Studio',
+      description: locale === 'de'
+        ? 'Shopify-Entwicklungspakete, Shop-Optimierungen und kostenpflichtige Detailanalysen. Kostenlose erste Expertenprüfung; endgültiger Umfang und Preis werden im Angebot vereinbart.'
+        : isHe
         ? 'חבילות פיתוח Shopify, שדרוגים ואודיטים בתשלום. סקירה מקצועית ראשונית בחינם; היקף ותמחור מלא ייקבעו בהצעת עבודה.'
         : 'Shopify development packages, store improvements and paid deep-dive audits. Free initial expert review; final scope and pricing agreed in a proposal.',
       url: '/pricing',
@@ -35,22 +37,22 @@ export async function generateMetadata({
         'affordable Shopify developer',
       ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
-  const t = await getTranslations({ locale: locale as 'en' | 'he' });
+  setRequestLocale(locale as 'en' | 'he' | 'de');
+  const t = await getTranslations({ locale: locale as 'en' | 'he' | 'de' });
   const pricingFaqs = t.raw('pricing.faq.items') as { question: string; answer: string }[];
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
       { name: t('navigation.home'), url: '/' },
       { name: t('pricing.hero.title'), url: '/pricing' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const faqSchema = generateFAQPageSchema(pricingFaqs);

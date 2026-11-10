@@ -15,7 +15,7 @@ const focuses: StoreReviewFocus[] = ['conversion','speed','seo','trust','checkou
 
 function InnerForm({ initialFocus, initialNotes }: { initialFocus?: StoreReviewFocus; initialNotes?: string }) {
   const t = useTranslations('storeReview');
-  const locale = useLocale() as 'en' | 'he';
+  const locale = useLocale() as 'en' | 'he' | 'de';
   const { executeRecaptcha } = useGoogleReCaptcha();
   const [focus, setFocus] = useState<StoreReviewFocus | undefined>(initialFocus);
   const [pending, setPending] = useState(false);

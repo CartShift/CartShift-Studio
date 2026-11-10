@@ -7,7 +7,13 @@ export const contactFormSchema = z.object({
   message: z.string().max(5000, 'Message must be less than 5000 characters').optional(),
   company: z.string().max(200, 'Company name must be less than 200 characters').optional(),
   projectType: z.string().optional(),
-  locale: z.enum(['en', 'he']).optional(),
+  locale: z.enum(['en', 'he', 'de']).optional(),
+  attribution: z.object({
+    utmSource: z.string().trim().max(160).optional(),
+    utmMedium: z.string().trim().max(160).optional(),
+    utmCampaign: z.string().trim().max(160).optional(),
+    partnerCode: z.string().trim().max(160).optional(),
+  }).optional(),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -26,7 +32,7 @@ export function validateContactForm(
 
 export const newsletterSubscriptionSchema = z.object({
   email: z.string().email('Invalid email address'),
-  locale: z.enum(['en', 'he']).optional(),
+  locale: z.enum(['en', 'he', 'de']).optional(),
   source: z.string().optional(),
 });
 

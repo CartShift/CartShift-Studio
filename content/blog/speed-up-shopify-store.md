@@ -9,6 +9,9 @@ socialImage: '/images/blog/og/speed-up-shopify-store.webp'
 title_he: '10 דרכים להאיץ את חנות השופיפיי שלכם'
 excerpt_he: 'מדריך מעשי למהירות Shopify: איך למצוא מה מאט את הרגע השימושי הראשון במובייל - מדיה, אפליקציות, סקריפטים, פונטים, layout shift ומשקל תבנית.'
 category_he: 'שופיפיי'
+title_de: "10 Möglichkeiten, Ihren Shopify-Shop zu beschleunigen"
+excerpt_de: "Ein praktischer Shopify-Geschwindigkeitsleitfaden, um herauszufinden, was den ersten nützlichen mobilen Moment verlangsamt: Medien, Apps, Skripte, Schriftarten, Layoutverschiebung und Theme-Gewicht."
+category_de: "Shopify"
 ---
 
 A slow Shopify store rarely has one villain. It is usually a pile-up: heavy hero media, too many apps, duplicate trackers, oversized product images, and theme code that has grown without a cleanup day.
@@ -286,3 +289,228 @@ Speed also affects conversion and SEO. For the broader strategy, read [Store spe
 שיפור מהירות החנות הוא תהליך מתמשך. התחילו עם הניצחונות הגדולים (אופטימיזציה לתמונות והסרת אפליקציות) והתקדמו ברשימה. אפילו שיפורים קטנים יכולים להוביל לעלייה משמעותית בשיעורי ההמרה.
 
 מתמודדים עם חנות איטית? ביצענו אופטימיזציה לעשרות אתרי שופיפיי. [צרו קשר עם CartShift Studio](/contact) כדי לדון כיצד נוכל לעזור להפוך את שלכם למהירה יותר.
+
+---de---
+Ein langsamer Shopify-Shop hat selten einen Bösewicht. Meist handelt es sich um eine Anhäufung: umfangreiche Hero-Medien, zu viele Apps, doppelte Tracker, übergroße Produktbilder und Theme-Code, der ohne einen Aufräumtag gewachsen ist.
+
+Geschwindigkeitsarbeit wird einfacher, wenn Sie aufhören zu fragen, wie wir alles schneller machen können, und anfangen zu fragen, was den ersten nützlichen Moment für einen mobilen Käufer verlangsamt. Testen Sie mit [PageSpeed ​​Insights](https://pagespeed.web.dev/), aber öffnen Sie den Store auch auf einem echten Telefon.
+
+## Was ist zu messen, bevor etwas geändert wird?
+
+Beginnen Sie mit einer Grundlinie. Andernfalls wissen Sie nicht, welche Korrekturen funktioniert haben.
+
+Testen Sie diese Seiten:
+
+- Homepage
+- Top-Sammlungsseite
+- Top-Produktseite
+- Warenkorb
+- eine stark frequentierte Landingpage oder ein Blogbeitrag
+
+Verfolgen Sie diese Kennzahlen:
+
+| Metrisch | Ziel | Warum es wichtig ist |
+| ----------- | ------------------- | -------------------------------- |
+| LCP | 2,5 Sekunden oder weniger | Hauptinhalt erscheint schnell |
+| INP | 200 ms oder weniger | Seite reagiert auf Tippen und Klicken |
+| CLS | 0,1 oder weniger | Layout bleibt stabil |
+| TTFB | idealerweise unter 800ms | Server reagiert schnell |
+| Seitengewicht | so niedrig wie möglich | Mobile Benutzer laden weniger herunter |
+
+Verwenden Sie [PageSpeed Insights](https://pagespeed.web.dev/), Chrome Lighthouse und [WebPageTest](https://www.webpagetest.org/) für eine tiefergehende Wasserfallanalyse.
+
+## 1. Optimieren Sie zuerst das LCP-Element
+
+Der größte Contentful Paint ist oft das Heldenbild, das Produktbild oder der erste große Inhaltsblock. Wenn dieses Element schwer ist, fühlt sich die gesamte Seite langsam an.
+
+### Was zu tun ist
+
+- Verwenden Sie Bilder in der richtigen Größe für Desktop und Mobilgeräte
+- Vermeiden Sie das Hochladen von 4000-Pixel-Bildern für 800-Pixel-Slots
+- Verwenden Sie WebP oder AVIF, sofern Ihr Workflow dies unterstützt
+- Komprimieren Sie Bilder bei Bedarf vor dem Hochladen
+- Vermeiden Sie die automatische Wiedergabe von Videos über dem Falz, es sei denn, dies ist unbedingt erforderlich
+- Laden Sie das True Hero-Bild nur vor, wenn es sich um das LCP-Element handelt
+
+### Häufiger Fehler
+
+Geschäfte optimieren häufig Miniaturansichten und ignorieren dabei den Startseiten-Helden oder das erste Produktbild. Fixieren Sie zuerst das größte sichtbare Element.
+
+## 2. Prüfen Sie jede Shopify-App
+
+Jede App muss sich ihren Platz verdienen. Viele Apps laden JavaScript und CSS auf Seiten, auf denen die Funktion nicht einmal sichtbar ist.
+
+### Fragen zur App-Prüfung
+
+- [ ] Nutzen wir diese App noch?
+- [ ] Generiert es Umsatz, Vertrauen oder betrieblichen Wert?
+- [ ] Lädt es auf jeder Seite?
+- [ ] Kann die gleiche Aufgabe vom Theme, dem Shopify-Administrator oder einem einfacheren benutzerdefinierten Code erledigt werden?
+- [ ] Gibt es Überschneidungen mit einer anderen App?
+
+### Apps, die den Speicher oft verlangsamen
+
+- Bewertungs-Widgets
+- Upsell- und Cross-Selling-Tools
+- Popup-Builder
+- Treueprogramme
+- Chat-Widgets
+- Heatmaps
+- Hersteller von Produktoptionen
+- Abonnement-Tools
+
+Entfernen Sie Apps nicht blind. Überprüfen Sie zuerst die Abhängigkeiten und deaktivieren Sie sie dann im Staging oder während eines Fensters mit geringem Risiko.
+
+## 3. Reduzieren Sie Skripte von Drittanbietern
+
+Skripte von Drittanbietern unterliegen der Leistungssteuer. Einige sind notwendig. Viele sind Überbleibsel früherer Kampagnen.
+
+### Aufräumen
+
+- doppelte GA4-Tags
+- alte Metapixel
+- aufgegebene Heatmap-Tools
+- A/B-Testskripte, die niemand verwendet
+- Chat-Widgets, die nicht konvertiert werden
+- mehrere Tag-Manager-Container
+
+Laden Sie unkritische Skripte nach der ersten Interaktion oder verzögern Sie sie nach Möglichkeit. Der erste Seitenaufruf sollte nicht bei jedem Marketingtool warten.
+
+## 4. Wählen Sie ein schnelles Thema aus oder erstellen Sie es neu
+
+Die Qualität des Themes ist wichtig. Ein Theme kann elegant aussehen und dennoch langsam sein, wenn es zu viel JavaScript, zu viele Animationen oder überladene Abschnitte enthält.
+
+### Suchen Sie nach
+
+- schlanke Abschnittsarchitektur
+- begrenzter Animationsaufwand
+- gute Bildverarbeitung
+- Saubere Produktvorlagenstruktur
+- stabile Kleberiegel
+- barrierefreie mobile Navigation
+
+### Vermeiden
+
+- mehrere Schieberegler oberhalb der Falte
+- animierte Abschnitte auf jeder Seite gestapelt
+- umfangreiche Produktmediengalerien
+- Ungenutzte Designfunktionen bleiben aktiviert
+- globale Skripte für Funktionen, die in einer Vorlage verwendet werden
+
+Wenn Sie eine Neugestaltung vornehmen, sollte die Leistung Teil der Entwurfsüberprüfung sein und keine Bereinigungsaufgabe nach dem Start.
+
+## 5. Layoutverschiebung behoben
+
+Eine Verschiebung des Layouts schadet dem Vertrauen und kann zu Tippfehlern führen. Dies geschieht häufig, wenn Bilder, Banner, Rezensionen, Schriftarten oder Sticky-Elemente ohne reservierten Speicherplatz geladen werden.
+
+### Was zu überprüfen ist
+
+- [ ] Bilder haben stabile Abmessungen
+- [ ] Bewertungs-Widgets verschieben den Produktinhalt nicht nach unten
+- [ ] Ankündigungsleisten werden nicht zu spät angezeigt
+- [ ] Klebeleisten zum Hinzufügen zum Warenkorb decken den Inhalt nicht ab
+- [ ] Schriftartwechsel verursachen keine großen Sprünge
+
+Stabile Seiten wirken professioneller und machen den Checkout auf Mobilgeräten sicherer.
+
+## 6. Schriftarten optimieren
+
+Schriftarten können die Darstellung langsam verlangsamen.
+
+### Halten Sie es einfach
+
+- Verwenden Sie eine oder zwei Schriftfamilien
+- Gewichte begrenzen
+- Verwenden Sie `font-display: swap`
+- Laden Sie nur wichtige Schriftartdateien vor
+- Erwägen Sie Systemschriftarten für UI-intensive Stores
+
+Typografie soll den Verkauf unterstützen und nicht verzögern.
+
+## 7. Verwenden Sie Lazy Loading richtig
+
+Lazy Loading ist unterhalb der Falte hilfreich. Es kann die Leistung beeinträchtigen, wenn es auf das falsche Bild angewendet wird.
+
+### Faustregel
+
+- Laden Sie den Haupthelden oder das erste Produktbild nicht verzögert
+- Lazy-Load-Bilder unterhalb der Falte
+- Halten Sie das Verhalten der Produktgalerie schnell
+- Vermeiden Sie es, große Karussells auf einmal zu laden
+
+Wenn das LCP-Bild verzögert geladen wird, erkennt der Browser es möglicherweise zu spät.
+
+## 8. Bereinigen Sie den Theme-Code
+
+In Shopify-Themes sammelt sich mit der Zeit Code an: alte Snippets, aufgegebene App-Einbettungen, ungenutzte Abschnitte, doppeltes CSS und Skripte aus Experimenten.
+
+### Was Sie überprüfen sollten
+
+- App-Einbettungseinstellungen
+- Themenausschnitte aus entfernten Apps
+- benutzerdefinierte Skripte in Designdateien
+- unbenutzte Abschnitte
+- Duplikate von CSS-Dienstprogrammen
+- große JavaScript-Bundles
+
+Für seriöse Shops lohnt sich hier oft ein Entwickler-Audit.
+
+## 9. Halten Sie Warenkorb und Kasse schlank
+
+Die Leistung ist am wichtigsten, wenn der Käufer kurz vor dem Kauf steht.
+
+### Überprüfen
+
+- [ ] Einkaufswagenschublade öffnet sich schnell
+- [ ] Der Versandkostenkalkulator friert die Seite nicht ein
+- [ ] Upsells blockieren den Checkout nicht
+- [ ] Rabatt-Widgets sorgen nicht für Verwirrung
+- [ ] Zahlungsoptionen werden übersichtlich angezeigt
+
+Upsells können den Bestellwert steigern, aber nicht, wenn sie den Weg zum Kauf verlangsamen.
+
+## 10. Überwachen Sie die Leistung nach jeder Änderung
+
+Geschwindigkeit ist kein einmaliges Projekt. Apps werden installiert, Kampagnen fügen Skripte hinzu, Bilder werden hochgeladen und Themen ändern sich.
+
+### Monatliche Checkliste
+
+- [ ] Top-Vorlagen testen
+- [ ] Überprüfen Sie neue Apps und Skripte
+- [ ] Überprüfen Sie die Bildgrößen für neue Sammlungen
+- [ ] vergleichen Sie die mobile Conversion-Rate
+- [ ] Überprüfen Sie die Search Console Core Web Vitals
+- [ ] Dokumentänderungen, die sich auf die Geschwindigkeit auswirken
+
+## Vorrangige Bestellung, wenn Sie nur wenig Zeit haben
+
+1. Identifizieren Sie das LCP-Element auf Schlüsselseiten.
+2. Komprimieren und skalieren Sie umfangreiche Helden-/Produktbilder.
+3. Entfernen oder verzögern Sie nicht verwendete Apps und Skripte.
+4. Layoutverschiebung auf Mobilgeräten behoben.
+5. Reduzieren Sie den Aufwand für Schriftarten und Animationen.
+6. Testen Sie das Produkt, die Abholung, den Warenkorb und den Checkout erneut.
+
+## Was man nicht tun sollte
+
+Vermeiden Sie Änderungen, die produktiv erscheinen, aber das Kauferlebnis nicht verbessern:
+
+- Sie streben nach dem perfekten Ergebnis, während die Produktseiten immer noch verwirrend wirken
+- Entfernen nützlicher Bewertungen oder Vertrauens-Widgets ohne Ersatz
+- Bilder werden so stark komprimiert, dass die Produkte schlechter aussehen
+- Die Analyse wird so sehr verzögert, dass die Messung unterbrochen wird
+- Installieren Sie eine weitere Optimierungs-App, bevor Sie die alte Aufblähung entfernen
+
+Performance-Arbeit soll den Shop schneller und übersichtlicher machen, nicht nur kleiner.
+
+## Wann sollte ein Entwickler hinzugezogen werden?
+
+Holen Sie sich technische Hilfe, wenn der Store App-Rückstände in Theme-Dateien, unklare Skripteigentümerschaft, schlechte Core Web Vitals nach grundlegenden Korrekturen oder benutzerdefinierten Theme-Code aufweist, den niemand anfassen möchte. Ein guter Leistungsdurchlauf sollte die Ursache jedes Engpasses identifizieren und nicht nur ein weiteres Tool installieren.
+
+Fordern Sie eine priorisierte Fixliste mit erwarteten Auswirkungen, Risiken und Validierungsschritten an. So bleibt die Arbeit messbar.
+
+## Fazit
+
+Die Verbesserung der Geschwindigkeit Ihres Shopify-Shops ist ein kontinuierliches System. Beginnen Sie mit den größten Vorteilen: LCP-Bilder, App-Aufblähung, Skripte von Drittanbietern und mobile Stabilität. Überwachen Sie dann den Store, damit die Leistung nach neuen Kampagnen und App-Installationen nicht nachlässt.
+
+Geschwindigkeit wirkt sich auch auf Conversion und SEO aus. Für die umfassendere Strategie lesen Sie [Store-Geschwindigkeit vs. Conversion](/blog/store-speed-vs-conversion), [Shopify SEO im Jahr 2026](/blog/shopify-seo-complete-guide) oder [CartShift Studio kontaktieren](/contact), um praktische Leistungsarbeit zu besprechen.

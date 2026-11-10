@@ -9,6 +9,9 @@ socialImage: '/images/blog/og/conversion-audit-checklist.webp'
 title_he: 'צ׳קליסט לאודיט המרות בחנות אונליין'
 excerpt_he: 'אודיט המרות רגוע ומעשי למציאת חיכוך אמיתי במהירות, אמון, מובייל, מרצ׳נדייזינג, עמודי מוצר ו-checkout.'
 category_he: 'אופטימיזציית המרות'
+title_de: "Checkliste für Conversion-Audits für E-Commerce-Shops"
+excerpt_de: "Ein ruhigeres E-Commerce-Conversion-Audit, um echte Reibungspunkte in Bezug auf Geschwindigkeit, Vertrauen, mobile UX, Merchandising, Produktseiten und Checkout zu finden."
+category_de: "Conversion-Optimierung"
 ---
 
 A good conversion audit does not start with button colors. It starts with friction. Where does the shopper slow down, hesitate, lose trust, or run out of information?
@@ -433,3 +436,239 @@ If you want to combine conversion diagnostics with SEO and technical checks, sta
 הפכו את האודיט לתוכנית של 30 יום: לתקן חסמי רכישה, לשפר עמודי מוצר במובייל, להבהיר משלוח והחזרות, להוריד עומס מהירות ואפליקציות, לשכתב עמודי נחיתה חלשים, ואז למדוד מחדש המרות לפי מכשיר ומקור תנועה.
 
 אם תרצו לשלב אודיט המרות עם SEO ובדיקות טכניות, התחילו עם [סקירה מקצועית בחינם](/free-store-review), קראו [למה החנות לא ממירה](/blog/why-your-store-isnt-converting), או עברו על [שירותי Shopify](/solutions/shopify).
+
+---de---
+Ein gutes Conversion-Audit beginnt nicht mit den Tastenfarben. Es beginnt mit Reibung. Wo wird der Käufer langsamer, zögert, verliert das Vertrauen oder gehen ihm die Informationen aus?
+
+Nutzen Sie diesen Leitfaden wie einen Spaziergang durch den Laden mit einem skeptischen, aber fairen Kunden. Das Ziel besteht nicht darin, Fehler zu sammeln. Das Ziel besteht darin, die wenigen Lösungen zu finden, die das Kauferlebnis erleichtern.
+
+## Was ist vor dem Audit zu sammeln?
+
+Inspizieren Sie die Baustelle nicht im kalten Zustand. Erstellen Sie zunächst einen einfachen Schnappschuss, damit Sie wissen, wo Sie suchen müssen.
+
+### Basiszahlen
+
+- Conversion-Rate nach Gerät
+- Add-to-Cart-Rate nach Gerät
+- Abschlussrate der Kasse
+- Warenkorb-Abbruchrate
+- Top-Landingpages nach Traffic
+- Top-Exit-Seiten
+- Umsatz pro Besucher
+- durchschnittlicher Bestellwert
+
+Wenn die Conversion-Rate für Mobilgeräte halb so hoch ist wie für Desktop-Computer, beginnen Sie mit der Geschwindigkeit, tippen Sie auf „Ziele“, „Formulare“ und „Bezahlen“. Wenn die Add-to-Cart-Funktion funktioniert, der Checkout-Abschluss jedoch schwach ist, beginnen Sie mit der Zahlung, dem Versand und den Überraschungskosten. Wenn das Engagement auf der Produktseite gering ist, beginnen Sie mit Produktklarheit und Vertrauen.
+
+## 1. Geschwindigkeit und technische Reibung
+
+Geschwindigkeit verändert das Verhalten, bevor der Käufer die Seite überhaupt liest. Ein langsamer Store weckt Zweifel, insbesondere auf Mobilgeräten.
+
+### Was zu überprüfen ist
+
+- [ ] Zielseiten sind auf einem echten Telefon schnell nutzbar
+- [ ] Größter Contentful Paint wird nicht von großen Heldenmedien blockiert
+- [ ] Produktbilder werden komprimiert und haben die richtige Größe
+- [ ] Skripte von Drittanbietern verzögern die Interaktion nicht
+- [ ] Popups blockieren nicht die erste Entscheidung
+- [ ] Warenkorb und Kasse bleiben auf Mobilgeräten stabil
+- [ ] Kernvorlagen verschieben sich beim Laden nicht
+
+### Wie gut sieht aus
+
+Das erste Produkt oder Angebot sollte schnell sichtbar sein. Der CTA sollte nicht springen. Die Seite sollte sich über eine normale mobile Verbindung weiterhin nutzbar anfühlen, nicht nur auf einem Entwickler-Laptop.
+
+Wenn Geschwindigkeit ein bekanntes Problem ist, kombinieren Sie diese Checkliste mit [Shop-Geschwindigkeit vs. Conversion](/blog/store-speed-vs-conversion) und [10 Möglichkeiten, Ihren Shopify-Shop zu beschleunigen](/blog/speed-up-shopify-store).
+
+## 2. Suchabsicht und Zielseite stimmen überein
+
+Ein Konvertierungsproblem kann bereits vor dem Klick beginnen. Wenn die Anzeige, das Suchergebnis oder die E-Mail etwas verspricht und die Zielseite mit etwas anderem geöffnet wird, muss sich der Käufer neu orientieren. Viele gehen stattdessen.
+
+### Was zu überprüfen ist
+
+- [ ] Die Überschrift der Seite entspricht der Suchanfrage, Anzeige oder dem Kampagnenversprechen
+- [ ] Der erste Bildschirm macht das Angebot klar
+- [ ] Die Seite entspricht dem wahrscheinlichen Bekanntheitsgrad des Besuchers
+- [ ] Blog-Traffic hat einen logischen nächsten Schritt
+- [ ] SEO-Seiten verweisen gegebenenfalls auf kommerzielle Seiten
+- [ ] Bezahlter Traffic landet nicht auf generischen Seiten, wenn eine bestimmte Seite existiert
+
+### Prüfungsfrage
+
+Hätte ein Besucher, der auf dieses Ergebnis geklickt hat, sofort das Gefühl: „Ja, dafür bin ich gekommen“?
+
+Wenn nicht, schreiben Sie den ersten Bildschirm neu, bevor Sie Elemente mit niedrigerer Priorität berühren.
+
+## 3. Produktklarheit
+
+Produktseiten konvertieren, wenn sie Unsicherheit beseitigen. Wenn der Käufer Größe, Passform, Material, Anwendungsfall, Kompatibilität, Versand oder Rückgaberegeln erraten muss, leistet die Seite nicht genügend Verkaufsarbeit.
+
+### Was zu überprüfen ist
+
+- [ ] Der Produkttitel ist klar und spezifisch
+- [ ] Das Hauptbild zeigt das Produkt deutlich
+- [ ] Die Galerie enthält Nahaufnahmen, Maßstab und Nutzungskontext
+- [ ] Vorteile werden vor langen Spezifikationen erläutert
+- [ ] Größe, Passform, Maße, Inhaltsstoffe oder Kompatibilität sind leicht zu finden
+- [ ] Liefer- und Retoureninformationen spielen eine wichtige Rolle bei der Kaufentscheidung
+- [ ] Bewertungen beantworten echte Einwände
+- [ ] FAQs decken die Fragen ab, die der Support am häufigsten erhält
+
+### Stärkeres Produktkopiermuster
+
+Verwenden Sie diese Reihenfolge:
+
+1. Was es ist
+2. Für wen es ist
+3. Warum es besser oder anders ist
+4. Was der Käufer vor der Bestellung wissen muss
+5. Was passiert nach dem Kauf?
+
+Diese Struktur ist nützlicher als ein poetischer Absatz, gefolgt von einer Aufzählung von Funktionen.
+
+## 4. Vertrauen und Glaubwürdigkeit
+
+Vertrauen ist kein einzelnes Abzeichen. Es ist das Gefühl, dass der Laden real, erreichbar und konsistent ist.
+
+### Was zu überprüfen ist
+
+- [ ] Kontaktdaten sind leicht zu finden
+- [ ] Versand-, Rückgabe- und Zahlungsoptionen sind vor dem Bezahlvorgang sichtbar
+- [ ] Bewertungen sehen echt und spezifisch aus
+- [ ] Produktfotos sind keine generischen Archivbilder
+- [ ] Richtlinien sind in menschlicher Sprache verfasst
+- [ ] Die Website enthält keine defekten Links, Platzhalterkopien oder veralteten Jahreszahlen
+- [ ] Über uns und Serviceseiten wird erklärt, wer hinter dem Shop steht
+- [ ] Sicherheits- und Zahlungssignale erscheinen dort, wo Benutzer Zahlungsentscheidungen treffen
+
+### Rote Fahnen
+
+Dünne Richtlinien, versteckte Rückgabebedingungen, vage Produktaussagen und inkonsistentes Branding lassen Käufer zögern. Das Problem ist selten, dass ein Abzeichen fehlt. Es handelt sich in der Regel um ein Muster aus kleinen Vertrauenslecks.
+
+## 5. Mobile Nutzbarkeit
+
+Bei Mobilgeräten entgehen vielen Geschäften Umsätze, weil die Seite zwar technisch „funktioniert“, aber nervig wirkt.
+
+### Was zu überprüfen ist
+
+- [ ] CTA-Schaltflächen sind groß genug zum Antippen
+- [ ] Sticky Bars verdecken wichtige Inhalte nicht
+- [ ] Variantenselektoren sind einfach zu verwenden
+- [ ] Formulare verwenden die richtigen Tastaturtypen
+- [ ] Die Navigation verbirgt keine Schlüsselkategorien
+- [ ] Filter sind mit einem Daumen benutzbar
+- [ ] Die Suche ist sichtbar und liefert nützliche Ergebnisse
+- [ ] Die Checkout-Felder sind nicht überfüllt
+
+### Echter Test
+
+Bitten Sie jemanden, der mit dem Geschäft nicht vertraut ist, ein Produkt zu finden, eine Variante auszuwählen, es in den Warenkorb zu legen, die Lieferung abzuschätzen und die Zahlung per Telefon vorzunehmen. Beobachten Sie, wo sie langsamer werden. Trainieren Sie sie nicht.
+
+## 6. Reibung im Warenkorb und an der Kasse
+
+An der Kasse hat der Käufer bereits „Ja“ gesagt. Ihre Aufgabe ist es, sie nicht zum Umdenken zu bewegen.
+
+### Was zu überprüfen ist
+
+- [ ] Gastkasse ist möglich
+- [ ] Die Versandkosten erscheinen vor dem letzten Überraschungsmoment
+- [ ] Liefervoranschlag ist klar
+- [ ] Zahlungsmethoden entsprechen den Kundenerwartungen
+- [ ] Das Rabattfeld lenkt Vollpreiskäufer nicht ab
+- [ ] Fehlermeldungen erklären, wie das Problem behoben werden kann
+- [ ] Der Warenkorb behält Artikel sitzungsübergreifend bei
+- [ ] Upsells blockieren den Checkout-Fortschritt nicht
+
+### Prioritätsregel
+
+Beheben Sie Checkout-Blocker vor kosmetischen Änderungen. Eine schöne Produktseite kann keine Einnahmen ausgleichen, die durch überraschende Kosten, Zahlungsverwirrungen oder fehlerhafte Formulare verloren gehen.
+
+## 7. Merchandising und Navigation
+
+Gutes Merchandising hilft Käufern, sich schneller zu entscheiden.
+
+### Was zu überprüfen ist
+
+- [ ] Sammlungen entsprechen dem Einkaufsverhalten der Kunden, nicht nur internen Kategorien
+- [ ] Bestseller sind leicht zu finden
+- [ ] Filter entsprechen wichtigen Entscheidungskriterien
+- [ ] Die Suche verarbeitet häufig verwendete Begriffe und Tippfehler
+- [ ] Produktkarten enthalten genügend Informationen zum Vergleich
+- [ ] Ausverkaufte Produkte dominieren nicht die wichtigsten Kollektionen
+- [ ] Verwandte Produkte sind wirklich verwandt
+
+Für Modegeschäfte bedeutet dies häufig Filter nach Größe, Passform, Farbe, Stoff und Anlass. Bei technischen Produkten kann es sich um Kompatibilität, Material, Abmessungen oder Anwendungsfall handeln.
+
+## 8. Angebots- und Preisklarheit
+
+Teilweise ist die Seite nutzbar, das Angebot jedoch unklar.
+
+### Was zu überprüfen ist
+
+- [ ] Die Preise sind leicht zu verstehen
+- [ ] Bundles erklären Einsparungen ohne Verwirrung
+- [ ] Der Schwellenwert für den kostenlosen Versand ist sichtbar
+- [ ] Die Abonnementbedingungen sind klar
+- [ ] Rabatte trainieren nicht jeden Käufer zum Warten
+- [ ] Garantien oder Gewährleistungen werden in der Nähe des Entscheidungspunkts erläutert
+
+### Bessere Frage
+
+Nicht „Ist das Produkt billig genug?“ aber „Macht die Seite den Wert für diesen Preis deutlich genug?“
+
+## Priorisieren Sie Korrekturen nach Auswirkung
+
+Versenden Sie nach dem Audit keine 40 zufälligen Verbesserungen. Bewerten Sie jede Ausgabe:
+
+| Priorität | Bedeutung | Beispiele |
+| -------- | ---------------------------------- | ------------------------------------------------------------ |
+| Kritisch | Blockiert den Kauf oder bricht das Vertrauen | Fehler beim Bezahlen, versteckte Versandkosten, defekter mobiler CTA |
+| Hoch | Reduziert wahrscheinlich viele Conversions | langsame mobile Seite, schwache Produktklarheit, fehlende Retoureninformationen |
+| Mittel | Hilft einem Segment von Käufern | bessere Filter, verbesserte Bewertungen, stärkere FAQs |
+| Niedrig | Schöne Verbesserung, begrenzte Beweise | Kopierpolitur, kleinere Layout-Verfeinerungen |
+
+Beheben Sie zuerst kritische Probleme und dann die Seiten mit großer Auswirkung. Für die meisten Geschäfte bedeutet das Startseite, Top-Kollektionsseiten, Top-Produktseiten, Warenkorb und Kasse.
+
+## Checkliste für das Conversion-Audit
+
+**Geschwindigkeit**
+
+- [ ] Mobile Landingpages fühlen sich schnell nutzbar an
+- [ ] Umfangreiche Bilder und Skripte werden kontrolliert
+- [ ] Das Layout verschiebt sich beim Laden nicht
+
+**Absicht**
+
+- [ ] Zielseite entspricht der Anzeige, E-Mail oder dem Suchversprechen
+- [ ] Der erste Bildschirm erklärt das Angebot klar und deutlich
+- [ ] Informationsseiten verweisen auf den nächsten Schritt rechts
+
+**Produkt**
+
+- [ ] Auf den Produktseiten werden Fragen zu Passform, Lieferung, Verwendung und Vertrauen beantwortet
+- [ ] Fotos zeigen echte Details und Kontext
+- [ ] Bewertungen und FAQs reduzieren Einwände
+
+**Vertrauen**
+
+- [ ] Kontakt-, Versand-, Retouren- und Zahlungsinformationen sind auffindbar
+- [ ] Die Richtlinien sind klar
+- [ ] Es bleiben keine veralteten, fehlerhaften oder Platzhalterinhalte übrig
+
+**Zur Kasse**
+
+- [ ] Gast-Checkout funktioniert
+- [ ] Die Kosten sind nicht überraschend
+- [ ] Zahlungs- und Formularfehler können leicht behoben werden
+
+## Was ist nach dem Audit zu tun?
+
+Verwandeln Sie das Audit in einen 30-Tage-Verbesserungsplan:
+
+1. Kaufblocker beheben.
+2. Verbessern Sie mobile Produktseiten.
+3. Klären Sie Versand, Retouren und Vertrauenssignale.
+4. Reduzieren Sie die Geschwindigkeit und das Aufblähen der App.
+5. Schreiben Sie schwache Zielseiten neu.
+6. Messen Sie die Conversion-Rate erneut nach Gerät und Traffic-Quelle.
+
+Wenn Sie Conversion-Diagnose mit SEO und technischen Prüfungen kombinieren möchten, beginnen Sie mit der [kostenlosen Experten-Shop-Bewertung](/free-store-review), lesen Sie [Warum Ihr Shop nicht konvertiert](/blog/why-your-store-isnt-converting) oder sehen Sie sich unsere [Shopify-Services-Seite](/solutions/shopify) an.

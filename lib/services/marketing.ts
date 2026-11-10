@@ -5,7 +5,7 @@ import { sanitizeString } from '@/lib/sanitize';
 import { buildFirebaseFunctionUrl } from '@/lib/services/firebase';
 import { ANALYZER_INTENTS, PRIMARY_ISSUES } from '@/lib/analyzer/funnel';
 
-const localeSchema = z.enum(['en', 'he']).default('en');
+const localeSchema = z.enum(['en', 'he', 'de']).default('en');
 
 const marketingCaptureSchema = z.object({
   email: z.string().email('Invalid email address'),

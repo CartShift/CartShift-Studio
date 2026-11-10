@@ -19,10 +19,14 @@ export async function generateMetadata({
 
   return genMeta(
     {
-      title: isHebrew
+      title: locale === 'de'
+        ? 'Über CartShift Studio | Yotam Faraggi und Adi Zelter'
+        : isHebrew
         ? "אודות CartShift Studio | יותם פרג'י ועדי זלטר"
         : 'About CartShift Studio | Yotam Faraggi & Adi Zelter',
-      description: isHebrew
+      description: locale === 'de'
+        ? 'Lernen Sie CartShift Studio kennen: Yotam Faraggi, Senior Product Engineer in Berlin mit über zehn Jahren Erfahrung, und Adi Zelter, die Entwicklung, Geschäftsstrategie und Kundenerlebnis verbindet.'
+        : isHebrew
         ? 'הכירו את CartShift Studio: יותם פרג׳י, Senior Product Engineer בברלין עם 10+ שנות ניסיון, ועדי זלטר, שמחברת פיתוח עם אסטרטגיה עסקית וחוויית לקוח.'
         : 'Meet CartShift Studio: Yotam Faraggi, a Berlin-based Senior Product Engineer with 10+ years in production software, and Adi Zelter, connecting development with business strategy and client experience.',
       url: '/about',
@@ -37,13 +41,13 @@ export async function generateMetadata({
         'WordPress development',
       ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const validLocale = locale as 'en' | 'he';
+  const validLocale = locale as 'en' | 'he' | 'de';
   const isHebrew = validLocale === 'he';
   setRequestLocale(validLocale);
 
@@ -51,18 +55,18 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const orgSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: isHebrew ? 'בית' : 'Home', url: '/' },
-      { name: isHebrew ? 'אודות' : 'About', url: '/about' },
+      { name: isHebrew ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: isHebrew ? 'אודות' : locale === 'de' ? 'Über uns' : 'About', url: '/about' },
     ],
     validLocale
   );
 
   const yotamSchema = generatePersonSchema({
     name: 'Yotam Faraggi',
-    jobTitle: 'Co-Founder & Senior Product Engineer',
+    jobTitle: locale === 'de' ? 'Mitgründer und Senior Product Engineer' : 'Co-Founder & Senior Product Engineer',
     description:
-      'Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, commerce, APIs, integrations and cloud systems, with recent work in AI-assisted products.',
-    url: `${siteUrl}/${locale}/yotam`,
+      locale === 'de' ? 'Senior Product Engineer in Berlin mit über zehn Jahren Erfahrung in Entwicklung und Betrieb produktiver Full-Stack-Produkte, E-Commerce-Systeme, APIs, Integrationen und Cloud-Systeme, zuletzt auch mit KI-gestützten Produkten.' : 'Berlin-based Senior Product Engineer with 10+ years building and operating production software across full-stack products, commerce, APIs, integrations and cloud systems, with recent work in AI-assisted products.',
+    url: `${siteUrl}/${locale === 'de' ? 'en' : locale}/yotam`,
     image: '/images/portfolio-v2/hero-art.webp',
     sameAs: [
       'https://linkedin.com/in/yotam-faraggi',
@@ -72,9 +76,9 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
 
   const adiSchema = generatePersonSchema({
     name: 'Adi Zelter',
-    jobTitle: 'Co-Founder, Business Strategy & Web Development',
+    jobTitle: locale === 'de' ? 'Mitgründerin, Geschäftsstrategie und Webentwicklung' : 'Co-Founder, Business Strategy & Web Development',
     description:
-      'CartShift Studio co-founder connecting web development with business strategy, project leadership, client relations and audience experience.',
+      locale === 'de' ? 'Mitgründerin von CartShift Studio, die Webentwicklung mit Geschäftsstrategie, Projektleitung, Kundenbetreuung und Nutzererfahrung verbindet.' : 'CartShift Studio co-founder connecting web development with business strategy, project leadership, client relations and audience experience.',
     url: `${siteUrl}/${locale}/about`,
     image: '/images/yotam-and-adi.png',
   });

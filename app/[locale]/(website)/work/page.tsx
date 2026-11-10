@@ -20,15 +20,21 @@ export async function generateMetadata({
 
   return genMeta(
     {
-      title: isHe
+      title: locale === 'de'
+        ? 'Shopify-, WordPress- und Web-App-Projekte | CartShift Studio'
+        : isHe
         ? 'פרויקטים ב-Shopify, WordPress ו-Web Apps | CartShift Studio'
         : 'Shopify, WordPress, and Web App Case Studies | CartShift Studio Work',
-      description: isHe
+      description: locale === 'de'
+        ? 'Entdecken Sie ausgewählte CartShift-Projekte aus Shopify, WordPress, individuellen Web-Apps, Migrationen und Performance-Optimierung – mit echten Ansichten, Entwicklungsentscheidungen und messbaren Ergebnissen, wo Daten vorliegen.'
+        : isHe
         ? 'פרויקטים נבחרים של CartShift ב-Shopify, WordPress, אפליקציות ווב, מיגרציות ואופטימיזציה, עם מסכים אמיתיים, החלטות פיתוח ותוצאות מדודות כשיש נתונים.'
         : 'Explore CartShift projects across Shopify, WordPress, custom web apps, migrations, and performance optimization, with real screens, implementation decisions, and measured results where available.',
       url: '/work',
       image: featured?.hero.image,
-      keywords: isHe
+      keywords: locale === 'de'
+        ? ['Shopify-Referenzen', 'WordPress-Projekte', 'Web-App-Projekte', 'E-Commerce-Fallstudien', 'Shopify-Migration', 'Performance-Optimierung']
+        : isHe
         ? [
             'פרויקטים בשופיפיי',
             'פרויקטים בוורדפרס',
@@ -47,33 +53,37 @@ export async function generateMetadata({
             'ecommerce project examples',
           ],
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
   const caseStudies = getAllCaseStudies(locale);
 
   const isHe = locale === 'he';
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: isHe ? 'בית' : 'Home', url: '/' },
-      { name: isHe ? 'פרויקטים' : 'Work', url: '/work' },
+      { name: isHe ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: isHe ? 'פרויקטים' : locale === 'de' ? 'Projekte' : 'Work', url: '/work' },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const collectionSchema = generateCollectionPageSchema({
-    name: isHe
+    name: locale === 'de'
+      ? 'Unsere Projekte | Shopify, WordPress und Web-Apps'
+      : isHe
       ? 'הפרויקטים שלנו | Shopify, WordPress ואפליקציות ווב'
       : 'Our Work | Shopify, WordPress & Web App Projects',
-    description: isHe
+    description: locale === 'de'
+      ? 'Ausgewählte Shopify-, WordPress-, Web-App-, Migrations- und Optimierungsprojekte von CartShift Studio.'
+      : isHe
       ? 'פרויקטים נבחרים של CartShift ב-Shopify, WordPress, אפליקציות ווב, מיגרציות ואופטימיזציה.'
       : 'Recent Shopify, WordPress, web app, migration, and optimization projects from CartShift Studio.',
     url: '/work',
-    locale: locale as 'en' | 'he',
+    locale: locale as 'en' | 'he' | 'de',
     items: caseStudies.map(cs => ({
       name: cs.title,
       url: `/work/${cs.slug}`,

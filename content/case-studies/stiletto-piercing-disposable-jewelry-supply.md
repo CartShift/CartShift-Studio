@@ -185,4 +185,93 @@ he:
     - 'חוויה בעברית'
     - 'עיצוב עמודי מוצר'
     - 'מרצ׳נדייזינג מונחה מותג'
+de:
+  title: Schaufenster für Stiletto-Piercing-Zubehör
+  summary: Eine markengeführte Shopify-Storefront für Einweg-Piercingwerkzeuge und Studioausrüstung mit klarerem Kategorienrahmen, stärkeren Produktseiten und einem selbstbewussteren, professionellen Erlebnis.
+  industry: Professionelle Schönheit und Piercing
+  duration: ''
+  projectStage: Neues Shopify-Theme im Test – noch nicht veröffentlicht
+  cta:
+    title: Einen technischen B2B-Katalog auf Shopify verkaufen?
+    description: Wir können komplexe Produkte, Standards und Kaufrichtlinien für professionelle Einkäufer verständlicher und einfacher machen.
+  hero:
+    image: /images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg
+    alt: Stiletto Piercing-Homepage mit biologisch abbaubarer Verpackung und einem auffälligen Markenhelden
+    supportingCopy: Eine schärfere Shopify-Storefront für einen speziellen Katalog für Piercing-Artikel, der darauf ausgelegt ist, Einweg-Workflows, Sterilstandards und die Produktfindung für professionelle Käufer einfacher zu machen.
+  overview:
+    title: Verleihen Sie einem Nischen-B2B-Katalog eine stärkere Markenstimme und einen klareren Kauffluss
+    summary: Das Ziel bestand darin, der Ladenfront einen bewussteren Eindruck zu verleihen als einem generischen Produktraster. Wir haben das Erlebnis rund um den Kategorienkontext, saubereres Merchandising und stärkeres Produkt-Storytelling organisiert, damit Studiobesitzer schneller verstehen, was sie kaufen, und den dahinter stehenden Standards vertrauen können.
+  deliverables:
+  - title: B2B-First-Schaufensterrahmen
+    description: Der rein geschäftliche Einkaufskontext wurde frühzeitig hervorgehoben, sodass das Geschäftsmodell bereits bei der ersten Interaktion klar erkennbar wird.
+  - title: Schärfere Kategorie- und Sammlungsstruktur
+    description: Der Katalog wurde nach praktischen Arbeitsabläufen im Studio organisiert, damit sterile Werkzeuge, Zubehör und Ausrüstung einfacher und gezielter durchsucht werden können.
+  - title: Produktdetail-Storytelling
+    description: Erstellen Sie Produktseiten, die große Bilder, Spezifikationen und Kaufkontext in einem Format vereinen, das sich schneller scannen lässt.
+  - title: Markenorientierte visuelle Ausrichtung
+    description: Anlehnung an die Markenpalette und die Verpackungssprache, damit sich die Ladenfront unverwechselbar und nicht austauschbar anfühlt.
+  - title: Erzählung über Vertrauen und Standards
+    description: Bringte den Reinraumkontext, die sterile Produktionssprache und die Positionierung von Einwegwerkzeugen in die sichtbare Markengeschichte ein.
+  gallery:
+  - image: /images/case-studies/stiletto-piercing-disposable-jewelry-supply/hero.jpg
+    alt: Stiletto-Homepage-Held wirbt für die biologisch abbaubare Produktlinie
+    caption: Die Homepage öffnet sich mit einem auffälligen Markenbild anstelle einer neutralen Katalogansicht und signalisiert sofort, was die Linie unverwechselbar macht.
+  - image: /images/case-studies/stiletto-piercing-disposable-jewelry-supply/gallery-01.jpg
+    alt: Stiletto About-Seite, die die Markengeschichte und die sterile Produktphilosophie präsentiert
+    caption: Die About-Erfahrung verleiht dem Katalog mehr Gewicht, indem sie die Einwegproduktphilosophie und den Kontext der sterilen Produktion erläutert.
+  - image: /images/case-studies/stiletto-piercing-disposable-jewelry-supply/gallery-02.jpg
+    alt: Stiletto-Produktseite für verschiedene Taper mit Bildern und technischen Details
+    caption: Produktseiten kombinieren kontrastreiche Grafiken, Spezifikationen und Kaufkontrollen auf eine Art und Weise, die präzise und vertrauenswürdiger wirkt.
+  - image: /images/case-studies/stiletto-piercing-disposable-jewelry-supply/gallery-03.jpg
+    alt: Stiletto-Produktseite für Ultraschallreiniger mit technischen Spezifikationen
+    caption: Technische Ausrüstungsseiten bleiben lesbar, indem sie ausführliche Spezifikationen mit einem unkomplizierten, produktorientierten Layout kombinieren.
+  evidence:
+  - title: Die reine Geschäftspolitik wird deutlich zum Ausdruck gebracht
+    value: B2B-Klarheit
+    description: Der Versand- und Kaufkontext ist frühzeitig sichtbar, sodass professionelle Käufer das Geschäftsmodell verstehen, bevor sie sich eingehend mit dem Katalog befassen.
+    before: Politik ist leicht zu übersehen
+    after: Der Kontext ist auf dem ersten Bildschirm sichtbar
+    tone: qualitative
+  - title: Der Einweg-Workflow ist einfacher zu verstehen
+    value: Kategorie Geschichte
+    description: Die Storefront bietet Einwegwerkzeugen und sterilen Produkten eine klarere Darstellung und hilft Käufern, Kategorien mit Studio-Workflows zu verknüpfen.
+    before: Durchsuchen Sie zuerst den Katalog
+    after: Anwendungsfallorientiertes Surfen
+    tone: qualitative
+  - title: Produktseiten kombinieren visuelle Elemente mit technischen Details
+    value: Schärfere PDPs
+    description: Kernproduktseiten kombinieren große Bilder, Spezifikationen und Kaufkontrollen in einem Format, das sich sicherer anfühlt und einfacher zu scannen ist.
+    before: Die technischen Daten fühlten sich verstreut an
+    after: Visuelles und technisches Layout
+    tone: qualitative
+  - title: Standards wurden Teil der Vertrauensschicht
+    value: Vertrauensgeschichte
+    description: Reinraum- und sterile Produktionskontexte werden deutlicher hervorgehoben, was der Schaufensterfront eine größere Glaubwürdigkeit für professionelle Einkäufer verleiht.
+    before: In unterstützenden Seiten vergrabene Standards
+    after: Vertrauen Sie der Sprache, die in die Erfahrung eingewoben ist
+    tone: qualitative
+  results:
+  - metric: Geschäftskontext
+    before: Leicht zu übersehen
+    after: Vorne sichtbar
+    improvement: Klarer
+  - metric: Kategorie Geschichte
+    before: Kataloggeführt
+    after: Workflowgesteuert
+    improvement: Neu gerahmt
+  - metric: Produktseiten
+    before: Verstreute Spezifikationen
+    after: Visuell + technisch
+    improvement: Geschärft
+  - metric: Vertrauensschicht
+    before: Begraben
+    after: Integriert
+    improvement: Stärker
+  services:
+  - Shopify Storefront-Design
+  - E-Commerce-UX
+  - Hebräisch-erste Erfahrung
+  - Produktdetaildesign
+  - Markenorientiertes Merchandising
+  content: ''
 ---

@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return routing.locales.flatMap(locale =>
+  return routing.locales.filter(locale => locale !== 'de').flatMap(locale =>
     portfolioShowcaseSlugs.map(slug => ({ locale, slug }))
   );
 }
