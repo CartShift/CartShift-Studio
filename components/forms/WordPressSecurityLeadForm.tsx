@@ -8,7 +8,7 @@ import { submitContactForm } from '@/lib/services/contact-client';
 
 export function WordPressSecurityLeadForm() {
   const t = useTranslations();
-  const locale = useLocale() as 'en' | 'he';
+  const locale = useLocale() as 'en' | 'he' | 'de';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
