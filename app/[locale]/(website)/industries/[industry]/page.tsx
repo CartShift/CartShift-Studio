@@ -139,14 +139,53 @@ const INDUSTRY_META: Record<IndustrySlug, { en: IndustryMeta; he: IndustryMeta }
   },
 };
 
+const GERMAN_INDUSTRY_META: Record<IndustrySlug, IndustryMeta> = {
+  fashion: {
+    title: 'E-Commerce für Mode und Bekleidung',
+    description: 'Produktsuche, mobile Produktpräsentation und Kaufprozesse für Mode- und Bekleidungsgeschäfte – mit Shopify, wenn es zur Aufgabe passt.',
+    keywords: ['Mode-E-Commerce', 'Onlineshop für Bekleidung', 'Shopify für Modemarken', 'Fashion-Onlineshop', 'Website für Modemarken'],
+  },
+  food: {
+    title: 'Websites für Gastronomie und Lebensmittel',
+    description: 'Übersichtliche Online-Bestellprozesse, Produkt- und Speisekarteninformationen sowie Integrationen für Lebensmittelmarken und Gastronomiebetriebe.',
+    keywords: ['Restaurant-Website', 'Online-Bestellsystem', 'digitale Speisekarte', 'Shopify für Gastronomie', 'Café-Website'],
+  },
+  health: {
+    title: 'E-Commerce für Gesundheit und Wellness',
+    description: 'Verständliche Produktinformationen, Vertrauenssignale und klare Kaufprozesse für Gesundheits- und Wellnessangebote – mit besonderer Sorgfalt bei sensiblen Werbeaussagen.',
+    keywords: ['Gesundheits-E-Commerce', 'Onlineshop für Nahrungsergänzung', 'Wellness-Website', 'Fitness-Onlineshop', 'Website für Gesundheitsmarken'],
+  },
+  tech: {
+    title: 'Websites für Technologie und SaaS',
+    description: 'Produktorientierte Websites und Landingpages, die komplexe Softwareangebote verständlich machen und Nutzern sinnvolle nächste Schritte zeigen.',
+    keywords: ['SaaS-Website', 'Website für Tech-Startups', 'Landingpage-Design', 'Softwareunternehmen Website', 'Technologie-Landingpage'],
+  },
+  arts: {
+    title: 'E-Commerce für Kunst und Handwerk',
+    description: 'Portfolios und Onlineshops für Kreative, die von der Entdeckung ihrer Arbeiten bis zur Anfrage oder zum Kauf einen klaren Weg bieten.',
+    keywords: ['Künstler-Website', 'Onlineshop für Kunsthandwerk', 'Kunst online verkaufen', 'Handmade-Onlineshop', 'Shop für Kreative'],
+  },
+  local: {
+    title: 'Websites für lokale Unternehmen',
+    description: 'Wartbare Websites für lokale Betriebe – mit verständlichen Leistungsinformationen, gut erreichbaren Kontaktmöglichkeiten und einer soliden Grundlage für lokale Suchmaschinenoptimierung.',
+    keywords: ['Website für lokale Unternehmen', 'Website für kleine Betriebe', 'KMU-Website', 'lokales SEO', 'Unternehmenswebsite'],
+  },
+};
+
+function getIndustryMeta(industry: string, locale: string): IndustryMeta {
+  const slug = (INDUSTRIES as readonly string[]).includes(industry) ? industry as IndustrySlug : 'fashion';
+  return locale === 'de'
+    ? GERMAN_INDUSTRY_META[slug]
+    : INDUSTRY_META[slug][locale === 'he' ? 'he' : 'en'];
+}
+
 export async function generateStaticParams() {
   return routing.locales.filter(locale => locale !== 'de').flatMap(locale => INDUSTRIES.map(industry => ({ locale, industry })));
 }
 
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
   const { locale, industry } = await params;
-  const meta =
-    INDUSTRY_META[industry as IndustrySlug]?.[locale as 'en' | 'he'] || INDUSTRY_META.fashion.en;
+  const meta = getIndustryMeta(industry, locale);
 
   return genMeta(
     {
@@ -155,29 +194,28 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
       url: `/industries/${industry}`,
       keywords: meta.keywords,
     },
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 }
 
 export default async function IndustryPage({ params }: IndustryPageProps) {
   const { locale, industry } = await params;
-  setRequestLocale(locale as 'en' | 'he');
+  setRequestLocale(locale as 'en' | 'he' | 'de');
 
-  const meta =
-    INDUSTRY_META[industry as IndustrySlug]?.[locale as 'en' | 'he'] || INDUSTRY_META.fashion.en;
+  const meta = getIndustryMeta(industry, locale);
 
   const breadcrumbSchema = generateBreadcrumbSchema(
     [
-      { name: locale === 'he' ? 'בית' : 'Home', url: '/' },
-      { name: locale === 'he' ? 'תעשיות' : 'Industries', url: '/' },
+      { name: locale === 'he' ? 'בית' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'תעשיות' : locale === 'de' ? 'Branchen' : 'Industries', url: '/' },
       { name: meta.title, url: `/industries/${industry}` },
     ],
-    locale as 'en' | 'he'
+    locale as 'en' | 'he' | 'de'
   );
 
   const serviceSchema = generateServiceSchema(meta.title, meta.description, {
     url: `/industries/${industry}`,
-    locale: locale as 'en' | 'he',
+    locale: locale as 'en' | 'he' | 'de',
   });
 
   return (
