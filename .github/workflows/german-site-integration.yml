@@ -38,7 +38,7 @@ env:
 jobs:
   german-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -77,6 +77,7 @@ jobs:
             exit 1
           fi
           node scripts/ci/check-german-http.mjs
+          node scripts/ci/check-german-browser.mjs
       - name: Explain release restriction
         if: always()
         run: echo 'These test-only toggles do not authorize a public German rollout. Verified Impressum, human translation review and browser QA remain separate release requirements.'
