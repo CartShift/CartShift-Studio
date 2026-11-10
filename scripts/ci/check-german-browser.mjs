@@ -41,7 +41,9 @@ const viewports = [
 ];
 
 async function collect(page, path, lang) {
-  const response = await page.goto(baseUrl + '/' + lang + path, { waitUntil: 'networkidle2', timeout: 35000 });
+  const response = await page.goto(baseUrl + '/' + lang + path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  // Yield for React hydration without waiting for background analytics/network polling.
+  await new Promise(resolve => setTimeout(resolve, 250));
   const route = '/' + lang + path;
   if (!response || response.status() !== 200) failures.push(route + ' returned ' + response?.status());
   const metrics = await page.evaluate(() => ({
@@ -89,7 +91,8 @@ try {
 
   // Exercise the real shared language-switcher in the desktop header.
   const nav = await browser.newPage();
-  await nav.goto(baseUrl + '/en', {waitUntil:'networkidle2', timeout:35000});
+  await nav.goto(baseUrl + '/en', {waitUntil:'domcontentloaded', timeout:30000});
+  await new Promise(resolve => setTimeout(resolve, 500));
   const btn = await nav.$('button[aria-label="Select Language"]');
   if (!btn) failures.push('Shared language-switcher button missing');
   else {
