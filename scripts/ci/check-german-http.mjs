@@ -65,8 +65,12 @@ for (const path of cases.slice(1)) {
     assert(html.includes(expectedGermanCopy[path]), path + ' is missing expected German content');
   }
 }
-const sections = text => (text.match(/<section(?:\\s|>)/g) || []).length;
+const sections = text => (text.match(/<section(?:\s|>)/g) || []).length;
+assert(sections(original) > 5, 'English homepage section count not measurable');
 assert(sections(translated) === sections(original), 'German homepage has different section count: ' + sections(translated) + ' vs ' + sections(original));
+const headings = html => (html.match(/<h[1-6](?:\s|>)/g) || []).length;
+assert(headings(original) > 5, 'English homepage headings not measurable');
+assert(headings(translated) === headings(original), 'German homepage heading count differs from English');
 assert(translated.includes('Shopify'), 'German page is missing Shopify content');
 for (const path of ['/de/portal', '/de/yotam', '/de/tools/store-analyzer/report/private-test']) {
   const res = await request(path);
