@@ -4,8 +4,9 @@ import { setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { generateMetadata as createSeoMetadata } from '@/lib/seo';
+import germanServiceCopy from '@/content/i18n/inline-service-de.json';
 
-type Locale = 'en' | 'he';
+type Locale = 'en' | 'he' | 'de';
 type ServiceSlug = 'shopify-conversion-optimization' | 'shopify-b2b-integrations' | 'shopify-performance-seo';
 
 interface ServiceContent {
@@ -27,7 +28,7 @@ interface ServiceContent {
   backLabel: string;
 }
 
-const services: Record<ServiceSlug, Record<Locale, ServiceContent>> = {
+const services: Record<ServiceSlug, Record<'en' | 'he', ServiceContent>> = {
   'shopify-conversion-optimization': {
     en: {
       title: 'Shopify Conversion Rate Optimization | CartShift Studio',
@@ -260,6 +261,12 @@ function isServiceSlug(slug: string): slug is ServiceSlug {
   return Object.prototype.hasOwnProperty.call(services, slug);
 }
 
+function getServiceContent(slug: ServiceSlug, locale: Locale): ServiceContent {
+  // Same page component, FAQ, process and imagery for every locale.
+  // German copy is a 1:1 structural translation of the existing English record.
+  return locale === 'de' ? germanServiceCopy.shopify[slug] : services[slug][locale];
+}
+
 export async function generateMetadata({
   params
 }: {
@@ -267,8 +274,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: requestedLocale, slug } = await params;
   if (!isServiceSlug(slug)) return { robots: { index: false, follow: false } };
-  const locale: Locale = requestedLocale === 'he' ? 'he' : 'en';
-  const page = services[slug][locale];
+  const locale: Locale = requestedLocale === 'he' ? 'he' : requestedLocale === 'de' ? 'de' : 'en';
+  const page = getServiceContent(slug, locale);
   return createSeoMetadata({
     title: page.title,
     description: page.description,
@@ -283,9 +290,9 @@ export default async function ShopifyServicePage({
 }) {
   const { locale: requestedLocale, slug } = await params;
   if (!isServiceSlug(slug)) notFound();
-  const locale: Locale = requestedLocale === 'he' ? 'he' : 'en';
+  const locale: Locale = requestedLocale === 'he' ? 'he' : requestedLocale === 'de' ? 'de' : 'en';
   setRequestLocale(locale);
-  const page = services[slug][locale];
+  const page = getServiceContent(slug, locale);
 
   return (
     <main className="min-h-screen bg-background text-surface-900 dark:bg-surface-950 dark:text-white">
