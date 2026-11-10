@@ -49,6 +49,8 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install Chrome required for existing CV generator and browser QA
+        run: pnpm exec puppeteer browsers install chrome
       - name: Validate complete public German translation
         run: |
           pnpm i18n:merge
