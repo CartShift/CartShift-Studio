@@ -6,6 +6,7 @@ import {
   ShieldCheck, ShoppingBag, TrendingUp, Workflow,
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import germanServiceCopy from '@/content/i18n/inline-service-de.json';
 import {
   generateMetadata as createSeoMetadata,
   generateServiceSchema,
@@ -13,7 +14,7 @@ import {
   generateFAQPageSchema,
 } from '@/lib/seo';
 
-type Locale = 'he' | 'en';
+type Locale = 'he' | 'en' | 'de';
 
 const copy = {
   he: {
@@ -164,6 +165,7 @@ const copy = {
     backLabel: 'Explore Shopify services',
     navigationLabel: 'Subscriptions & repeat orders',
   },
+  de: germanServiceCopy.subscriptions,
 } as const;
 
 const reviewHref = {
@@ -173,15 +175,17 @@ const reviewHref = {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  const page = copy[locale === 'he' ? 'he' : 'en'];
+  const page = copy[locale === 'he' ? 'he' : locale === 'de' ? 'de' : 'en'];
   return createSeoMetadata({
     title: page.seoTitle,
     description: page.seoDescription,
     url: '/services/shopify-subscriptions',
-    keywords: locale === 'he'
+    keywords: locale === 'de'
+      ? ['Shopify-Abonnements', 'wiederkehrende Shopify-Bestellungen', 'Shopify-Abo-Einrichtung', 'Abonnementmodelle im E-Commerce']
+      : locale === 'he'
       ? ['מנויים בשופיפיי', 'הקמת מנויים Shopify', 'מנוי חודשי שופיפיי', 'רכישה חוזרת', 'אספקה קבועה', 'Subscribe and Save']
       : ['Shopify subscription setup', 'Shopify recurring orders', 'Subscribe and Save Shopify', 'Shopify subscription service'],
-  }, locale === 'he' ? 'he' : 'en');
+  }, locale === 'he' ? 'he' : locale === 'de' ? 'de' : 'en');
 }
 
 export default async function ShopifySubscriptionsServicePage({
@@ -190,7 +194,7 @@ export default async function ShopifySubscriptionsServicePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale: requestedLocale } = await params;
-  const locale: Locale = requestedLocale === 'he' ? 'he' : 'en';
+  const locale: Locale = requestedLocale === 'he' ? 'he' : requestedLocale === 'de' ? 'de' : 'en';
   setRequestLocale(locale);
   const p = copy[locale];
   const url = '/services/shopify-subscriptions';
@@ -198,7 +202,7 @@ export default async function ShopifySubscriptionsServicePage({
   const schemas = [
     generateServiceSchema(p.navigationLabel, p.seoDescription, { locale, url }),
     generateBreadcrumbSchema([
-      { name: locale === 'he' ? 'ראשי' : 'Home', url: '/' },
+      { name: locale === 'he' ? 'ראשי' : locale === 'de' ? 'Startseite' : 'Home', url: '/' },
       { name: 'Shopify', url: '/solutions/shopify' },
       { name: p.navigationLabel, url },
     ], locale),
