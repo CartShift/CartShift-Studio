@@ -46,11 +46,12 @@ export function isGermanMarketingPath(pathname: string): boolean {
 }
 
 /**
- * Both flags must be set explicitly after a passing build, German-language
- * review, verified Impressum, GDPR/cookie audit and successful browser QA.
- * Neither preview nor production enables German implicitly.
+ * All three flags must be set explicitly after a passing build, human-language
+ * review, verified Impressum and GDPR/cookie audit, and successful browser QA.
+ * No preview or production environment activates German implicitly.
  */
 export function germanMarketingEnabled(): boolean {
   return process.env.NEXT_PUBLIC_GERMAN_MARKETING_ENABLED === 'true'
-    && process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED === 'true';
+    && process.env.NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED === 'true'
+    && process.env.NEXT_PUBLIC_GERMAN_LEGAL_APPROVED === 'true';
 }
