@@ -50,6 +50,7 @@ describe('German website is a translation of the existing site, not a second web
     const flags = read('lib/i18n/german-routes.ts');
     expect(flags).toContain('NEXT_PUBLIC_GERMAN_TRANSLATIONS_REVIEWED');
     expect(flags).toContain('NEXT_PUBLIC_GERMAN_MARKETING_ENABLED');
+    expect(flags).toContain('NEXT_PUBLIC_GERMAN_LEGAL_APPROVED');
     expect(flags).not.toContain("NEXT_PUBLIC_CARTSHIFT_DE_PREVIEW");
   });
 });
