@@ -35,7 +35,7 @@ export const ContactPageContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const locale = useLocale() as 'en' | 'he';
+  const locale = useLocale() as 'en' | 'he' | 'de';
   const t = useTranslations();
 
   const prefill = useMemo(() => {
