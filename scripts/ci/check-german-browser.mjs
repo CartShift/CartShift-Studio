@@ -120,6 +120,44 @@ try {
     console.log('Desktop language switcher German choice:', count);
   }
   await nav.close();
+
+  // Validate the marketing journey without submitting a real form or recording a lead.
+  for (const lang of ['en', 'de']) {
+    const funnelPage = await browser.newPage();
+    await funnelPage.setViewport(viewports[1]);
+    try {
+      await funnelPage.goto(baseUrl + '/' + lang, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await new Promise(resolve => setTimeout(resolve, 450));
+      const heroCta = await funnelPage.$('main#main-content a[href$="/' + lang + '/free-store-review"]');
+      if (!heroCta) {
+        failures.push(lang + ' primary free-review CTA missing on homepage');
+        continue;
+      }
+      const ctaVisibility = await funnelPage.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        return box.width > 0 && box.height > 0 && getComputedStyle(el).visibility !== 'hidden'
+          && getComputedStyle(el).opacity !== '0';
+      }, heroCta);
+      if (!ctaVisibility) failures.push(lang + ' hero review CTA not visible on mobile');
+      await heroCta.click();
+      await funnelPage.waitForFunction(expected => location.pathname === expected,
+        { timeout: 15000 }, '/' + lang + '/free-store-review');
+      const reviewState = await funnelPage.evaluate(() => ({
+        form: !!document.querySelector('form input[name="storeUrl"][required]'),
+        email: !!document.querySelector('form input[type="email"][required]'),
+        sampleCount: document.querySelectorAll('#review-example-title').length,
+        exampleCards: document.querySelectorAll('section[aria-labelledby="review-example-title"] article').length,
+        nestedButtons: document.querySelectorAll('a button').length,
+      }));
+      if (!reviewState.form || !reviewState.email) failures.push(lang + ' review request form fields missing');
+      if (reviewState.sampleCount !== 1 || reviewState.exampleCards !== 3) failures.push(lang + ' illustrative review sample missing');
+      if (reviewState.nestedButtons !== 0) failures.push(lang + ' review page has nested interactive buttons');
+    } catch (e) {
+      failures.push(lang + ' review journey failed: ' + String(e.message || e).slice(0, 180));
+    } finally {
+      await funnelPage.close();
+    }
+  }
 } finally {
   await browser.close();
 }
