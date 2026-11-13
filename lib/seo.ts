@@ -125,9 +125,9 @@ export function generateOrganizationSchema() {
     url: siteUrl,
     logo: {
       '@type': 'ImageObject',
-      url: `${siteUrl}/logo.png`,
-      width: 512,
-      height: 512,
+      url: `${siteUrl}/apple-touch-icon.png`,
+      width: 152,
+      height: 152,
     },
     image: `${siteUrl}/images/og-default.png`,
     description:
@@ -184,7 +184,7 @@ export function generateOrganizationSchema() {
       '@type': 'ContactPoint',
       contactType: 'customer service',
       availableLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
-      url: `${siteUrl}/contact`,
+      url: `${siteUrl}/en/contact`,
     },
   };
 }
