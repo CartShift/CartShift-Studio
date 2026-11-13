@@ -3,6 +3,7 @@ import en from '../../messages/src/en/website.json';
 import he from '../../messages/src/he/website.json';
 import enReview from '../../messages/src/en/store-review.json';
 import heReview from '../../messages/src/he/store-review.json';
+import heldQuotes from '../../docs/editorial/held-case-study-quotes-2026-11-13.json';
 
 const locales = [
   { name: 'English', site: en, review: enReview.storeReview },
@@ -69,11 +70,18 @@ describe('industry proof and commercial offer boundaries', () => {
       )).toBe(true);
     });
 
-    it(`${name}: customer quotes stay available as provided`, () => {
-      expect(site.testimonials.items.length).toBeGreaterThanOrEqual(3);
-      expect(site.testimonials.items.every(item =>
+    it(`${name}: preserves all client quotes without exposing prelaunch outcomes`, () => {
+      const locale = name === 'Hebrew' ? 'he' : 'en';
+      const held = heldQuotes.websiteTranslations[locale];
+      // The source quotes remain in the non-public editorial archive until
+      // verified approval. They must not appear in the public locale payload.
+      expect(held).toHaveLength(2);
+      expect(site.testimonials.items.length + held.length).toBeGreaterThanOrEqual(3);
+      expect([...site.testimonials.items, ...held].every(item =>
         item.quote.length > 50 && item.author && item.company
       )).toBe(true);
+      expect(held.every(item => !site.testimonials.items.some(publicItem =>
+        publicItem.company === item.company))).toBe(true);
     });
   }
 });
