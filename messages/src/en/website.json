@@ -851,7 +851,7 @@
       "packages": [
         {
           "name": "SEO Audit",
-          "price": "From €390 one-time",
+          "price": "Custom scope and quote",
           "description": "A focused diagnosis and prioritized plan for teams that need clarity before implementation.",
           "includes": [
             "Technical and indexability review",
@@ -864,7 +864,7 @@
         },
         {
           "name": "SEO Foundation",
-          "price": "From €790 one-time",
+          "price": "Custom scope and quote",
           "description": "Audit, setup, and hands-on implementation of an agreed first wave of priority improvements.",
           "includes": [
             "Everything in SEO Audit",
@@ -878,7 +878,7 @@
         },
         {
           "name": "SEO Growth",
-          "price": "From €590/month",
+          "price": "Custom scope and quote",
           "description": "A recurring improvement cycle for businesses ready to measure, learn, and compound organic progress.",
           "includes": [
             "Ongoing technical and on-page improvements",
@@ -892,7 +892,7 @@
       ],
       "notesTitle": "Pricing notes",
       "notes": [
-        "Prices are starting points; final pricing depends on website size and scope.",
+        "Final scope, deliverables and pricing are agreed in a written proposal after reviewing your site and needs.",
         "VAT is added where applicable.",
         "SEO Growth works best after an audit or equivalent discovery.",
         "Paid ads and purchased links are not included unless separately scoped.",
@@ -1058,8 +1058,8 @@
       "quickLaunch": {
         "name": "Quick Launch",
         "description": "Get your Shopify store live fast with a proven foundation.",
-        "price": "From $2,500",
-        "timeline": "1-2 weeks",
+        "price": "Quote after scoping",
+        "timeline": "Timeline agreed in proposal",
         "features": [
           "Shopify store setup and configuration",
           "Theme selection and basic customization",
@@ -1073,8 +1073,8 @@
       "growthUpgrade": {
         "name": "Growth Upgrade",
         "description": "Optimize your existing store for better performance and conversions.",
-        "price": "From $3,500",
-        "timeline": "2-4 weeks",
+        "price": "Quote after scoping",
+        "timeline": "Timeline agreed in proposal",
         "popular": true,
         "features": [
           "Full site audit (speed, SEO, UX)",
@@ -1089,8 +1089,8 @@
       "customBuild": {
         "name": "Custom Build",
         "description": "A fully custom solution built around your unique needs.",
-        "price": "From $8,000",
-        "timeline": "4-8 weeks",
+        "price": "Quote after scoping",
+        "timeline": "Timeline agreed in proposal",
         "features": [
           "Custom discovery and strategy",
           "Custom theme development",
@@ -1104,8 +1104,8 @@
       "storeAudit": {
         "name": "Store Audit",
         "description": "A paid deep dive beyond the free first-pass review, with a documented action plan.",
-        "price": "$500",
-        "timeline": "3-5 days",
+        "price": "Quote after scoping",
+        "timeline": "Timeline agreed in proposal",
         "features": [
           "60-minute video walkthrough",
           "Speed analysis with specific fixes",
@@ -1142,7 +1142,7 @@
       "items": [
         {
           "question": "Do you offer payment plans?",
-          "answer": "Yes, for projects over $5,000, we typically split payments into milestones: 40% to start, 30% at design approval, and 30% at launch."
+          "answer": "Payment milestones and any deposit are agreed in writing in the approved project proposal before work begins."
         },
         {
           "question": "What if my project doesn't fit these packages?",
