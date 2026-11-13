@@ -64,7 +64,7 @@ export default async function FreeStoreReviewPage({
               <span key={text} className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary-600"/>{text}</span>)}
           </div>
         </div>
-        <div id="request-review" className="rounded-3xl border border-surface-200 bg-white p-5 shadow-2xl shadow-primary-900/10 dark:border-white/10 dark:bg-surface-900 sm:p-8">
+        <div id="request-review" className="scroll-mt-28 rounded-3xl border border-surface-200 bg-white p-5 shadow-2xl shadow-primary-900/10 dark:border-white/10 dark:bg-surface-900 sm:p-8">
           <h2 className="text-2xl font-bold">{t('formTitle')}</h2>
           <p className="mb-6 mt-2 text-sm leading-relaxed text-surface-500">{t('formDescription')}</p>
           <StoreReviewRequestForm
