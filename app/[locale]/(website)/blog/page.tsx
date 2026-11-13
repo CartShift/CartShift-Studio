@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BlogTemplate } from '@/components/templates/BlogTemplate';
 import { getAllPosts } from '@/lib/markdown';
+import { toBlogPostSummary } from '@/lib/blog-summary';
 import {
   generateMetadata as genMeta,
   generateBreadcrumbSchema,
@@ -44,6 +45,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale as 'en' | 'he' | 'de');
   const posts = await getAllPosts();
+  const summaries = posts.map(toBlogPostSummary);
   const t = await getTranslations({ locale: locale as 'en' | 'he' | 'de' });
   const categories = Array.from(new Set(posts.map(post => post.category)));
 
@@ -81,7 +83,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
       />
-      <BlogTemplate posts={posts} categories={categories} />
+      <BlogTemplate posts={summaries} categories={categories} />
     </>
   );
 }
