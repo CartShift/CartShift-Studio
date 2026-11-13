@@ -51,11 +51,19 @@ describe('CartShift public marketing claims and expert review flow', () => {
     expect(home).toContain('map(toBlogPostSummary)');
   });
 
-  it('retains original client quotes in sources while they await publication review', () => {
-    const he = JSON.parse(read('messages/src/he/website.json'));
-    expect(he.testimonials.items.some((item: {company: string}) => item.company === 'Stiletto Piercing')).toBe(true);
-    expect(he.testimonials.items.some((item: {company: string}) => item.company === 'I Love My Honeypot')).toBe(true);
-    const component = read('components/sections/Testimonials.tsx');
-    expect(component).toContain('awaitingPublicationEvidence');
+  it.each(languages)('holds unverified client quotes outside public locale payloads in %s', locale => {
+    const publicTranslations = JSON.parse(read(`messages/src/${locale}/website.json`));
+    const archived = JSON.parse(read('docs/editorial/held-case-study-quotes-2026-11-13.json'));
+    const heldCompanies = ['I Love My Honeypot', 'Stiletto Piercing'];
+    for (const company of heldCompanies) {
+      expect(publicTranslations.testimonials.items.some((item: {company: string}) => item.company === company)).toBe(false);
+      expect(archived.websiteTranslations[locale].some((item: {company: string; quote: string}) =>
+        item.company === company && item.quote.length > 20)).toBe(true);
+    }
+    expect(archived.caseStudyFrontmatter[locale]).toContain('testimonial:');
+    const { data } = matter(read('content/case-studies/i-love-my-honeypot-eco-ecommerce.md'));
+    expect(data.testimonial).toBeUndefined();
+    expect(data.he.testimonial).toBeUndefined();
+    expect(data.de.testimonial).toBeUndefined();
   });
 });
