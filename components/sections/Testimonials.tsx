@@ -17,7 +17,13 @@ const caseLinks: Record<string, string> = {
 
 export async function Testimonials() {
   const t = await getTranslations('testimonials');
-  const items = t.raw('items') as Testimonial[];
+  // Keep original client quotes in the translation source. Do not feature statements
+  // about completed launches or commercial impact while the related theme/quiz
+  // is still in client review. Reinstate only after source and consent verification.
+  const awaitingPublicationEvidence = new Set(['Stiletto Piercing', 'I Love My Honeypot']);
+  const items = (t.raw('items') as Testimonial[]).filter(
+    item => !awaitingPublicationEvidence.has(item.company)
+  );
   if (!items?.length) return null;
 
   return (
