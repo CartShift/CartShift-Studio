@@ -131,7 +131,7 @@ export function generateOrganizationSchema() {
     },
     image: `${siteUrl}/images/og-default.png`,
     description:
-      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
+      'Boutique studio improving existing Shopify stores through product UX, technical SEO, reliable integrations, and maintainable development. Request a personal expert store review.',
     foundingDate: '2024',
     slogan: 'Bold eCommerce Solutions Built for Your Vision',
     knowsAbout: [
