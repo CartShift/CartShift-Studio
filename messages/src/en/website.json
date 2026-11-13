@@ -1375,27 +1375,11 @@
     "subtitle": "What Our Clients Say About Working Together",
     "items": [
       {
-        "quote": "CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our product quiz alone transformed how customers find their perfect products.",
-        "author": "Danielle Shamir",
-        "company": "I Love My Honeypot",
-        "role": "Founder",
-        "industry": "Health & Wellness",
-        "rating": 5
-      },
-      {
         "quote": "CartShift Studio transformed Alondon into a sophisticated, high-performance community hub. The new architecture seamlessly handles our complex content while delivering a premium reading experience that truly resonates with our audience.",
         "author": "Carmel Faraggi",
         "company": "Alondon",
         "role": "Editorial Board",
         "industry": "Digital Publishing",
-        "rating": 5
-      },
-      {
-        "quote": "Working with CartShift Studio was a game-changer for our studio. They created a sleek, high-end digital catalog that perfectly showcases our jewelry collection. The ease of use for our clients has significantly increased our booking efficiency and online sales.",
-        "author": "Tom Robinson",
-        "company": "Stiletto Piercing",
-        "role": "Owner",
-        "industry": "Jewelry & Body Art",
         "rating": 5
       }
     ],
