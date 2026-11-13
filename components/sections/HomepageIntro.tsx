@@ -196,7 +196,7 @@ export const HomepageIntro: React.FC = () => {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link href="/solutions/shopify">
-                <Button size="lg">
+                <Button as="span" size="lg">
                   <span className="flex items-center gap-2">
                     {isRtl ? 'שירותי Shopify ו-SEO' : 'Explore Shopify services'}
                     <ArrowRight size={18} className="rtl:rotate-180" />
@@ -204,7 +204,7 @@ export const HomepageIntro: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/free-store-review">
-                <Button variant="outline" size="lg">
+                <Button as="span" variant="outline" size="lg">
                   <span className="flex items-center gap-2">
                     {isRtl ? 'סקירה מקצועית בחינם' : 'Request a free expert review'}
                     <ArrowRight size={18} className="rtl:rotate-180" />
@@ -212,7 +212,7 @@ export const HomepageIntro: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/blog/shopify-seo-complete-guide">
-                <Button variant="ghost" size="lg">
+                <Button as="span" variant="ghost" size="lg">
                   <span className="flex items-center gap-2">
                     {isRtl ? 'מדריך Shopify SEO' : 'Read the SEO guide'}
                     <ArrowRight size={18} className="rtl:rotate-180" />

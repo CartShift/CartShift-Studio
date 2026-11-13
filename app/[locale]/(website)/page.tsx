@@ -1,15 +1,13 @@
 import { Hero } from '@/components/sections/Hero';
-import { HomepageIntro } from '@/components/sections/HomepageIntro';
 import { ServicesOverview } from '@/components/sections/ServicesOverview';
 import { WhyChoose } from '@/components/sections/WhyChoose';
 import { CaseStudiesTeaser } from '@/components/sections/CaseStudiesTeaser';
 import { Testimonials } from '@/components/sections/Testimonials';
 import { Process } from '@/components/sections/Process';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
-import { PortalTeaser } from '@/components/sections/PortalTeaser';
-import { StoreAnalyzerTeaser } from '@/components/sections/StoreAnalyzerTeaser';
 import { CTABanner } from '@/components/sections/CTABanner';
 import { getAllPosts } from '@/lib/markdown';
+import { toBlogPostSummary } from '@/lib/blog-summary';
 import { getAllCaseStudies } from '@/lib/case-studies';
 import {
   generateMetadata as genMeta,
@@ -73,7 +71,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he' | 'de');
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
-  const latestPosts = posts.slice(0, 4);
+  const latestPosts = posts.slice(0, 4).map(toBlogPostSummary);
   // Curate documented work with reviewable deliverables; do not imply measured uplift.
   const selectedCaseSlugs = new Set([
     'i-love-my-honeypot-eco-ecommerce',
@@ -97,14 +95,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         dangerouslySetInnerHTML={{ __html: JSON.stringify(professionalServiceSchema) }}
       />
       <Hero />
-      <HomepageIntro />
       <ServicesOverview />
+      <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he' | 'de'} />
       <Process />
       <WhyChoose />
-      <CaseStudiesTeaser caseStudies={selectedCaseStudies} locale={locale as 'en' | 'he' | 'de'} />
       <Testimonials />
-      <StoreAnalyzerTeaser />
-      <PortalTeaser />
       <BlogTeaser posts={latestPosts} />
       <CTABanner />
     </>

@@ -9,37 +9,22 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { NewsletterSignupForm } from '@/components/forms/NewsletterSignupForm';
 import { isRTLLocale, getDateLocaleString } from '@/lib/locale-config';
+import type { BlogPostSummary } from '@/lib/blog-summary';
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  category: string;
-  image?: string;
-  imageAlt?: string;
-  readingTime?: number;
-  translation?: {
-    title: string;
-    excerpt: string;
-    category: string;
-  };
-  translations?: { de?: { title: string; excerpt: string; category: string } };
-}
 
 interface BlogPageContentProps {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   categories: string[];
 }
 
-type SortOption = 'newest' | 'oldest' | 'popular';
+type SortOption = 'newest' | 'oldest';
 
 export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categories }) => {
   const t = useTranslations();
   const locale = useLocale();
   const isHe = isRTLLocale(locale);
   const isLocalized = isHe || locale === 'de';
-  const localized = (post: BlogPost, field: 'title' | 'excerpt' | 'category'): string => {
+  const localized = (post: BlogPostSummary, field: 'title' | 'excerpt' | 'category'): string => {
     if (locale === 'de') return post.translations?.de?.[field] || post[field];
     return isHe ? post.translation?.[field] || post[field] : post[field];
   };
@@ -90,9 +75,6 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
           return new Date(b.date).getTime() - new Date(a.date).getTime();
         case 'oldest':
           return new Date(a.date).getTime() - new Date(b.date).getTime();
-        case 'popular':
-          // For now, sort by newest as placeholder for popularity
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
         default:
           return 0;
       }
@@ -217,6 +199,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                 <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-400" />
                 <input
                   type="text"
+                  aria-label={t('blog.content.searchLabel')}
                   placeholder={t('blog.content.searchPlaceholder')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
@@ -262,13 +245,13 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     : t('blog.content.articles')}
                 </span>
                 <select
+                  aria-label={t('blog.content.sortLabel')}
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as SortOption)}
                   className="px-4 py-2 rounded-lg glass-effect border border-surface-200 dark:border-white/5 text-sm font-medium text-surface-700 dark:text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent-500"
                 >
                   <option value="newest">{t('blog.content.sort.newest')}</option>
                   <option value="oldest">{t('blog.content.sort.oldest')}</option>
-                  <option value="popular">{t('blog.content.sort.popular')}</option>
                 </select>
               </div>
             </motion.div>

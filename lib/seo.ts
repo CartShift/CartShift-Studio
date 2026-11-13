@@ -125,13 +125,13 @@ export function generateOrganizationSchema() {
     url: siteUrl,
     logo: {
       '@type': 'ImageObject',
-      url: `${siteUrl}/logo.png`,
-      width: 512,
-      height: 512,
+      url: `${siteUrl}/apple-touch-icon.png`,
+      width: 152,
+      height: 152,
     },
     image: `${siteUrl}/images/og-default.png`,
     description:
-      'Expert Shopify & WordPress development agency. Custom e-commerce stores, migrations, and optimization. Get a free consultation for your online store project.',
+      'Boutique studio improving existing Shopify stores through product UX, technical SEO, reliable integrations, and maintainable development. Request a personal expert store review.',
     foundingDate: '2024',
     slogan: 'Bold eCommerce Solutions Built for Your Vision',
     knowsAbout: [
@@ -184,7 +184,7 @@ export function generateOrganizationSchema() {
       '@type': 'ContactPoint',
       contactType: 'customer service',
       availableLanguage: ['English', 'Hebrew', ...(germanMarketingEnabled() ? ['German'] : [])],
-      url: `${siteUrl}/contact`,
+      url: `${siteUrl}/en/contact`,
     },
   };
 }

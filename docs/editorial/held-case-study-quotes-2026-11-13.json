@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "archivedAt": "2026-11-13",
+  "status": "held_for_publication_review",
+  "reason": "Unverified client quote approvals and prelaunch commercial outcomes. Preserve original copy without sending it in public locale payloads.",
+  "websiteTranslations": {
+    "he": [
+      {
+        "quote": "CartShift Studio הבינו את המשימה שלנו מהיום הראשון. הם בנו לנו חנות שמלמדת לקוחות ובו זמנית הופכת את חוויית הקנייה לחלקה. השאלון לבחירת מוצרים לבד שינה לחלוטין את הדרך שבה לקוחות מוצאים את המוצר המושלם.",
+        "author": "דניאל שמיר",
+        "company": "I Love My Honeypot",
+        "role": "מייסדת",
+        "industry": "בריאות ואיכות חיים",
+        "rating": 5
+      },
+      {
+        "quote": "העבודה עם CartShift Studio הייתה מהפך אמיתי עבור הסטודיו שלנו. הם יצרו קטלוג דיגיטלי יוקרתי ומלוטש שמציג את קולקציית התכשיטים שלנו בצורה מושלמת. קלות השימוש עבור הלקוחות שלנו העלתה משמעותית את יעילות ההזמנות והמכירות אונליין.",
+        "author": "תם רובינסון",
+        "company": "Stiletto Piercing",
+        "role": "בעלים",
+        "industry": "תכשיטים ואמנות גוף",
+        "rating": 5
+      }
+    ],
+    "en": [
+      {
+        "quote": "CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our product quiz alone transformed how customers find their perfect products.",
+        "author": "Danielle Shamir",
+        "company": "I Love My Honeypot",
+        "role": "Founder",
+        "industry": "Health & Wellness",
+        "rating": 5
+      },
+      {
+        "quote": "Working with CartShift Studio was a game-changer for our studio. They created a sleek, high-end digital catalog that perfectly showcases our jewelry collection. The ease of use for our clients has significantly increased our booking efficiency and online sales.",
+        "author": "Tom Robinson",
+        "company": "Stiletto Piercing",
+        "role": "Owner",
+        "industry": "Jewelry & Body Art",
+        "rating": 5
+      }
+    ],
+    "de": [
+      {
+        "quote": "CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben einen Shop für uns entwickelt, der Kunden informiert und gleichzeitig das Einkaufen mühelos macht. Allein unser Produktquiz hat verändert, wie Kunden die passenden Produkte finden.",
+        "author": "Danielle Shamir",
+        "company": "I Love My Honeypot",
+        "role": "Gründerin",
+        "industry": "Gesundheit und Wellness",
+        "rating": 5
+      },
+      {
+        "quote": "Die Zusammenarbeit mit CartShift Studio war für unser Studio ein echter Wendepunkt. Sie haben einen eleganten, hochwertigen digitalen Katalog erstellt, der unsere Schmuckkollektion perfekt präsentiert. Die einfache Bedienung für unsere Kunden hat unsere Buchungseffizienz und Onlineverkäufe deutlich verbessert.",
+        "author": "Tom Robinson",
+        "company": "Stiletto Piercing",
+        "role": "Inhaber",
+        "industry": "Schmuck und Körperkunst",
+        "rating": 5
+      }
+    ]
+  },
+  "caseStudyFrontmatter": {
+    "en": "testimonial:\n  quote: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our quiz feature alone has transformed how customers find their perfect products.'\n  author: 'Danielle Shamir'\n  role: 'Founder, I Love My Honeypot'\n",
+    "he": "  testimonial:\n    quote: 'CartShift Studio הבינו את המשימה שלנו מהיום הראשון. הם בנו לנו חנות שמלמדת לקוחות ובו זמנית הופכת את חוויית הקנייה לחלקה. השאלון לבחירת מוצרים לבד שינה לחלוטין את הדרך שבה לקוחות מוצאים את המוצר המושלם.'\n    author: 'דניאל שמיר'\n    role: 'מייסדת, I Love My Honeypot'\n",
+    "de": "  testimonial:\n    quote: CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben für uns ein Geschäft aufgebaut, das Kunden informiert und ihnen gleichzeitig ein müheloses Einkaufserlebnis ermöglicht. Allein unsere Quizfunktion hat die Art und Weise verändert, wie Kunden ihre perfekten Produkte finden.\n    author: Danielle Shamir\n    role: Gründer, ich liebe meinen Honeypot\n"
+  }
+}

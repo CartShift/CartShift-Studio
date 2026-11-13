@@ -69,7 +69,7 @@ export const StoreAnalyzerTeaser = () => {
             ))}
           </div>
           <Link href="/free-store-review" className="inline-block">
-            <Button size="lg" className="h-14 px-8 text-base">
+            <Button as="span" size="lg" className="h-14 px-8 text-base">
               {t('submit')} <ArrowRight className="size-5 rtl:rotate-180"/>
             </Button>
           </Link>

@@ -219,7 +219,7 @@ export const ContactPageContent: React.FC = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href={getScheduleUrl()} target="_blank" rel="noopener noreferrer">
-                      <Button size="lg" className="w-full sm:w-auto h-14 font-black">
+                      <Button as="span" size="lg" className="w-full sm:w-auto h-14 font-black">
                         <Calendar className="w-5 h-5 me-2" />
                         {t('contact.scheduleMeeting')}
                       </Button>

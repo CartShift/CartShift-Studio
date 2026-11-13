@@ -467,7 +467,7 @@ export const ClientPortalPageContent: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href={getPortalSubdomainUrl('/', locale)}>
-                <Button
+                <Button as="span"
                   size="lg"
                   className="w-full sm:w-auto group bg-white text-surface-900 hover:bg-white/90"
                 >
@@ -478,7 +478,7 @@ export const ClientPortalPageContent: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button
+                <Button as="span"
                   variant="outline"
                   size="lg"
                   className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10"

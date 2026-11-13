@@ -92,7 +92,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
         ))}
       </ul>
       <Link href="/contact" className="block mt-auto">
-        <Button
+        <Button as="span"
           variant={popular ? 'secondary' : 'primary'}
           className={`w-full ${popular ? '!bg-white !text-accent-700 hover:!bg-white/90' : ''}`}
         >
@@ -306,7 +306,7 @@ export const MaintenancePageContent: React.FC = () => {
               {maintenance.cta.description}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="group">
+              <Button as="span" size="lg" className="group">
                 <span className="relative z-10 flex items-center gap-2">
                   {maintenance.cta.button}
                   <svg

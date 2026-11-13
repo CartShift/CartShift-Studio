@@ -9,26 +9,10 @@ import { Link } from '@/i18n/navigation';
 import { getDateLocaleString } from '@/lib/locale-config';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Clock, Calendar } from 'lucide-react';
-
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  category: string;
-  image?: string;
-  imageAlt?: string;
-  readingTime?: number;
-  translation?: {
-    title: string;
-    excerpt: string;
-    category: string;
-  };
-  translations?: { de?: { title: string; excerpt: string; category: string } };
-}
+import type { BlogPostSummary } from '@/lib/blog-summary';
 
 interface BlogTeaserProps {
-  posts?: BlogPost[];
+  posts?: BlogPostSummary[];
 }
 
 export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
@@ -199,7 +183,7 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
           className="mt-20 text-center"
         >
           <Link href="/blog">
-            <Button
+            <Button as="span"
               variant="outline"
               size="lg"
               className="h-16 px-10 rounded-2xl font-black border-surface-300 dark:border-white/10 text-surface-900 dark:text-white hover:bg-white dark:hover:bg-white/10 group"
