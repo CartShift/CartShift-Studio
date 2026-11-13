@@ -478,6 +478,8 @@
     "content": {
       "featuredPosts": "Empfohlene Beiträge",
       "searchPlaceholder": "Artikel durchsuchen...",
+      "searchLabel": "Artikel suchen",
+      "sortLabel": "Artikel sortieren",
       "allCategories": "Alle",
       "articles": "Artikel",
       "articles_singular": "Artikel",
