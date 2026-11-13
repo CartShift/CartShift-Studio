@@ -367,7 +367,7 @@ export const ShopifyPageContent: React.FC = () => {
                       })
                     }
                   >
-                    <Button size="lg" className="w-full sm:w-auto">
+                    <Button as="span" size="lg" className="w-full sm:w-auto">
                       {localTrust.primary}
                     </Button>
                   </Link>
@@ -412,7 +412,7 @@ export const ShopifyPageContent: React.FC = () => {
                 })
               }
             >
-              <Button
+              <Button as="span"
                 size="lg"
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow"
               >
