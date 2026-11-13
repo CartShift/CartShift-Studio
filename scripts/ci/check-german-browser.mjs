@@ -47,7 +47,7 @@ async function collect(page, path, lang) {
   const route = '/' + lang + path;
   // Repeated navigation may legitimately use HTTP conditional cache validation.
   if (!response || ![200, 304].includes(response.status())) failures.push(route + ' returned ' + response?.status());
-  const metrics = await page.evaluate(() => ({
+  const readMetrics = () => page.evaluate(() => ({
     lang: document.documentElement.lang,
     dir: document.documentElement.dir,
     sectionCount: document.querySelectorAll('main#main-content section').length,
@@ -61,6 +61,14 @@ async function collect(page, path, lang) {
     title: document.title,
     hasError: document.body.textContent.includes('Application error: a client-side exception'),
   }));
+  let metrics = await readMetrics();
+  // Client navigation may paint a transient empty Suspense boundary after
+  // DOMContentLoaded. Retry the actual rendered content before reporting a
+  // failure; a persistent empty page still fails the same threshold.
+  if (!metrics.main || metrics.mainTextLength < 200) {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    metrics = await readMetrics();
+  }
   if (metrics.lang !== lang) failures.push(route + ' wrong html lang ' + metrics.lang);
   if (metrics.dir && metrics.dir !== (lang === 'he' ? 'rtl' : 'ltr')) failures.push(route + ' wrong text direction ' + metrics.dir);
   if (!metrics.main || metrics.mainTextLength < 200) failures.push(route + ' unexpectedly short main content');
