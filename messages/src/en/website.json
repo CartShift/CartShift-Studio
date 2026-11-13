@@ -478,6 +478,8 @@
     "content": {
       "featuredPosts": "Featured Posts",
       "searchPlaceholder": "Search articles...",
+      "searchLabel": "Search articles",
+      "sortLabel": "Sort articles",
       "allCategories": "All",
       "articles": "articles",
       "articles_singular": "article",
