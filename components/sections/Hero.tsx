@@ -79,7 +79,7 @@ export const Hero: React.FC = () => {
 
             <motion.div
               className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6"
-              initial="hidden"
+              initial={false}
               animate="visible"
               variants={heroContent}
               custom={0.6}
