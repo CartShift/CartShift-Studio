@@ -93,11 +93,6 @@ services:
   - 'UX/UI Design'
   - 'SEO Optimization'
   - 'Educational Content Strategy'
-testimonial:
-  quote: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our quiz feature alone has transformed how customers find their perfect products.'
-  author: 'Danielle Shamir'
-  role: 'Founder, I Love My Honeypot'
-
 # Hebrew Translations
 he:
   projectStage: 'תבנית Shopify ושאלון התאמה בבדיקת הלקוחה — טרם הושקו'
@@ -182,10 +177,6 @@ he:
     - 'עיצוב UX/UI'
     - 'אופטימיזציית SEO'
     - 'אסטרטגיית תוכן חינוכי'
-  testimonial:
-    quote: 'CartShift Studio הבינו את המשימה שלנו מהיום הראשון. הם בנו לנו חנות שמלמדת לקוחות ובו זמנית הופכת את חוויית הקנייה לחלקה. השאלון לבחירת מוצרים לבד שינה לחלוטין את הדרך שבה לקוחות מוצאים את המוצר המושלם.'
-    author: 'דניאל שמיר'
-    role: 'מייסדת, I Love My Honeypot'
   content: |
     ## האתגר
     
@@ -291,10 +282,6 @@ de:
   - UX/UI-Design
   - SEO-Optimierung
   - Strategie für Bildungsinhalte
-  testimonial:
-    quote: CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben für uns ein Geschäft aufgebaut, das Kunden informiert und ihnen gleichzeitig ein müheloses Einkaufserlebnis ermöglicht. Allein unsere Quizfunktion hat die Art und Weise verändert, wie Kunden ihre perfekten Produkte finden.
-    author: Danielle Shamir
-    role: Gründer, ich liebe meinen Honeypot
   content: '
 
     ## Die Herausforderung
