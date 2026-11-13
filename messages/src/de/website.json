@@ -851,7 +851,7 @@
       "packages": [
         {
           "name": "SEO-Audit",
-          "price": "Ab 390 € einmalig",
+          "price": "Individuelles Angebot",
           "description": "Eine gezielte Diagnose und ein priorisierter Plan für Teams, die vor der Umsetzung Klarheit benötigen.",
           "includes": [
             "Technische Überprüfung und Indexierbarkeitsprüfung",
@@ -864,7 +864,7 @@
         },
         {
           "name": "SEO-Stiftung",
-          "price": "Ab 790 € einmalig",
+          "price": "Individuelles Angebot",
           "description": "Prüfung, Einrichtung und praktische Umsetzung einer vereinbarten ersten Welle vorrangiger Verbesserungen.",
           "includes": [
             "Alles im SEO-Audit",
@@ -878,7 +878,7 @@
         },
         {
           "name": "SEO-Wachstum",
-          "price": "Ab 590 €/Monat",
+          "price": "Individuelles Angebot",
           "description": "Ein wiederkehrender Verbesserungszyklus für Unternehmen, die bereit sind, den organischen Fortschritt zu messen, zu lernen und zu steigern.",
           "includes": [
             "Laufende technische und On-Page-Verbesserungen",
@@ -892,7 +892,7 @@
       ],
       "notesTitle": "Preishinweise",
       "notes": [
-        "Preise sind Ausgangspunkte; Der endgültige Preis hängt von der Größe und dem Umfang der Website ab.",
+        "Leistungsumfang, Ergebnisse und Preis werden nach Prüfung Ihres Shops schriftlich vereinbart.",
         "Gegebenenfalls kommt die Mehrwertsteuer hinzu.",
         "SEO-Wachstum funktioniert am besten nach einem Audit oder einer gleichwertigen Entdeckung.",
         "Bezahlte Anzeigen und gekaufte Links sind nicht enthalten, sofern sie nicht gesondert aufgeführt sind.",
@@ -1058,8 +1058,8 @@
       "quickLaunch": {
         "name": "Schnellstart",
         "description": "Bringen Sie Ihren Shopify-Shop mit einer bewährten Grundlage schnell zum Leben.",
-        "price": "Ab 2.500 $",
-        "timeline": "1-2 Wochen",
+        "price": "Angebot nach Abstimmung",
+        "timeline": "Zeitplan im Angebot",
         "features": [
           "Einrichtung und Konfiguration des Shopify-Shops",
           "Themenauswahl und grundlegende Anpassung",
@@ -1073,8 +1073,8 @@
       "growthUpgrade": {
         "name": "Wachstums-Upgrade",
         "description": "Optimieren Sie Ihren bestehenden Shop für bessere Leistung und Conversions.",
-        "price": "Ab 3.500 $",
-        "timeline": "2-4 Wochen",
+        "price": "Angebot nach Abstimmung",
+        "timeline": "Zeitplan im Angebot",
         "popular": true,
         "features": [
           "Vollständiges Site-Audit (Geschwindigkeit, SEO, UX)",
@@ -1089,8 +1089,8 @@
       "customBuild": {
         "name": "Benutzerdefinierter Build",
         "description": "Eine vollständig maßgeschneiderte Lösung, die auf Ihre individuellen Bedürfnisse zugeschnitten ist.",
-        "price": "Ab 8.000 $",
-        "timeline": "4-8 Wochen",
+        "price": "Angebot nach Abstimmung",
+        "timeline": "Zeitplan im Angebot",
         "features": [
           "Benutzerdefinierte Entdeckung und Strategie",
           "Benutzerdefinierte Theme-Entwicklung",
@@ -1104,8 +1104,8 @@
       "storeAudit": {
         "name": "Store-Audit",
         "description": "Ein kostenpflichtiger tiefer Einblick über die kostenlose Erstbewertung hinaus mit einem dokumentierten Aktionsplan.",
-        "price": "$500",
-        "timeline": "3-5 Tage",
+        "price": "Angebot nach Abstimmung",
+        "timeline": "Zeitplan im Angebot",
         "features": [
           "60-minütige Video-Komplettlösung",
           "Geschwindigkeitsanalyse mit spezifischen Korrekturen",
@@ -1142,7 +1142,7 @@
       "items": [
         {
           "question": "Bieten Sie Zahlungspläne an?",
-          "answer": "Ja, bei Projekten über 5.000 US-Dollar teilen wir die Zahlungen in der Regel in Meilensteine auf: 40 % für den Start, 30 % für die Designgenehmigung und 30 % für den Start."
+          "answer": "Zahlungsplan und eine mögliche Anzahlung werden vor Projektbeginn im bestätigten schriftlichen Angebot vereinbart."
         },
         {
           "question": "Was passiert, wenn mein Projekt nicht in diese Pakete passt?",
