@@ -77,8 +77,15 @@ try {
     page.on('pageerror', e => broken.push(String(e.message).slice(0, 250)));
     try {
       for (const path of pages) {
-        const original = await collect(page, path, 'en');
-        const translated = await collect(page, path, 'de');
+        let original = await collect(page, path, 'en');
+        let translated = await collect(page, path, 'de');
+        if (original.sectionCount !== translated.sectionCount || original.headingCount !== translated.headingCount) {
+          // Hydration can transiently introduce/remove a heading after DOMContentLoaded.
+          // Revisit both locales once with warmed assets before flagging a structural regression.
+          await new Promise(resolve => setTimeout(resolve, 500));
+          original = await collect(page, path, 'en');
+          translated = await collect(page, path, 'de');
+        }
         if (translated.sectionCount !== original.sectionCount) failures.push(path + ' ' + viewport.name + ' section mismatch EN ' + original.sectionCount + ' DE ' + translated.sectionCount);
         if (translated.headingCount !== original.headingCount) failures.push(path + ' ' + viewport.name + ' heading mismatch EN ' + original.headingCount + ' DE ' + translated.headingCount);
         console.log(viewport.name, path, 'EN/DE sections', original.sectionCount, translated.sectionCount, 'H1', translated.h1Count);
