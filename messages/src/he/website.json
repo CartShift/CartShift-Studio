@@ -478,6 +478,8 @@
     "content": {
       "featuredPosts": "מאמרים מובלטים",
       "searchPlaceholder": "חיפוש מאמרים...",
+      "searchLabel": "חיפוש מאמרים",
+      "sortLabel": "מיון מאמרים",
       "allCategories": "הכל",
       "articles": "מאמרים",
       "articles_singular": "מאמר",
