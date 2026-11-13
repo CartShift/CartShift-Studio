@@ -199,7 +199,7 @@ export const BlogTeaser: React.FC<BlogTeaserProps> = ({ posts }) => {
           className="mt-20 text-center"
         >
           <Link href="/blog">
-            <Button
+            <Button as="span"
               variant="outline"
               size="lg"
               className="h-16 px-10 rounded-2xl font-black border-surface-300 dark:border-white/10 text-surface-900 dark:text-white hover:bg-white dark:hover:bg-white/10 group"
