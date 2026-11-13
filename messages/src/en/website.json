@@ -1348,7 +1348,7 @@
       "clientQuote": "Client Quote",
       "projectNotes": "Project Notes",
       "visitSite": "Visit Live Site",
-      "galleryHint": "Real homepage and product/content screens captured from the live site and used here as the visual source of truth.",
+      "galleryHint": "Selected project screenshots captured during development; some may show a preview rather than the currently published site.",
       "openImage": "Expand Screenshot",
       "previousScreen": "Previous",
       "nextScreen": "Next",
