@@ -8,7 +8,7 @@ import { heroContent } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
-import { trackBookCallClick } from '@/lib/analytics';
+import { trackBookCallClick, trackCTAClick } from '@/lib/analytics';
 import { ArrowRight, ArrowDown, Code2, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { HeroIllustration } from './HeroIllustration';
@@ -84,7 +84,7 @@ export const Hero: React.FC = () => {
               variants={heroContent}
               custom={0.6}
             >
-              <Link href="/free-store-review" className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-auto group h-14 w-full px-10 text-lg font-bold shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 sm:w-auto md:h-16 md:px-12')}>
+              <Link href="/free-store-review" onClick={() => trackCTAClick(t('storeReview.ctaShort'), 'hero')} className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-auto group h-14 w-full px-10 text-lg font-bold shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 sm:w-auto md:h-16 md:px-12')}>
                   <span className="flex items-center gap-3">
                     {t('storeReview.ctaShort')}
                     <ArrowRight
