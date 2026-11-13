@@ -1032,7 +1032,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                             })
                           }
                         >
-                          <Button
+                          <Button as="span"
                             size="lg"
                             variant="secondary"
                             className="text-base md:text-lg px-8 md:px-12 py-4 md:py-5 font-bold shadow-glow-primary group"
