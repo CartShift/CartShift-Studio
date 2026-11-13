@@ -199,6 +199,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                 <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-400" />
                 <input
                   type="text"
+                  aria-label={t('blog.content.searchLabel')}
                   placeholder={t('blog.content.searchPlaceholder')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
@@ -244,6 +245,7 @@ export const BlogPageContent: React.FC<BlogPageContentProps> = ({ posts, categor
                     : t('blog.content.articles')}
                 </span>
                 <select
+                  aria-label={t('blog.content.sortLabel')}
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as SortOption)}
                   className="px-4 py-2 rounded-lg glass-effect border border-surface-200 dark:border-white/5 text-sm font-medium text-surface-700 dark:text-surface-200 focus:outline-none focus:ring-2 focus:ring-accent-500"
