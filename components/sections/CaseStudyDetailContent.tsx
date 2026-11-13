@@ -522,7 +522,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
         </section>
       )}
 
-      {caseStudy.testimonial && !caseStudy.projectStage && (
+      {caseStudy.testimonial && caseStudy.slug !== 'i-love-my-honeypot-eco-ecommerce' && (
         <section className="bg-white py-16 dark:bg-surface-950 md:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <motion.div
