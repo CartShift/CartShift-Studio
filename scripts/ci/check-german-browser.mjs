@@ -52,6 +52,7 @@ async function collect(page, path, lang) {
     dir: document.documentElement.dir,
     sectionCount: document.querySelectorAll('main#main-content section').length,
     headingCount: document.querySelectorAll('main#main-content h1,main#main-content h2,main#main-content h3').length,
+    headingLabels: Array.from(document.querySelectorAll('main#main-content h1,main#main-content h2,main#main-content h3')).map(el => `${el.tagName}: ${(el.textContent || '').trim().slice(0, 68)}`),
     h1Count: document.querySelectorAll('main#main-content h1').length,
     mainTextLength: (document.querySelector('main#main-content')?.textContent || '').trim().length,
     scrollWidth: document.documentElement.scrollWidth,
@@ -71,30 +72,39 @@ async function collect(page, path, lang) {
 
 try {
   for (const viewport of viewports) {
-    const page = await browser.newPage();
-    await page.setViewport(viewport);
+    // Compare both languages in independent tabs so a prior locale's hydrated
+    // component tree and client state cannot contaminate the next measurement.
+    const originalPage = await browser.newPage();
+    const translatedPage = await browser.newPage();
+    await Promise.all([originalPage.setViewport(viewport), translatedPage.setViewport(viewport)]);
     const broken = [];
-    page.on('pageerror', e => broken.push(String(e.message).slice(0, 250)));
+    for (const page of [originalPage, translatedPage]) {
+      page.on('pageerror', e => broken.push(String(e.message).slice(0, 250)));
+    }
     try {
       for (const path of pages) {
-        let original = await collect(page, path, 'en');
-        let translated = await collect(page, path, 'de');
+        let original = await collect(originalPage, path, 'en');
+        let translated = await collect(translatedPage, path, 'de');
         if (original.sectionCount !== translated.sectionCount || original.headingCount !== translated.headingCount) {
           // Hydration can transiently introduce/remove a heading after DOMContentLoaded.
           // Revisit both locales once with warmed assets before flagging a structural regression.
           await new Promise(resolve => setTimeout(resolve, 500));
-          original = await collect(page, path, 'en');
-          translated = await collect(page, path, 'de');
+          original = await collect(originalPage, path, 'en');
+          translated = await collect(translatedPage, path, 'de');
         }
         if (translated.sectionCount !== original.sectionCount) failures.push(path + ' ' + viewport.name + ' section mismatch EN ' + original.sectionCount + ' DE ' + translated.sectionCount);
-        if (translated.headingCount !== original.headingCount) failures.push(path + ' ' + viewport.name + ' heading mismatch EN ' + original.headingCount + ' DE ' + translated.headingCount);
+        if (translated.headingCount !== original.headingCount) {
+          failures.push(path + ' ' + viewport.name + ' heading mismatch EN ' + original.headingCount + ' DE ' + translated.headingCount);
+          console.warn('EN heading labels:', JSON.stringify(original.headingLabels));
+          console.warn('DE heading labels:', JSON.stringify(translated.headingLabels));
+        }
         console.log(viewport.name, path, 'EN/DE sections', original.sectionCount, translated.sectionCount, 'H1', translated.h1Count);
       }
     } catch(e) {
       failures.push(viewport.name + ' navigation failed: ' + e.message);
     }
     if (broken.length > 0) failures.push(viewport.name + ' JS errors ' + [...new Set(broken)].slice(0, 5).join(' | '));
-    await page.close();
+    await Promise.all([originalPage.close(), translatedPage.close()]);
   }
 
   // Exercise the real shared language-switcher in the desktop header.
