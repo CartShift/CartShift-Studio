@@ -246,7 +246,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/contact">
-                <Button size="lg" className="group">
+                <Button as="span" size="lg" className="group">
                   <span className="relative z-dropdown flex items-center gap-2">
                     {t('industries.getFreeQuote')}
                     <ArrowRight size={20} className="rtl:rotate-180" />
@@ -254,7 +254,7 @@ export const IndustryPageContent: React.FC<IndustryPageContentProps> = ({ indust
                 </Button>
               </Link>
               <Link href="/work">
-                <Button variant="outline" size="lg">
+                <Button as="span" variant="outline" size="lg">
                   {t('industries.viewOurWork')}
                 </Button>
               </Link>
