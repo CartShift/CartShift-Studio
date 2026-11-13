@@ -416,7 +416,7 @@ export const SeoPageContent: React.FC = () => {
               }
               className="mt-9 inline-flex"
             >
-              <Button size="lg" className="min-h-12 px-7">
+              <Button as="span" size="lg" className="min-h-12 px-7">
                 {t('seo.cta.button')}
                 <ArrowRight className="h-5 w-5 rtl:rotate-180" aria-hidden="true" />
               </Button>
