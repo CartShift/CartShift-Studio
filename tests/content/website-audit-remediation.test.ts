@@ -28,6 +28,20 @@ describe('CartShift public marketing claims and expert review flow', () => {
     }
   });
 
+  it.each(languages)('does not advertise unapproved prices or hard-coded delivery promises in %s', locale => {
+    const content = JSON.parse(read(`messages/src/${locale}/website.json`));
+    for (const item of Object.values(content.pricing.packages) as Array<{price: string; timeline: string}>) {
+      expect(item.price).not.toMatch(/[€$₪]|\\d{3,}/);
+      expect(item.timeline).not.toMatch(/\\d+\\s*[-–]\\s*\\d+/);
+    }
+    for (const item of content.seo.pricing.packages as Array<{price: string}>) {
+      expect(item.price).not.toMatch(/[€$₪]|\\d{3,}/);
+    }
+    const paymentAnswer: string = content.pricing.faq.items[0].answer;
+    expect(paymentAnswer).not.toContain('40%');
+    expect(paymentAnswer).not.toContain('30%');
+  });
+
   it('keeps review CTA and documented case studies high in the homepage journey', () => {
     const home = read('app/[locale]/(website)/page.tsx');
     expect(home.indexOf('<Hero')).toBeLessThan(home.indexOf('<ServicesOverview'));
