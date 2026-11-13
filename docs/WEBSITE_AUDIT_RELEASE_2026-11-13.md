@@ -16,6 +16,7 @@
 - Added an explicitly illustrative 3-example review output to the review page, with locale-specific disclaimer in Hebrew, English and German.
 - Labelled Honeypot theme/quiz as in client review across case-study locales. Stiletto remains clearly marked prelaunch; preserved original testimonial copies.
 - Temporarily withheld Stiletto/Honeypot testimonials from public home and Honeypot detail pending source validation; no customer quotes were destroyed.
+- Subsequent Preview HTML inspection found those hidden quotes were still serialized through the root locale provider. Original EN/HE/DE quote records and Honeypot case-study frontmatter were archived at `docs/editorial/held-case-study-quotes-2026-11-13.json` before removal from public message payloads and case-study metadata. Verify the final Preview does **not** contain these strings in the returned HTML/RSC scripts.
 - Replaced unsupported public price cards, timelines and payment splits with written, project-specific quotes in all three locales; Hebrew FAQ reflects the documented default 50% deposit subject to written agreement.
 - Improved form success announcement/focus and scroll anchor offset.
 - Improved agency inbox notification eligibility to include both authorized `isAgency` and `accountType=AGENCY` owner/admin identities, dedupe, exclude suspended/ineligible users; added automated regression test.
