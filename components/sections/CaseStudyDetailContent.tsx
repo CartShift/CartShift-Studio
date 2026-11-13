@@ -214,7 +214,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/contact">
-                  <Button
+                  <Button as="span"
                     size="lg"
                     rightIcon={<ArrowRight className="h-4 w-4 rtl:rotate-180" />}
                     className="group"
@@ -223,7 +223,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                   </Button>
                 </Link>
                 <Link href="/work">
-                  <Button variant="glass" size="lg">
+                  <Button as="span" variant="glass" size="lg">
                     {workT.detail.viewMore}
                   </Button>
                 </Link>
@@ -610,7 +610,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
 
               <div className="flex flex-wrap gap-3 lg:justify-end">
                 <Link href="/contact">
-                  <Button
+                  <Button as="span"
                     variant="secondary"
                     size="lg"
                     rightIcon={<ArrowUpRight className="h-4 w-4" />}
@@ -620,7 +620,7 @@ export const CaseStudyDetailContent: React.FC<CaseStudyDetailContentProps> = ({ 
                   </Button>
                 </Link>
                 <Link href="/work">
-                  <Button
+                  <Button as="span"
                     variant="outline"
                     size="lg"
                     className="border-white/40 text-white hover:bg-white/10"
