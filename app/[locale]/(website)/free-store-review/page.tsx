@@ -92,6 +92,39 @@ export default async function FreeStoreReviewPage({
         </div>
       </div>
     </section>
+    {/* Clearly illustrative deliverable sample, never presented as a real client audit. */}
+    <section aria-labelledby="review-example-title" className="px-4 py-16 sm:px-6 lg:py-20">
+      <div className="mx-auto max-w-6xl">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold text-primary-600 dark:text-primary-400">{t('sample.eyebrow')}</p>
+          <h2 id="review-example-title" className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t('sample.title')}</h2>
+          <p className="mt-4 text-base leading-relaxed text-surface-600 dark:text-surface-300">{t('sample.description')}</p>
+        </div>
+        <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          {(['product', 'mobile', 'seo'] as const).map((key, index) =>
+            <article key={key} className="flex flex-col rounded-2xl border border-surface-200 bg-white p-6 dark:border-white/10 dark:bg-surface-900">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
+                  {t(`sample.findings.${key}.area`)}
+                </span>
+                <span aria-hidden="true" className="text-xs font-bold tabular-nums text-surface-400">0{index + 1}</span>
+              </div>
+              <h3 className="text-lg font-bold">{t(`sample.findings.${key}.title`)}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                {t(`sample.findings.${key}.observation`)}
+              </p>
+              <p className="mt-4 border-t border-surface-200 pt-4 text-sm leading-relaxed text-surface-800 dark:border-white/10 dark:text-surface-100">
+                <strong>{t('sample.actionLabel')} </strong>{t(`sample.findings.${key}.action`)}
+              </p>
+            </article>
+          )}
+        </div>
+        <p className="mt-4 text-xs leading-relaxed text-surface-500">{t('sample.disclaimer')}</p>
+        <a href="#request-review" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
+          {t('ctaShort')} <ArrowRight aria-hidden="true" className="h-4 w-4 rtl:rotate-180" />
+        </a>
+      </div>
+    </section>
     <section className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center">
       <div><h2 className="text-3xl font-bold">{t('deliverTitle')}</h2><p className="mt-4 leading-relaxed text-surface-600 dark:text-surface-300">{t('deliverDescription')}</p>
         <Link href="/work" className="mt-6 inline-flex items-center gap-2 font-semibold text-primary-600 hover:underline">{t('workLink')} <ArrowRight size={16} className="rtl:rotate-180"/></Link>
