@@ -7,6 +7,7 @@ import { Process } from '@/components/sections/Process';
 import { BlogTeaser } from '@/components/sections/BlogTeaser';
 import { CTABanner } from '@/components/sections/CTABanner';
 import { getAllPosts } from '@/lib/markdown';
+import { toBlogPostSummary } from '@/lib/blog-summary';
 import { getAllCaseStudies } from '@/lib/case-studies';
 import {
   generateMetadata as genMeta,
@@ -70,7 +71,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const websiteSchema = generateWebSiteSchema(locale as 'en' | 'he' | 'de');
   const professionalServiceSchema = generateProfessionalServiceSchema();
   const posts = await getAllPosts();
-  const latestPosts = posts.slice(0, 4);
+  const latestPosts = posts.slice(0, 4).map(toBlogPostSummary);
   // Curate documented work with reviewable deliverables; do not imply measured uplift.
   const selectedCaseSlugs = new Set([
     'i-love-my-honeypot-eco-ecommerce',
