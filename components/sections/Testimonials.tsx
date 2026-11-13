@@ -37,7 +37,7 @@ export async function Testimonials() {
             {t('subtitle')}
           </h2>
         </div>
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className={`grid gap-5 ${items.length === 1 ? 'max-w-3xl' : 'lg:grid-cols-3'}`}>
           {items.map(item => (
             <figure key={item.author + item.company} className="flex h-full flex-col rounded-3xl border border-surface-200 bg-surface-50 p-7 dark:border-white/10 dark:bg-surface-900/70 md:p-8">
               <Quote aria-hidden="true" className="mb-6 h-7 w-7 text-primary-500" />
