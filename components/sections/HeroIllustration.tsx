@@ -320,20 +320,20 @@ export const HeroIllustration: React.FC = () => {
                 y="150"
                 className="fill-surface-500 dark:fill-surface-400 text-[10px] font-sans"
               >
-                Active Users
+                Storefront
               </text>
               <text
                 x="640"
                 y="175"
                 className="fill-surface-900 dark:fill-white text-[18px] font-bold font-sans"
               >
-                12,402
+                Shopify
               </text>
               <circle cx="740" cy="145" r="4" className="fill-green-500 animate-pulse" />
             </motion.g>
           </motion.g>
 
-          {/* Bottom Left Card: Revenue */}
+          {/* Bottom Left Card: Workflow */}
           <motion.g
             initial={{ x: -50, y: 50, opacity: 0 }}
             animate={{ x: -40, y: 80, opacity: 1 }}
@@ -367,7 +367,7 @@ export const HeroIllustration: React.FC = () => {
                 y="410"
                 className="fill-surface-900 dark:fill-white text-[16px] font-bold font-sans"
               >
-                $842k
+                UX + SEO
               </text>
               <path
                 d="M 140 405 L 135 400 M 140 405 L 145 400"
