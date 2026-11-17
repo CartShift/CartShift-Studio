@@ -2,6 +2,7 @@
 title: 'Eco-Friendly Menstrual Care E-commerce Store'
 slug: 'i-love-my-honeypot-eco-ecommerce'
 client: 'I Love My Honeypot'
+projectStage: 'New Shopify theme and product quiz in client review — not yet launched'
 industry: 'Health & Wellness'
 platform: 'Shopify'
 duration: '10 weeks'
@@ -20,7 +21,7 @@ hero:
 overview:
   title: 'Turning a mission-led wellness catalog into a guided buying experience'
   summary: 'We redesigned the storefront around clarity, trust, and product education so customers could understand unfamiliar products, navigate Hebrew RTL content naturally, and find the right fit without feeling overwhelmed.'
-summary: 'Complete Shopify store development for an eco-friendly menstrual care brand, featuring product quiz integration, localized Hebrew content, and a cause-driven shopping experience.'
+summary: 'Shopify theme and product-quiz redesign in client review, with Hebrew RTL content and a guided shopping experience being tested before launch.'
 cta:
   title: 'Need a Shopify store that helps customers choose with confidence?'
   description: 'We can turn product education, localization, and merchandising into a clearer buying journey.'
@@ -44,11 +45,11 @@ gallery:
     alt: 'I Love My Honeypot product page for the Hello Disc with product media, benefits, and purchase controls'
     caption: 'Product pages bring the media gallery, benefits, and buy actions into one tighter layout so fit and trust questions are answered closer to checkout.'
 evidence:
-  - title: 'Product quiz launched'
+  - title: 'Product quiz built for client review'
     value: 'Guided Quiz'
-    description: 'The store now includes a guided quiz flow that helps customers narrow complex product choices through a more supportive decision journey.'
+    description: 'The development preview includes a guided quiz flow intended to help customers narrow complex product choices. Editing, recommendations and launch remain subject to client review.'
     before: 'No guided selection'
-    after: 'Live quiz flow'
+    after: 'Quiz in client review'
     tone: 'qualitative'
   - title: 'Hebrew storefront delivered'
     value: 'RTL Complete'
@@ -71,7 +72,7 @@ evidence:
 results:
   - metric: 'Product Quiz'
     before: 'N/A'
-    after: 'Live'
+    after: 'In review'
     improvement: 'New Feature'
   - metric: 'Hebrew Localization'
     before: 'Partial'
@@ -92,18 +93,14 @@ services:
   - 'UX/UI Design'
   - 'SEO Optimization'
   - 'Educational Content Strategy'
-testimonial:
-  quote: 'CartShift Studio understood our mission from day one. They built us a store that educates customers while making the shopping experience effortless. Our quiz feature alone has transformed how customers find their perfect products.'
-  author: 'Danielle Shamir'
-  role: 'Founder, I Love My Honeypot'
-
 # Hebrew Translations
 he:
+  projectStage: 'תבנית Shopify ושאלון התאמה בבדיקת הלקוחה — טרם הושקו'
   cta:
     title: 'צריכים חנות Shopify שעוזרת ללקוחות לבחור בביטחון?'
     description: 'אפשר להפוך חינוך מוצרי, לוקליזציה ומרצ׳נדייזינג למסע קנייה ברור ומכוון יותר.'
   title: 'חנות מסחר אלקטרוני למוצרי מחזור ידידותיים לסביבה'
-  summary: 'פיתוח חנות שופיפיי מלאה למותג מוצרי מחזור ידידותיים לסביבה, כולל שאלון התאמת מוצרים, תוכן בעברית וחוויית קנייה עם ערך חברתי.'
+  summary: 'שדרוג תבנית Shopify ושאלון התאמה בגרסת עבודה שעדיין בבדיקת הלקוחה, עם התאמות RTL, תוכן בעברית וחוויית בחירה מונחית.'
   industry: 'בריאות ואיכות חיים'
   duration: '10 שבועות'
   hero:
@@ -132,11 +129,11 @@ he:
       alt: 'עמוד המוצר של Hello Disc עם גלריית מדיה, יתרונות ואזור רכישה'
       caption: 'עמודי המוצר מרכזים גלריה, יתרונות ופעולות רכישה לפריסה אחת מהודקת יותר, שעונה על שאלות התאמה ואמון קרוב יותר לרגע הקנייה.'
   evidence:
-    - title: 'השאלון עלה לאוויר'
+    - title: 'שאלון התאמה שפותח לבדיקת הלקוחה'
       value: 'שאלון מונחה'
-      description: 'החנות כוללת כיום זרימת התאמה מונחית שמסייעת ללקוחות לצמצם בחירות מורכבות בדרך תומכת וברורה יותר.'
+      description: 'בגרסת ה־Preview נבנתה זרימת התאמה מונחית. יכולת העריכה, דיוק ההמלצות וההחלטה על השקה עדיין בבדיקת הלקוחה.'
       before: 'בלי התאמה מונחית'
-      after: 'שאלון חי'
+      after: 'שאלון ב־Preview'
       tone: 'qualitative'
     - title: 'חוויית עברית מלאה'
       value: 'RTL מלא'
@@ -159,7 +156,7 @@ he:
   results:
     - metric: 'שאלון מוצרים'
       before: 'לא היה'
-      after: 'פעיל'
+      after: 'בבדיקת לקוחה'
       improvement: 'פיצ׳ר חדש'
     - metric: 'לוקליזציה לעברית'
       before: 'חלקי'
@@ -180,10 +177,6 @@ he:
     - 'עיצוב UX/UI'
     - 'אופטימיזציית SEO'
     - 'אסטרטגיית תוכן חינוכי'
-  testimonial:
-    quote: 'CartShift Studio הבינו את המשימה שלנו מהיום הראשון. הם בנו לנו חנות שמלמדת לקוחות ובו זמנית הופכת את חוויית הקנייה לחלקה. השאלון לבחירת מוצרים לבד שינה לחלוטין את הדרך שבה לקוחות מוצאים את המוצר המושלם.'
-    author: 'דניאל שמיר'
-    role: 'מייסדת, I Love My Honeypot'
   content: |
     ## האתגר
     
@@ -206,8 +199,9 @@ he:
     
     החנות עברה מחוויה שמתחילה בקטלוג למסע קנייה מונחה. ללקוחות יש היום דרכים ברורות יותר להבין את הקטגוריה, לצמצם אפשרויות ולהגיע לעמוד מוצר רלוונטי בלי להסתמך על ניחוש. מקרה הבוחן מתמקד בכוונה בשינויים שאפשר לראות במוצר וב-UX, ולא בטענות המרה שאין להן נתונים מוצגים.
 de:
+  projectStage: Shopify-Theme und Produktquiz in der Kundenprüfung — noch nicht veröffentlicht
   title: Umweltfreundlicher E-Commerce-Shop für Menstruationspflege
-  summary: Komplette Shopify-Store-Entwicklung für eine umweltfreundliche Marke für Menstruationspflege, mit Produkt-Quiz-Integration, lokalisierten hebräischen Inhalten und einem zweckorientierten Einkaufserlebnis.
+  summary: Shopify-Theme und Produktquiz in der Kundenprüfung, mit hebräischer RTL-Lokalisierung und geführter Produktauswahl vor dem Launch.
   industry: Gesundheit und Wohlbefinden
   duration: 10 Wochen
   cta:
@@ -240,11 +234,11 @@ de:
     alt: I Love My Honeypot-Produktseite für die Hello Disc mit Produktmedien, Vorteilen und Kaufkontrollen
     caption: Auf den Produktseiten werden die Mediengalerie, Vorteile und Kaufaktionen in einem übersichtlicheren Layout zusammengefasst, sodass Fragen zur Passform und zum Vertrauen näher an der Kasse beantwortet werden.
   evidence:
-  - title: Produktquiz gestartet
+  - title: Produktquiz zur Kundenprüfung umgesetzt
     value: Geführtes Quiz
-    description: Der Store verfügt jetzt über einen geführten Quizablauf, der Kunden dabei hilft, komplexe Produktauswahlen durch eine unterstützendere Entscheidungsfindung einzugrenzen.
+    description: Die Entwicklungsvorschau enthält einen geführten Quizablauf. Bearbeitbarkeit, Ergebnisqualität und Veröffentlichung werden noch mit der Kundin geprüft.
     before: Keine geführte Auswahl
-    after: Live-Quizablauf
+    after: Quiz in Kundenprüfung
     tone: qualitative
   - title: Hebräische Schaufenster geliefert
     value: RTL komplett
@@ -267,7 +261,7 @@ de:
   results:
   - metric: Produktquiz
     before: N/A
-    after: Lebe
+    after: In Prüfung
     improvement: Neue Funktion
   - metric: Hebräische Lokalisierung
     before: Teilweise
@@ -288,10 +282,6 @@ de:
   - UX/UI-Design
   - SEO-Optimierung
   - Strategie für Bildungsinhalte
-  testimonial:
-    quote: CartShift Studio hat unsere Mission vom ersten Tag an verstanden. Sie haben für uns ein Geschäft aufgebaut, das Kunden informiert und ihnen gleichzeitig ein müheloses Einkaufserlebnis ermöglicht. Allein unsere Quizfunktion hat die Art und Weise verändert, wie Kunden ihre perfekten Produkte finden.
-    author: Danielle Shamir
-    role: Gründer, ich liebe meinen Honeypot
   content: '
 
     ## Die Herausforderung

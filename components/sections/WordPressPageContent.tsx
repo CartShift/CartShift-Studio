@@ -191,7 +191,7 @@ export const WordPressPageContent: React.FC = () => {
                     {learnMoreData.excerpt}
                   </p>
                   <Link href={learnMoreData.href}>
-                    <Button
+                    <Button as="span"
                       variant="ghost"
                       className="p-0 text-accent-600 dark:text-accent-400 hover:text-accent-700 font-bold flex items-center gap-3 transition-all group/link"
                     >
@@ -256,7 +256,7 @@ export const WordPressPageContent: React.FC = () => {
                 })
               }
             >
-              <Button
+              <Button as="span"
                 size="lg"
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-accent-500/20 hover:shadow-accent-500/40 transition-shadow bg-accent-500 hover:bg-accent-600"
               >

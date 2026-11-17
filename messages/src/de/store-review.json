@@ -120,6 +120,33 @@
       },
       "note": "Darüber hinausgehende Recherchen, Umsetzungen und etwaige Zugriffe auf private Unternehmensdaten bedürfen eines vereinbarten Umfangs.",
       "seoLink": "Entdecken Sie SEO-Audit-Optionen"
+    },
+    "sample": {
+      "eyebrow": "So sieht eine Prüfung aus",
+      "title": "Beispiele für umsetzbare Hinweise",
+      "description": "Bei einer echten Prüfung dokumentieren wir, was wir in Ihrem Shop beobachtet haben, warum es relevant ist und was Sie tun können. Dies sind nur Beispielszenarien, keine Befunde einer geprüften Website.",
+      "actionLabel": "Was wir prüfen würden:",
+      "disclaimer": "Nur zur Veranschaulichung: kein geprüfter Befund, keine Ergebnisgarantie und keine Messung eines bestimmten Shops.",
+      "findings": {
+        "product": {
+          "area": "Produktseiten",
+          "title": "Klarheit bei Produktvarianten",
+          "observation": "Wenn Käufer nicht erkennen, welche Größe oder Variante ausgewählt ist, kann das die Entscheidung vor dem Warenkorb erschweren.",
+          "action": "Auswahlzustände, Verfügbarkeit und Hinweise direkt beim Warenkorb-Button prüfen."
+        },
+        "mobile": {
+          "area": "Mobile UX",
+          "title": "Nächster Schritt gut sichtbar?",
+          "observation": "Wenn die nächste Aktion auf kleinen Bildschirmen schwer zu finden ist, kann der Kaufweg unklar werden.",
+          "action": "Wichtige Abläufe mobil prüfen und konkrete Hürden festhalten."
+        },
+        "seo": {
+          "area": "Technisches SEO",
+          "title": "Eindeutige Seitensignale",
+          "observation": "Ähnliche Produkttitel können die Unterscheidung in Suchergebnissen erschweren.",
+          "action": "Titel, Canonicals und Indexierung anhand echter Seiten prüfen."
+        }
+      }
     }
   }
 }

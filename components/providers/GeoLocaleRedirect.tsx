@@ -11,6 +11,10 @@ const USER_LOCALE_PREFERENCE_KEY = 'user_locale_preference';
 // Re-detect location after 7 days (in milliseconds)
 const GEO_CACHE_DURATION = 7 * 24 * 60 * 60 * 1000;
 
+export function isExplicitLocalePath(pathname: string) {
+  return /^\/(?:en|he|de)(?:\/|$)/.test(pathname);
+}
+
 export function isExplicitCvPath(pathname: string) {
   return pathname === '/cv' || pathname === '/yotam' || /^\/(en|he)\/(?:cv|yotam)(?:\/|$)/.test(pathname);
 }
@@ -42,8 +46,10 @@ export function GeoLocaleRedirect() {
     const currentLocale = localeRef.current;
     const currentRouter = routerRef.current;
 
-    // Explicit recruiter-facing locale URLs must never be geo-swapped.
-    if (isExplicitCvPath(currentPathname)) {
+    // An explicit language in the URL is the visitor's choice, regardless of
+    // IP, timezone or a cached country. Never replace /he with /en (or vice
+    // versa). Server-side routing handles unprefixed entry points.
+    if (isExplicitLocalePath(currentPathname) || isExplicitCvPath(currentPathname)) {
       return;
     }
 

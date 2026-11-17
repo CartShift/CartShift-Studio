@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { GeoLocaleRedirect, isExplicitCvPath } from '@/components/providers/GeoLocaleRedirect';
+import { GeoLocaleRedirect, isExplicitCvPath, isExplicitLocalePath } from '@/components/providers/GeoLocaleRedirect';
 
 const mockReplace = vi.fn();
 let mockPathname = '/en/cv';
@@ -38,4 +38,28 @@ describe('GeoLocaleRedirect recruiter profile behavior', () => {
       expect(mockReplace).not.toHaveBeenCalled();
     }
   );
+  it.each([
+    ['/he', 'he', 'US'],
+    ['/he/free-store-review', 'he', 'US'],
+    ['/he/blog', 'he', 'DE'],
+    ['/en', 'en', 'IL'],
+    ['/en/solutions/seo', 'en', 'IL'],
+    ['/de/solutions/seo', 'de', 'IL'],
+  ])('keeps explicitly localized %s even when geo detection prefers %s', (path, locale, country) => {
+    mockPathname = path;
+    mockLocale = locale;
+    localStorage.setItem('geo_locale_detected', country);
+    sessionStorage.clear();
+    render(<GeoLocaleRedirect />);
+
+    expect(isExplicitLocalePath(path)).toBe(true);
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it('does not treat an unlocalized website entry as an explicit locale', () => {
+    expect(isExplicitLocalePath('/')).toBe(false);
+    expect(isExplicitLocalePath('/blog')).toBe(false);
+    expect(isExplicitLocalePath('/heb/')).toBe(false);
+  });
+
 });

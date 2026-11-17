@@ -727,12 +727,12 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Link href="/solutions/shopify">
-                        <Button size="lg" className="w-full sm:w-auto">
+                        <Button as="span" size="lg" className="w-full sm:w-auto">
                           {helpCta.primary}
                         </Button>
                       </Link>
                       <Link href="/free-store-review">
-                        <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                        <Button as="span" variant="outline" size="lg" className="w-full sm:w-auto">
                           {helpCta.secondary}
                         </Button>
                       </Link>
@@ -1032,7 +1032,7 @@ export const BlogPostContent: React.FC<BlogPostContentProps> = ({
                             })
                           }
                         >
-                          <Button
+                          <Button as="span"
                             size="lg"
                             variant="secondary"
                             className="text-base md:text-lg px-8 md:px-12 py-4 md:py-5 font-bold shadow-glow-primary group"

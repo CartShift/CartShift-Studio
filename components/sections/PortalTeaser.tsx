@@ -94,7 +94,7 @@ export const PortalTeaser: React.FC = () => {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-5">
               <Link href="/tools/client-portal">
-                <Button
+                <Button as="span"
                   size="lg"
                   className="w-full sm:w-auto h-14 px-8 font-bold group shadow-premium bg-primary-600 hover:bg-primary-700"
                 >
@@ -105,7 +105,7 @@ export const PortalTeaser: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button
+                <Button as="span"
                   variant="outline"
                   size="lg"
                   className="w-full sm:w-auto h-14 px-8 font-bold border-surface-300 dark:border-white/10 text-surface-700 dark:text-white hover:bg-surface-100 dark:hover:bg-white/10"

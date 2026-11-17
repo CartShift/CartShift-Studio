@@ -21,12 +21,11 @@ describe('German website is a translation of the existing site, not a second web
     expect(source).not.toMatch(/if\s*\(\s*locale\s*===\s*['"]de['"]\s*\)\s*return\s*</);
   });
 
-  it('retains the full homepage section order', () => {
+  it('retains the shared conversion-focused homepage section order', () => {
     const source = read(sharedPages[0]);
     const sections = [
-      '<Hero', '<HomepageIntro', '<ServicesOverview', '<Process', '<WhyChoose',
-      '<CaseStudiesTeaser', '<Testimonials', '<StoreAnalyzerTeaser', '<PortalTeaser',
-      '<BlogTeaser', '<CTABanner',
+      '<Hero', '<ServicesOverview', '<CaseStudiesTeaser', '<Process',
+      '<WhyChoose', '<Testimonials', '<BlogTeaser', '<CTABanner',
     ];
     let index = 0;
     for (const section of sections) {

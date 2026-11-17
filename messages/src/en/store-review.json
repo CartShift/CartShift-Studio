@@ -120,6 +120,33 @@
       },
       "note": "Additional research, implementation and any access to private business data require an agreed scope.",
       "seoLink": "Explore SEO audit options"
+    },
+    "sample": {
+      "eyebrow": "What a review looks like",
+      "title": "Examples of actionable findings",
+      "description": "A real review includes what we observed on your site, why it matters and what to do next. These are illustrative scenarios, not findings from an audited store.",
+      "actionLabel": "What we'd check:",
+      "disclaimer": "Illustration only: not a verified finding, a guaranteed result or a measurement of a specific store.",
+      "findings": {
+        "product": {
+          "area": "Product pages",
+          "title": "Product option clarity",
+          "observation": "For example, when a shopper cannot tell which size or variant is selected, they may hesitate before adding to cart.",
+          "action": "Inspect selection states, stock messages and guidance near the add-to-cart button."
+        },
+        "mobile": {
+          "area": "Mobile UX",
+          "title": "Visibility of the next step",
+          "observation": "For example, if the next action is difficult to find on a small screen, the buying journey may feel less obvious.",
+          "action": "Walk through key flows on smaller screens and document friction."
+        },
+        "seo": {
+          "area": "Technical SEO",
+          "title": "Clear, distinct page signals",
+          "observation": "For example, similar titles across product pages can make it harder to distinguish them in search results.",
+          "action": "Check titles, canonical URLs and indexing on real page examples."
+        }
+      }
     }
   }
 }

@@ -2,13 +2,14 @@
 
 import { motion } from '@/lib/motion';
 import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/ui/Button';
+import { buttonVariants } from '@/components/ui/Button';
 import { BackgroundShapes } from '@/components/ui/BackgroundShapes';
 import { heroContent } from '@/lib/animation-variants';
 import { useTranslations } from 'next-intl';
 import { useDirection } from '@/lib/i18n-utils';
 import { getScheduleUrl } from '@/lib/schedule';
-import { trackBookCallClick } from '@/lib/analytics';
+import { trackBookCallClick, trackCTAClick } from '@/lib/analytics';
+import { trackFunnelEvent } from '@/lib/services/analyzer-events';
 import { ArrowRight, ArrowDown, Code2, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { HeroIllustration } from './HeroIllustration';
@@ -79,14 +80,15 @@ export const Hero: React.FC = () => {
 
             <motion.div
               className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6"
-              initial="hidden"
+              initial={false}
               animate="visible"
               variants={heroContent}
               custom={0.6}
             >
-              <Link href="/free-store-review" className="w-full sm:w-auto">
-                <Button size="lg"
-                  className="group h-14 w-full px-10 text-lg font-bold shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 sm:w-auto md:h-16 md:px-12">
+              <Link href="/free-store-review" onClick={() => {
+                trackCTAClick(t('storeReview.ctaShort'), 'hero');
+                trackFunnelEvent('expert_review_cta_clicked', { source: 'hero' });
+              }} className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-auto group h-14 w-full px-10 text-lg font-bold shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 sm:w-auto md:h-16 md:px-12')}>
                   <span className="flex items-center gap-3">
                     {t('storeReview.ctaShort')}
                     <ArrowRight
@@ -95,15 +97,12 @@ export const Hero: React.FC = () => {
                       strokeWidth={3}
                     />
                   </span>
-                </Button>
-              </Link>
+                </Link>
               <a href={getScheduleUrl()} target="_blank" rel="noopener noreferrer"
-                onClick={() => trackBookCallClick('hero_cta')} className="w-full sm:w-auto">
-                <Button variant="outline" size="lg"
-                  className="h-14 w-full border-surface-200 bg-white/50 px-10 text-lg font-bold backdrop-blur-md hover:bg-surface-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 sm:w-auto md:h-16 md:px-12">
+                onClick={() => trackBookCallClick('hero_cta')}
+                className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'w-full sm:w-auto h-14 w-full border-surface-200 bg-white/50 px-10 text-lg font-bold backdrop-blur-md hover:bg-surface-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 sm:w-auto md:h-16 md:px-12')}>
                   {t('hero.primaryCta')}
-                </Button>
-              </a>
+                </a>
             </motion.div>
 
             {/* Platform Trusted Bar */}

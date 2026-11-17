@@ -346,7 +346,7 @@ export const WorkPageContent: React.FC<WorkPageContentProps> = ({ caseStudies = 
               </div>
               <div className="flex flex-wrap gap-3 lg:justify-end">
                 <Link href="/contact">
-                  <Button size="lg" rightIcon={<ArrowRight className="h-4 w-4 rtl:rotate-180" />}>
+                  <Button as="span" size="lg" rightIcon={<ArrowRight className="h-4 w-4 rtl:rotate-180" />}>
                     {work.cta.button}
                   </Button>
                 </Link>

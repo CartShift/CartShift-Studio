@@ -110,10 +110,22 @@ export async function POST(request: NextRequest) {
   // The request is already durable. Secondary systems must never produce a false submission failure.
   if (created) {
     try {
-      const agencyUsers = await db.collection('portal_users').where('isAgency', '==', true).limit(20).get();
-      if (!agencyUsers.empty) {
+      // Portal authorization accepts either legacy isAgency or accountType=AGENCY.
+      // Query both representations to avoid silently missing legitimate editors.
+      const [byFlag, byType] = await Promise.all([
+        db.collection('portal_users').where('isAgency', '==', true).limit(30).get(),
+        db.collection('portal_users').where('accountType', '==', 'AGENCY').limit(30).get(),
+      ]);
+      const staff = new Map([...byFlag.docs, ...byType.docs].map(user => [user.id, user]));
+      const recipients = [...staff.values()].filter(user => {
+        const data = user.data();
+        return data?.status !== 'suspended' && ['owner', 'admin'].includes(data?.agencyRole);
+      });
+      if (recipients.length === 0) {
+        console.warn('[store-review] No active agency owners/admins to notify', { requestId });
+      } else {
         const notifications = db.batch();
-        agencyUsers.docs.forEach(user => {
+        recipients.forEach(user => {
           notifications.set(db.collection('portal_notifications').doc('store-review-' + requestId + '-' + user.id), {
             userId: user.id, type: 'human_review_requested',
             title: 'New expert store review request',

@@ -266,7 +266,7 @@ export const ShopifyPageContent: React.FC = () => {
 
           <div className="mt-10 flex flex-wrap gap-4">
             <Link href="/blog/shopify-seo-complete-guide">
-              <Button variant="outline" size="lg">
+              <Button as="span" variant="outline" size="lg">
                 <span className="flex items-center gap-2">
                   {isHe ? 'המדריך המלא ל-Shopify SEO' : 'Read the Shopify SEO pillar guide'}
                   <ArrowRight className="w-5 h-5 rtl:rotate-180" />
@@ -274,7 +274,7 @@ export const ShopifyPageContent: React.FC = () => {
               </Button>
             </Link>
             <Link href="/free-store-review">
-              <Button size="lg">
+              <Button as="span" size="lg">
                 <span className="flex items-center gap-2">
                   {isHe ? 'בקשו סקירה מקצועית בחינם' : 'Request a free expert review'}
                   <Search className="w-5 h-5" />
@@ -367,12 +367,12 @@ export const ShopifyPageContent: React.FC = () => {
                       })
                     }
                   >
-                    <Button size="lg" className="w-full sm:w-auto">
+                    <Button as="span" size="lg" className="w-full sm:w-auto">
                       {localTrust.primary}
                     </Button>
                   </Link>
                   <Link href="/free-store-review">
-                    <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                    <Button as="span" variant="outline" size="lg" className="w-full sm:w-auto">
                       {localTrust.secondary}
                     </Button>
                   </Link>
@@ -412,7 +412,7 @@ export const ShopifyPageContent: React.FC = () => {
                 })
               }
             >
-              <Button
+              <Button as="span"
                 size="lg"
                 className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow"
               >

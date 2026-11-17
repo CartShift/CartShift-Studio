@@ -23,6 +23,11 @@ function InnerForm({ initialFocus, initialNotes }: { initialFocus?: StoreReviewF
   const [requestId, setRequestId] = useState<string | null>(null);
   const idRef = useRef<string | null>(null);
   const viewTrackedRef = useRef(false);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (requestId) successHeadingRef.current?.focus();
+  }, [requestId]);
   useEffect(() => {
     const recordView = () => {
       if (viewTrackedRef.current || !isAnalyticsConsentGranted()) return;
@@ -84,13 +89,13 @@ function InnerForm({ initialFocus, initialNotes }: { initialFocus?: StoreReviewF
   if (requestId) {
     return <div role="status" className="space-y-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-6">
       <CheckCircle2 size={36} className="text-emerald-600" aria-hidden="true" />
-      <h2 className="text-2xl font-bold text-surface-900 dark:text-white">{t('successTitle')}</h2>
+      <h2 ref={successHeadingRef} tabIndex={-1} className="text-2xl font-bold text-surface-900 dark:text-white">{t('successTitle')}</h2>
       <p className="leading-relaxed text-surface-600 dark:text-surface-300">{t('successText')}</p>
       <p className="break-all text-xs text-surface-500">{t('successReference')}: <b dir="ltr">{requestId}</b></p>
     </div>;
   }
 
-  return <form onSubmit={submit} className="space-y-4">
+  return <form onSubmit={submit} aria-busy={pending} className="space-y-4">
     <div className="grid gap-4 sm:grid-cols-2">
       <label className="block space-y-2 text-sm font-medium text-surface-800 dark:text-surface-200">
         <span>{t('name')}</span>

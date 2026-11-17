@@ -277,7 +277,7 @@ export const AboutPageContent: React.FC = () => {
               {copy.ctaDescription}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow">
+              <Button as="span" size="lg" className="h-16 px-10 text-xl font-bold group shadow-2xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-shadow">
                 <span className="flex items-center gap-3">
                   {copy.ctaButton}
                   <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" strokeWidth={2.5} />

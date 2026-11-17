@@ -51,7 +51,7 @@ export function ContextualAnalyzerCta({
           trackFunnelEvent('expert_review_cta_clicked', { intent, article_slug: articleSlug })
         }
       >
-        <Button variant="secondary" size="lg" className="w-full md:w-auto">
+        <Button as="span" variant="secondary" size="lg" className="w-full md:w-auto">
           {review('submit')} <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
         </Button>
       </Link>

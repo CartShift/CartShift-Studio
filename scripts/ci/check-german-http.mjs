@@ -51,6 +51,9 @@ const cases = [
 ];
 const original = await checkPage('/en', { lang: 'en' });
 const translated = await checkPage('/de', { lang: 'de' });
+const hebrew = await checkPage('/he', { lang: 'he' });
+const heMain = hebrew.slice(hebrew.indexOf('<main'), hebrew.indexOf('</main>'));
+assert(heMain.includes('חנות Shopify'), 'Hebrew homepage main content fell back to English');
 const expectedGermanCopy = {
   '/de/services/shopify-conversion-optimization': 'Conversion-Rate',
   '/de/services/shopify-b2b-integrations': 'Integrationen',

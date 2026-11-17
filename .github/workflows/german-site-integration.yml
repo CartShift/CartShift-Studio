@@ -79,6 +79,14 @@ jobs:
           fi
           node scripts/ci/check-german-http.mjs
           node scripts/ci/check-german-browser.mjs
+      - name: Upload anonymous Hebrew website visual QA captures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cartshift-website-qa
+          path: .artifacts/website-qa/*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Explain release restriction
         if: always()
         run: echo 'These test-only toggles do not authorize a public German rollout. Verified Impressum, human translation review and browser QA remain separate release requirements.'

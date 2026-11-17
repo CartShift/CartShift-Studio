@@ -5,24 +5,11 @@ import { PageHero } from '@/components/sections/PageHero';
 import { BlogPageContent } from '@/components/sections/BlogPageContent';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { useTranslations } from 'next-intl';
+import type { BlogPostSummary } from '@/lib/blog-summary';
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  category: string;
-  image?: string;
-  imageAlt?: string;
-  translation?: {
-    title: string;
-    excerpt: string;
-    category: string;
-  };
-}
 
 interface BlogTemplateProps {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   categories: string[];
 }
 
