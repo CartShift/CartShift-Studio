@@ -166,6 +166,39 @@ try {
       await funnelPage.close();
     }
   }
+
+  // The main SEO/service heading must remain readable before hydration or when
+  // JavaScript is unavailable. Motion's initial opacity:0 hides H1 otherwise.
+  for (const lang of ['en', 'de']) {
+    const noJsPage = await browser.newPage();
+    try {
+      await noJsPage.setJavaScriptEnabled(false);
+      const response = await noJsPage.goto(baseUrl + '/' + lang + '/solutions/seo', {
+        waitUntil: 'domcontentloaded', timeout: 30000,
+      });
+      if (response?.status() !== 200) failures.push(lang + ' no-JS SEO page failed HTTP');
+      const hero = await noJsPage.evaluate(() => {
+        const title = document.querySelector('main#main-content h1');
+        const intro = title?.nextElementSibling;
+        return {
+          text: title?.textContent?.trim() || '',
+          titleOpacity: title ? getComputedStyle(title).opacity : '0',
+          introOpacity: intro ? getComputedStyle(intro).opacity : '0',
+          introText: intro?.textContent?.trim() || '',
+        };
+      });
+      if (hero.text.length < 8 || Number(hero.titleOpacity) < 0.9) {
+        failures.push(lang + ' SEO title hidden with JavaScript disabled');
+      }
+      if (hero.introText.length < 30 || Number(hero.introOpacity) < 0.9) {
+        failures.push(lang + ' SEO introduction hidden with JavaScript disabled');
+      }
+    } catch (e) {
+      failures.push(lang + ' no-JS SEO smoke failed: ' + String(e.message || e).slice(0, 180));
+    } finally {
+      await noJsPage.close();
+    }
+  }
 } finally {
   await browser.close();
 }
