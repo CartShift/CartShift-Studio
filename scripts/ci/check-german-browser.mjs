@@ -176,7 +176,11 @@ try {
       const response = await noJsPage.goto(baseUrl + '/' + lang + '/solutions/seo', {
         waitUntil: 'domcontentloaded', timeout: 30000,
       });
-      if (response?.status() !== 200) failures.push(lang + ' no-JS SEO page failed HTTP');
+      // The page was already visited above; conditional browser-cache responses
+      // may return 304 and still render valid, previously fetched HTML.
+      if (!response || ![200, 304].includes(response.status())) {
+        failures.push(lang + ' no-JS SEO page failed HTTP ' + response?.status());
+      }
       const hero = await noJsPage.evaluate(() => {
         const title = document.querySelector('main#main-content h1');
         const intro = title?.nextElementSibling;
