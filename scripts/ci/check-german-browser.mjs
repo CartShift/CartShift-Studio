@@ -228,12 +228,33 @@ try {
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 4,
       }));
       if (home.lang !== 'he' || home.dir !== 'rtl' || home.h1.length < 12 || home.overflow) {
-        failures.push('HE ' + viewport.name + ' main page RTL or layout regression');
+        failures.push('HE ' + viewport.name + ' main page RTL or layout regression at ' + he.url());
+        // Different browser contexts do not share NEXT_LOCALE cookies. A clean
+        // visit distinguishes explicit locale routing from state contamination.
+        let diagnosticContext;
+        try {
+          diagnosticContext = await browser.createBrowserContext();
+          const diagnosticPage = await diagnosticContext.newPage();
+          const diagnosticResponse = await diagnosticPage.goto(baseUrl + '/he', {
+            waitUntil: 'domcontentloaded', timeout: 15000,
+          });
+          console.log('HE isolated browser context', viewport.name,
+            diagnosticResponse?.status(), diagnosticPage.url(),
+            await diagnosticPage.evaluate(() => ({ lang: document.documentElement.lang,
+              dir: document.documentElement.dir,
+              h1: document.querySelector('main h1')?.textContent?.slice(0, 90) })));
+        } catch (e) {
+          console.warn('HE isolated diagnostic unavailable', String(e.message || e).slice(0, 120));
+        } finally {
+          await diagnosticContext?.close();
+        }
       }
+      console.log('HE visual smoke', viewport.name, 'actual URL', he.url(),
+        'status', homeResponse.status(), 'locale/layout', JSON.stringify(home));
       await he.screenshot({ path: capturesDir + '/he-home-' + viewport.name + '.png' });
       const cta = await he.$('main#main-content a[href$="/he/free-store-review"]');
       if (!cta) {
-        failures.push('HE ' + viewport.name + ' review CTA missing');
+        failures.push('HE ' + viewport.name + ' review CTA missing at ' + he.url());
         continue;
       }
       await cta.click();
