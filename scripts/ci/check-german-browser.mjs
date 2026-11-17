@@ -3,6 +3,7 @@
  * build. This never visits production or submits forms.
  */
 import puppeteer from 'puppeteer';
+import { mkdir } from 'node:fs/promises';
 
 const baseUrl = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:3210';
 const browser = await puppeteer.launch({
@@ -201,6 +202,65 @@ try {
       failures.push(lang + ' no-JS SEO smoke failed: ' + String(e.message || e).slice(0, 180));
     } finally {
       await noJsPage.close();
+    }
+  }
+
+  // Evidence-only screenshots of public marketing pages, without submitted
+  // forms, authenticated sessions, cookies from users, or client data.
+  const capturesDir = '.artifacts/website-qa';
+  await mkdir(capturesDir, { recursive: true });
+  for (const viewport of viewports) {
+    const he = await browser.newPage();
+    try {
+      await he.setViewport(viewport);
+      const homeResponse = await he.goto(baseUrl + '/he', {
+        waitUntil: 'domcontentloaded', timeout: 30000,
+      });
+      if (!homeResponse || ![200, 304].includes(homeResponse.status())) {
+        failures.push('HE ' + viewport.name + ' home did not load');
+        continue;
+      }
+      await new Promise(resolve => setTimeout(resolve, 400));
+      const home = await he.evaluate(() => ({
+        dir: document.documentElement.dir,
+        lang: document.documentElement.lang,
+        h1: document.querySelector('main#main-content h1')?.textContent?.trim() || '',
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 4,
+      }));
+      if (home.lang !== 'he' || home.dir !== 'rtl' || home.h1.length < 12 || home.overflow) {
+        failures.push('HE ' + viewport.name + ' main page RTL or layout regression');
+      }
+      await he.screenshot({ path: capturesDir + '/he-home-' + viewport.name + '.png' });
+      const cta = await he.$('main#main-content a[href$="/he/free-store-review"]');
+      if (!cta) {
+        failures.push('HE ' + viewport.name + ' review CTA missing');
+        continue;
+      }
+      await cta.click();
+      await he.waitForFunction(() => location.pathname === '/he/free-store-review',
+        { timeout: 15000 });
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const review = await he.evaluate(() => ({
+        lang: document.documentElement.lang,
+        dir: document.documentElement.dir,
+        cards: document.querySelectorAll('section[aria-labelledby="review-example-title"] article').length,
+        email: !!document.querySelector('form input[type="email"][required]'),
+        store: !!document.querySelector('form input[name="storeUrl"][required]'),
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 4,
+      }));
+      if (review.lang !== 'he' || review.dir !== 'rtl' || review.cards !== 3 ||
+          !review.email || !review.store || review.overflow) {
+        failures.push('HE ' + viewport.name + ' review form/layout regression');
+      }
+      await he.screenshot({
+        path: capturesDir + '/he-review-' + viewport.name + '.png',
+        fullPage: viewport.name === 'mobile',
+      });
+    } catch (e) {
+      failures.push('HE ' + viewport.name + ' visual flow failed: ' +
+        String(e.message || e).slice(0, 180));
+    } finally {
+      await he.close();
     }
   }
 } finally {
