@@ -288,6 +288,31 @@ try {
       await heContext.close();
     }
   }
+
+  // An explicit Hebrew URL should win over a previously selected English
+  // preference in a normal visitor session. This is separate from isolated
+  // screenshots and guards against genuine cross-locale redirects.
+  const switchContext = await browser.createBrowserContext();
+  const switchPage = await switchContext.newPage();
+  try {
+    await switchPage.goto(baseUrl + '/en', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await switchPage.goto(baseUrl + '/he', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const state = await switchPage.evaluate(() => ({
+      path: location.pathname,
+      lang: document.documentElement.lang,
+      dir: document.documentElement.dir,
+    }));
+    console.log('Explicit EN-to-HE navigation', JSON.stringify(state));
+    if (state.path !== '/he' || state.lang !== 'he' || state.dir !== 'rtl') {
+      failures.push('Explicit Hebrew URL did not override previous English preference');
+    }
+  } catch (e) {
+    failures.push('Explicit EN-to-HE navigation failed: ' + String(e.message || e).slice(0, 180));
+  } finally {
+    await switchPage.close();
+    await switchContext.close();
+  }
 } finally {
   await browser.close();
 }
