@@ -210,7 +210,10 @@ try {
   const capturesDir = '.artifacts/website-qa';
   await mkdir(capturesDir, { recursive: true });
   for (const viewport of viewports) {
-    const he = await browser.newPage();
+    // Screenshot QA must not inherit NEXT_LOCALE or router cache state from
+    // the preceding EN/DE navigation matrix. Keep each locale run independent.
+    const heContext = await browser.createBrowserContext();
+    const he = await heContext.newPage();
     try {
       await he.setViewport(viewport);
       const homeResponse = await he.goto(baseUrl + '/he', {
@@ -282,6 +285,7 @@ try {
         String(e.message || e).slice(0, 180));
     } finally {
       await he.close();
+      await heContext.close();
     }
   }
 } finally {
