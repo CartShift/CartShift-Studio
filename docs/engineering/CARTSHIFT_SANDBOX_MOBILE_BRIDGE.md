@@ -131,7 +131,7 @@ on approximately one idle poll per 30 seconds; during long commands it sends
 periodic busy heartbeats. An absent heartbeat cannot prove an older worker
 is offline. A v2 heartbeat older than 90 seconds is considered stale.
 
-The worker polls every 3 seconds initially and backs off toward 30 seconds
+The worker polls every 3 seconds initially and backs off toward 45 seconds
 when idle, reducing sustained idle reads by roughly 90% relative to a 3-second
 constant rate (not an observed billing claim). New jobs can take up to 30
 seconds to start after extended inactivity. A push channel / long polling
@@ -195,3 +195,7 @@ An auditable privileged credential broker, safe live running-job
 cancellation, reliable long-term log streaming, and retention-aware
 cleanup of historical jobs remain separate engineering projects. Do not
 represent them as delivered by Operations v2.
+
+### Idle resource budget
+
+After extended inactivity, both command and inactive-session channels use a 45-second interval. Interactive sessions still sync every second, and busy command heartbeats remain every 30 seconds. Repeated transport failures use a bounded 3/6/12/24/45-second retry delay. Two idle channels generate about 3,840 requests per 24 hours instead of 5,760, excluding retries and active work; actual CPU savings must be measured. This is an interim reduction, not an event-driven transport. A fully stopped worker consumes no polling resources. The longer idle interval can add up to 15 seconds to command/session discovery versus the previous configuration. Keep owner-verified launcher and hash verification intact when deploying the updated worker.
