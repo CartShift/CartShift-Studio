@@ -127,13 +127,13 @@ Firestore document listener on the Vercel server, not busy polling from ChatGPT.
 
 `sandbox_status` is driven by an actual authenticated worker heartbeat, never
 by the unrelated cloud `sandbox_ping`. A v2 worker piggybacks a heartbeat
-on approximately one idle poll per 30 seconds; during long commands it sends
+on approximately one idle poll per 45 seconds with the updated worker (30 seconds on older builds); during long commands it sends
 periodic busy heartbeats. An absent heartbeat cannot prove an older worker
 is offline. A v2 heartbeat older than 90 seconds is considered stale.
 
 The worker polls every 3 seconds initially and backs off toward 45 seconds
 when idle, reducing sustained idle reads by roughly 90% relative to a 3-second
-constant rate (not an observed billing claim). New jobs can take up to 30
+constant rate (not an observed billing claim). New jobs can take up to 45
 seconds to start after extended inactivity. A push channel / long polling
 should be separately evaluated before optimizing further.
 
