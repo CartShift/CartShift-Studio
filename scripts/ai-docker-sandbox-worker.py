@@ -25,7 +25,9 @@ TOKEN = ""
 WORKSPACE = Path("/workspace").resolve(strict=True)
 MAX_OUTPUT = 24_000
 POLL_INTERVAL_SECONDS = 3
-MAX_IDLE_POLL_SECONDS = 30
+MAX_IDLE_POLL_SECONDS = 45
+SESSION_IDLE_POLL_SECONDS = 45
+SESSION_ACTIVE_POLL_SECONDS = 1
 HEARTBEAT_SECONDS = 30
 MAX_DRAINED_BYTES = 2_000_000
 MAX_COMMAND_SECONDS = 600
@@ -257,6 +259,15 @@ def report_completion(completion, deadline=None):
     return False
 
 
+def retry_delay_seconds(failures):
+    """Bound outage traffic without changing active command heartbeat deadlines."""
+    return min(MAX_IDLE_POLL_SECONDS, POLL_INTERVAL_SECONDS * 2 ** min(max(failures - 1, 0), 4))
+
+
+def next_idle_delay_seconds(current):
+    return min(MAX_IDLE_POLL_SECONDS, current * 1.5)
+
+
 def busy_heartbeat_loop(stop_event, busy_event):
     # One daemon thread per worker, never per command. Network I/O must not
     # block the selector's output draining or deadline enforcement.
@@ -290,7 +301,7 @@ def sessions_sync_loop(stop_event, guardian):
             if failures == 1 or failures % 20 == 0:
                 activity('connection_error', channel='sessions')
             # HTTPS outages do not interfere with the guardian's local deadlines.
-            stop_event.wait(3)
+            stop_event.wait(retry_delay_seconds(failures))
             continue
         if not connected or failures:
             activity('connection_recovered' if connected else 'connected', channel='sessions')
@@ -313,7 +324,7 @@ def sessions_sync_loop(stop_event, guardian):
                 activity('session_input_acknowledged', session_id=ack[0])
                 last_ack = ack
         active = snapshot and snapshot.get('status') not in ('completed', 'failed', 'stopped', 'expired')
-        stop_event.wait(1 if active else 30)
+        stop_event.wait(SESSION_ACTIVE_POLL_SECONDS if active else SESSION_IDLE_POLL_SECONDS)
 
 
 def main():
@@ -369,13 +380,14 @@ def main():
                         worker_busy.clear()
                     report_completion(completion, deadline)
                 else:
-                    idle_delay = min(MAX_IDLE_POLL_SECONDS, idle_delay * 1.5)
+                    idle_delay = next_idle_delay_seconds(idle_delay)
             except KeyboardInterrupt:
                 return 0
             except (urllib.error.URLError, TimeoutError, ValueError, RuntimeError, OSError, KeyError) as error:
                 if UNSAFE_MARKER.exists():
                     return 1
                 failures += 1
+                idle_delay = max(idle_delay, retry_delay_seconds(failures))
                 if failures == 1 or failures % 20 == 0:
                     activity('connection_error', channel='jobs', error=type(error).__name__)
                 code = error.code if isinstance(error, urllib.error.HTTPError) else ""
