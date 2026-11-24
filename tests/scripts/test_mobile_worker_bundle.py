@@ -47,8 +47,8 @@ class MobileBundleTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):self.load(role,slot)
     def test_v3_wire_schema_matches_deployed_strict_backend(self):
         _,ns=self.load();payload=ns['worker_payload']
-        self.assertEqual(payload({'action':'poll','worker_version':4,'heartbeat':True}),{'action':'poll','worker_version':3,'heartbeat':True})
-        self.assertEqual(payload({'action':'heartbeat','busy':True,'job_id':'fixture','lease_token':'x'*40}),{'action':'heartbeat','busy':True,'worker_version':3})
+        self.assertEqual(payload({'action':'poll','worker_version':4,'heartbeat':True}),{'action':'poll','worker_version':3,'long_commands_v1':True,'heartbeat':True})
+        self.assertEqual(payload({'action':'heartbeat','busy':True,'job_id':'fixture','lease_token':'x'*40}),{'action':'heartbeat','busy':True,'worker_version':3,'long_commands_v1':True})
         with self.assertRaises(RuntimeError):payload({'action':'sync'},endpoint='auth')
         data={'action':'complete','worker_version':4,'job_id':'fixture','lease_token':'x'*40,'exit_code':0,'stdout':'','stderr':'','duration_ms':1,'output_truncated':False}
         self.assertNotIn('worker_version',payload(data))
@@ -112,6 +112,7 @@ class MobileBundleTests(unittest.TestCase):
             exec(compile(wrapper,'real-mobile','exec'),ns)
             worker=ns['load_worker']()
         self.assertEqual(worker['ROLE'],'build')
-        self.assertEqual(worker['worker_payload']({'action':'poll','worker_version':4}),{'action':'poll','worker_version':3})
+        self.assertEqual(worker['worker_payload']({'action':'poll','worker_version':4}),{'action':'poll','worker_version':3,'long_commands_v1':True})
+        self.assertEqual(worker['MAX_COMMAND_SECONDS'],3600)
 
 if __name__=='__main__':unittest.main()

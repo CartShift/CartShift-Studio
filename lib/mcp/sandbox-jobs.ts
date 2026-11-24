@@ -15,6 +15,8 @@ const MAX_OUTPUT = 24_000;
 const JOB_RETENTION_MS = 7 * 24 * 60 * 60_000;
 const WORKER_ONLINE_MS = 90_000;
 const MAX_COMMAND_SECONDS = 600;
+const MAX_EXTENDED_COMMAND_SECONDS = 3600;
+const EXTENDED_QUEUE_AGE_MS = 70 * 60_000;
 const MAX_ARTIFACT_CHUNK = 12_000;
 const WORKER_STATE = 'sandbox_worker_state';
 
@@ -66,6 +68,19 @@ async function workerIsV2(): Promise<boolean> {
     Date.now() - data.lastSeenAt < WORKER_ONLINE_MS && Date.now() >= data.lastSeenAt;
 }
 
+function supportsExtendedMobileCommands(version: unknown, capability: unknown): boolean {
+  return process.env.SANDBOX_ACTIVE_WORKER_HOST === 'mobile' &&
+    !poolEnabled() && version === 3 && capability === true;
+}
+
+async function workerSupportsExtendedCommands(): Promise<boolean> {
+  if (process.env.SANDBOX_ACTIVE_WORKER_HOST !== 'mobile' || poolEnabled()) return false;
+  const data = (await firestore().collection(WORKER_STATE).doc('primary').get()).data();
+  const age = typeof data?.lastSeenAt === 'number' ? Date.now() - data.lastSeenAt : null;
+  return age !== null && age >= 0 && age < WORKER_ONLINE_MS &&
+    supportsExtendedMobileCommands(data?.version, data?.longCommandsV1);
+}
+
 export async function getSandboxStatus(grant: TokenGrant) {
   authorizeSandboxOwner(grant);
   const snap = await firestore().collection(WORKER_STATE).doc('primary').get();
@@ -76,6 +91,7 @@ export async function getSandboxStatus(grant: TokenGrant) {
   const interactive = auth.connected;
   const enforced = process.env.SANDBOX_AUTH_WORKER_ENFORCE === 'true';
   const pool = poolEnabled() ? await poolStatus() : null;
+  const extended = online && supportsExtendedMobileCommands(data?.version, data?.longCommandsV1);
   return { connected: online, state: online ? 'online' : data ? 'offline' : 'unverified',
     last_seen_at: data?.lastSeenAt ?? null, worker_version: data?.version ?? null,
     busy: online && data?.busy === true,
@@ -83,10 +99,11 @@ export async function getSandboxStatus(grant: TokenGrant) {
     auth_worker_enforced: enforced,
     limitations: [enforced ? 'auth_runtime_isolation_unverified' : 'shared_uid_provider_credentials',
       'managed_dev_services_unverified', 'host_backup_not_remotely_verified'],
-    max_command_seconds: online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
+    max_command_seconds: extended ? MAX_EXTENDED_COMMAND_SECONDS : online && data?.version >= 2 ? MAX_COMMAND_SECONDS : 120,
     capabilities: [...((pool?.connected || online && data?.version >= 2)
       ? ['adaptive_polling', 'cancel_queued', 'long_commands', 'output_truncation',
           ...((pool?.connected || data?.version >= 4) ? ['cancel_running', 'artifact_chunks'] : [])] : []),
+      ...(extended ? ['long_commands_3600'] : []),
       ...(interactive ? ['interactive_auth_sessions'] : []),
       ...(pool ? ['parallel_execution', 'per_worker_diagnostics'] : [])],
     ...(pool ? { ...pool, state: pool.connected ? 'online' : 'offline', worker_version: 5,
@@ -94,10 +111,11 @@ export async function getSandboxStatus(grant: TokenGrant) {
   };
 }
 
-export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 | 4 = 2) {
+export async function recordSandboxHeartbeat(busy = false, version: 2 | 3 | 4 = 2, longCommandsV1 = false) {
   configured();
   await firestore().collection(WORKER_STATE).doc('primary').set({
     lastSeenAt: Date.now(), version, busy,
+    longCommandsV1: supportsExtendedMobileCommands(version, longCommandsV1),
   }, { merge: true });
   return { acknowledged: true };
 }
@@ -169,7 +187,7 @@ async function awaitJob(ref: FirebaseFirestore.DocumentReference, jobId: string,
 const commandInput = z.object({
   command: z.string().trim().min(1).max(2000),
   cwd: z.string().min(10).max(300).regex(/^\/workspace(?:\/[A-Za-z0-9._/-]+)?$/).default('/workspace'),
-  timeout_seconds: z.number().int().min(1).max(MAX_COMMAND_SECONDS).default(60),
+  timeout_seconds: z.number().int().min(1).max(MAX_EXTENDED_COMMAND_SECONDS).default(60),
   wait_seconds: z.number().int().min(0).max(15).default(0),
   exclusive_workspace: z.boolean().default(false),
 }).strict();
@@ -229,13 +247,16 @@ export async function submitSandboxCommand(grant: TokenGrant, input: unknown) {
   if (args.timeout_seconds > 120 && !(await workerIsV2())) {
     throw new Error('SANDBOX_WORKER_UPDATE_REQUIRED');
   }
+  if (args.timeout_seconds > MAX_COMMAND_SECONDS && !(await workerSupportsExtendedCommands())) {
+    throw new Error('SANDBOX_WORKER_UPDATE_REQUIRED');
+  }
   const now = Date.now();
   const ref = firestore().collection(JOBS).doc();
   await ref.create({
     ownerUid: grant.uid, command: args.command, cwd: args.cwd,
     exclusiveWorkspace: args.exclusive_workspace,
     timeoutSeconds: args.timeout_seconds, status: 'queued',
-    createdAt: now, expiresAt: now + JOB_MAX_AGE_MS,
+    createdAt: now, expiresAt: now + (args.timeout_seconds > MAX_COMMAND_SECONDS ? EXTENDED_QUEUE_AGE_MS : JOB_MAX_AGE_MS),
     purgeAt: Timestamp.fromMillis(now + JOB_RETENTION_MS),
   });
   if (args.wait_seconds > 0) return await awaitJob(ref, ref.id, args.wait_seconds);
@@ -287,7 +308,7 @@ export async function getSandboxCommand(grant: TokenGrant, input: unknown) {
   return publicJobResult(job_id, data);
 }
 
-export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2) {
+export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2, longCommandsV1 = false) {
   configured();
   if (poolEnabled()) return null; // activation fences legacy dispatch; submissions stay unchanged
   const db = firestore();
@@ -301,12 +322,14 @@ export async function leaseSandboxJob(workerVersion: 2 | 3 | 4 = 2) {
       const fresh = await tx.get(doc.ref);
       const data = fresh.data();
       if (!data || data.status !== 'queued' ||
-          data.ownerUid !== process.env.SANDBOX_OWNER_UID ||
-          (data.kind === 'artifact_read' && workerVersion < 4)) return null;
+          data.ownerUid !== process.env.SANDBOX_OWNER_UID) return null;
       if (data.expiresAt <= now) {
         tx.update(doc.ref, { status: 'expired', finishedAt: now });
         return null;
       }
+      if ((data.kind === 'artifact_read' && workerVersion < 4) ||
+          (data.timeoutSeconds > MAX_COMMAND_SECONDS &&
+            (!supportsExtendedMobileCommands(workerVersion, longCommandsV1) || data.timeoutSeconds > MAX_EXTENDED_COMMAND_SECONDS))) return null;
       tx.update(doc.ref, {
         status: 'leased', startedAt: now, workerVersion,
         leaseExpiresAt: now + Math.max(LEASE_MS, data.timeoutSeconds * 1000 + 90_000),
@@ -332,7 +355,7 @@ export async function completeSandboxJob(input: unknown) {
     exit_code: z.number().int().min(-255).max(255),
     stdout: z.string().max(MAX_OUTPUT),
     stderr: z.string().max(MAX_OUTPUT),
-    duration_ms: z.number().int().min(0).max((MAX_COMMAND_SECONDS + 60) * 1000),
+    duration_ms: z.number().int().min(0).max((MAX_EXTENDED_COMMAND_SECONDS + 60) * 1000),
     output_truncated: z.boolean(),
     worker_id: z.string().regex(/^[a-f0-9]{32}$/).optional(),
   }).strict().parse(input);
@@ -354,7 +377,8 @@ export async function completeSandboxJob(input: unknown) {
     if (!data || (data.workerVersion === 5 && data.workerId !== args.worker_id) ||
         data.status !== 'leased' || typeof data.leaseTokenHash !== 'string' ||
         !constantEquals(data.leaseTokenHash, tokenHash(args.lease_token)) ||
-        Date.now() > data.leaseExpiresAt) {
+        Date.now() > data.leaseExpiresAt ||
+        (typeof data.timeoutSeconds === 'number' && args.duration_ms > (data.timeoutSeconds + 60) * 1000)) {
       throw new Error('INVALID_OR_EXPIRED_LEASE');
     }
     const stdout = redactSandboxOutput(args.stdout);

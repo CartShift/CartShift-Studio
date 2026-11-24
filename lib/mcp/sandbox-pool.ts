@@ -73,6 +73,8 @@ export async function claimPoolJob(input: PoolIdentity) {
     for (const { doc, data } of candidates) {
       if (!data || data.status !== 'queued' || data.ownerUid !== process.env.SANDBOX_OWNER_UID) continue;
       if (data.expiresAt <= now) { tx.update(doc.ref, { status: 'expired', finishedAt: now }); continue; }
+      // Existing pool workers have a 600-second execution ceiling.
+      if (data.timeoutSeconds > 600) continue;
       const scope = scopeFor(data);
       // Older blocked work reserves its place for conflicting scopes while
       // unrelated task directories continue using idle capacity.

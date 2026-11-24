@@ -197,3 +197,9 @@ An auditable privileged credential broker, safe live running-job
 cancellation, reliable long-term log streaming, and retention-aware
 cleanup of historical jobs remain separate engineering projects. Do not
 represent them as delivered by Operations v2.
+
+## Mobile long-command capability (proposed, activation gated)
+
+An upgraded build-only mobile bundle advertises `long_commands_v1: true` on V3 poll and busy heartbeat requests. Only a fresh heartbeat from the configured mobile host admits commands over 600 seconds, with a hard ceiling of 3600 seconds. Legacy V2/V3/V4 and V5 pool workers keep their previous limit. Dispatch rechecks the capability; a legacy worker cannot claim an extended job after a handoff. Extended jobs may wait up to 70 minutes in the queue; leases cover runtime plus 90 seconds. Completion remains lease-bound and bounded. V3 does not support running cancellation or artifact transfer; this change does not advertise either.
+
+Activation order: finish active jobs, validate tests, deploy the compatible server and refresh the MCP tool schema, then install the reviewed hash-pinned mobile bundle. Confirm fresh status reports `max_command_seconds: 3600`; run a harmless boundary smoke test before long builds. Do not restart a busy worker, auto-replay unknown commands, or roll back the server while extended jobs are leased. No production activation or physical-device validation is claimed by this proposal.

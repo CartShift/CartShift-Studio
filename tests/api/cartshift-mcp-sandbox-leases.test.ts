@@ -62,6 +62,19 @@ describe('sandbox one-use leases and completion retries', () => {
     });
     expect(state.update).toHaveBeenCalledTimes(1);
   });
+  it('leases hour-long commands only to explicitly capable mobile workers and accepts their completion', async () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    vi.stubEnv('SANDBOX_PARALLEL_ENABLED', 'false');
+    state.data = { ownerUid: 'owner', status: 'queued', timeoutSeconds: 3600,
+      expiresAt: Date.now() + 60_000 };
+    await expect(leaseSandboxJob(3)).resolves.toBeNull();
+    await expect(leaseSandboxJob(4, true)).resolves.toBeNull();
+    expect(state.update).not.toHaveBeenCalled();
+    const lease = await leaseSandboxJob(3, true);
+    expect(lease).toMatchObject({ timeout_seconds: 3600 });
+    expect(Number(state.data.leaseExpiresAt) - Number(state.data.startedAt)).toBe(3690_000);
+    await expect(completeSandboxJob({ ...completion, lease_token: lease!.lease_token, duration_ms: 3599_000 })).resolves.toEqual({ acknowledged: true });
+  });
   it('records the leasing worker version on a claimed command', async () => {
     state.data = { ownerUid: 'owner', status: 'queued', expiresAt: Date.now() + 60_000, timeoutSeconds: 60 };
     await leaseSandboxJob(4);

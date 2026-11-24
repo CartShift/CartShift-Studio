@@ -127,6 +127,25 @@ describe('CartShift owner-only sandbox job submission', () => {
     expect(mocks.created).toHaveBeenCalledTimes(1);
   });
 
+  it('requires an explicit fresh mobile capability for one-hour commands', async () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    vi.stubEnv('SANDBOX_PARALLEL_ENABLED', 'false');
+    const heartbeat = (extra: object) => mocks.read.mockResolvedValue({ exists: true,
+      data: () => ({ lastSeenAt: Date.now(), version: 3, ...extra }) });
+    heartbeat({});
+    await expect(submitSandboxCommand(owner, { command: 'echo fixture', timeout_seconds: 3600 })).rejects.toThrow('SANDBOX_WORKER_UPDATE_REQUIRED');
+    heartbeat({ longCommandsV1: true, lastSeenAt: Date.now() - 120_000 });
+    await expect(submitSandboxCommand(owner, { command: 'echo fixture', timeout_seconds: 3600 })).rejects.toThrow('SANDBOX_WORKER_UPDATE_REQUIRED');
+    heartbeat({ longCommandsV1: true });
+    await expect(getSandboxStatus(owner)).resolves.toMatchObject({ max_command_seconds: 3600 });
+    await expect(submitSandboxCommand(owner, { command: 'echo fixture', timeout_seconds: 3600 })).resolves.toMatchObject({ status: 'queued' });
+    expect(mocks.created).toHaveBeenCalledWith(expect.objectContaining({ timeoutSeconds: 3600 }));
+    await expect(submitSandboxCommand(owner, { command: 'echo fixture', timeout_seconds: 3601 })).rejects.toThrow();
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'windows');
+    await expect(submitSandboxCommand(owner, { command: 'echo fixture', timeout_seconds: 3600 })).rejects.toThrow('SANDBOX_WORKER_UPDATE_REQUIRED');
+    expect(mocks.created).toHaveBeenCalledTimes(1);
+  });
+
   it('redacts credential-like strings before persisting logs', () => {
     const raw = 'Bearer ' + 'x'.repeat(45) +
       '\\naccess_token=abcd1234abcdefgh\\nghp_' + 'Y'.repeat(38);

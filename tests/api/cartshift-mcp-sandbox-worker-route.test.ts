@@ -48,6 +48,20 @@ describe('sandbox worker request boundaries', () => {
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 5 }))).status).toBe(400);
     expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, arbitrary: true }))).status).toBe(400);
   });
+  it('negotiates explicit mobile long-command capability without upgrading legacy workers', async () => {
+    vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'mobile');
+    try {
+      const req = (body: object) => new Request('https://example.com', { method: 'POST', body: JSON.stringify(body) });
+      expect((await POST(req({ action: 'poll', heartbeat: true, worker_version: 3, long_commands_v1: true }))).status).toBe(200);
+      expect(mocks.lease).toHaveBeenCalledWith(3, true);
+      expect(mocks.heartbeat).toHaveBeenCalledWith(false, 3, true);
+      expect((await POST(req({ action: 'heartbeat', busy: true, worker_version: 3, long_commands_v1: true }))).status).toBe(200);
+      expect(mocks.heartbeat).toHaveBeenCalledWith(true, 3, true);
+      expect((await POST(req({ action: 'poll', worker_version: 4, long_commands_v1: true }))).status).toBe(400);
+      vi.stubEnv('SANDBOX_ACTIVE_WORKER_HOST', 'windows');
+      expect((await POST(req({ action: 'poll', worker_version: 3, long_commands_v1: true }))).status).toBe(400);
+    } finally { vi.unstubAllEnvs(); }
+  });
   it('dispatches V5 identities and preserves lease-bound cancellation and completion', async () => {
     const identity = { worker_version: 5, slot: 1, worker_id: 'a'.repeat(32) };
     const request = (body: object) => new Request('https://example.com', { method: 'POST', body: JSON.stringify({ ...identity, ...body }) });

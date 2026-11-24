@@ -39,6 +39,8 @@ def load_worker():
     if ns['ROLE'] != 'build' or ns['PARALLEL_SLOT']:
         raise RuntimeError('Unexpected worker role')
     ns['worker_payload'] = compat['worker_payload']
+    # Explicit capability only for the verified build-only mobile bundle.
+    ns['MAX_COMMAND_SECONDS'] = 3600
     original_execute = ns['execute']
     def durable_execute(job, cancel_event=None):
         completion = original_execute(job, cancel_event)

@@ -76,18 +76,22 @@ export async function POST(request: Request) {
       ? json({ error: 'invalid_request' }, 400) : json({ error: 'job_operation_failed' }, 409); }
   }
   if (version !== 2 && version !== 3 && version !== 4) return json({ error: 'invalid_worker_version' }, 400);
-  const keys = Object.keys(args).filter(key => key !== 'worker_version');
+  const extended = args.long_commands_v1 === true;
+  if ('long_commands_v1' in args && (!extended || version !== 3 ||
+      process.env.SANDBOX_ACTIVE_WORKER_HOST !== 'mobile' ||
+      (args.action !== 'poll' && args.action !== 'heartbeat'))) return json({ error: 'invalid_request' }, 400);
+  const keys = Object.keys(args).filter(key => key !== 'worker_version' && key !== 'long_commands_v1');
   try {
     if (args.action === 'poll' &&
         (keys.length === 1 || (keys.length === 2 && args.heartbeat === true))) {
-      const job = await leaseSandboxJob(version);
+      const job = await (extended ? leaseSandboxJob(version, true) : leaseSandboxJob(version));
       // Heartbeat every ~30s when idle, and whenever the worker begins a job.
-      if (job) await recordSandboxHeartbeat(true, version);
-      else if (args.heartbeat === true) await recordSandboxHeartbeat(false, version);
+      if (job) await (extended ? recordSandboxHeartbeat(true, version, true) : recordSandboxHeartbeat(true, version));
+      else if (args.heartbeat === true) await (extended ? recordSandboxHeartbeat(false, version, true) : recordSandboxHeartbeat(false, version));
       return json({ job });
     }
     if (args.action === 'heartbeat' && args.busy === true && keys.length === 2) {
-      return json(await recordSandboxHeartbeat(true, version));
+      return json(await (extended ? recordSandboxHeartbeat(true, version, true) : recordSandboxHeartbeat(true, version)));
     }
     if (version === 4 && args.action === 'heartbeat' && args.busy === true &&
         keys.length === 4 && typeof args.job_id === 'string' &&

@@ -4,10 +4,10 @@ def worker_payload(payload, endpoint=None):
         raise RuntimeError('Build compatibility worker cannot access auth sessions')
     action = payload.get('action')
     if action == 'poll':
-        return {'action': 'poll', 'worker_version': 3,
+        return {'action': 'poll', 'worker_version': 3, 'long_commands_v1': True,
                 **({'heartbeat': True} if payload.get('heartbeat') is True else {})}
     if action == 'heartbeat':
-        return {'action': 'heartbeat', 'busy': True, 'worker_version': 3}
+        return {'action': 'heartbeat', 'busy': True, 'worker_version': 3, 'long_commands_v1': True}
     if action == 'complete':
         keys = ('job_id', 'lease_token', 'exit_code', 'stdout', 'stderr',
                 'duration_ms', 'output_truncated')
