@@ -14,6 +14,24 @@ worker = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(worker)
 
 
+class PollingBudgetTests(unittest.TestCase):
+    def test_retry_backoff_is_bounded(self):
+        self.assertEqual([worker.retry_delay_seconds(n) for n in range(1, 7)],
+                         [3, 6, 12, 24, 45, 45])
+        self.assertEqual(worker.retry_delay_seconds(1000), 45)
+
+    def test_idle_backoff_preserves_fast_start_and_online_margin(self):
+        delay = worker.POLL_INTERVAL_SECONDS
+        self.assertEqual(delay, 3)
+        for _ in range(20):
+            delay = worker.next_idle_delay_seconds(delay)
+        self.assertEqual(delay, 45)
+        self.assertLess(delay, 90)
+        self.assertEqual(worker.SESSION_IDLE_POLL_SECONDS, 45)
+        self.assertEqual(worker.SESSION_ACTIVE_POLL_SECONDS, 1)
+        self.assertEqual(worker.HEARTBEAT_SECONDS, 30)
+
+
 class ActivityLoggingTests(unittest.TestCase):
     def test_metadata_only_atomic_nonblocking_sink(self):
         with patch.object(worker, 'DOCKER_ACTIVITY_LOG', True), patch.object(worker.os, 'open', return_value=123) as opened, patch.object(worker.os, 'write') as written, patch.object(worker.os, 'close') as closed:
