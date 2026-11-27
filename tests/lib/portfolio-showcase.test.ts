@@ -5,6 +5,7 @@ describe('personal portfolio showcase data', () => {
   it('keeps one canonical project order for navigation', () => {
     expect(getPortfolioShowcases('en').map(project => project.slug)).toEqual([
       'starlinker',
+      'pileheads',
       'rightflow',
       'wakemyway',
       'cartshift-studio',
@@ -38,6 +39,15 @@ describe('personal portfolio showcase data', () => {
     expect(ensemblis?.hero?.src).toBe('/images/cv/portfolio/ensemblis-editorial.svg');
     expect(ensemblis?.hero?.alt).toContain('not a product screenshot');
     expect(ensemblis?.status).toBe('Product in development');
+  });
+
+  it('exposes PILEHEADS as a playable project with honest playtest status and original artwork', () => {
+    const project = getPortfolioShowcases('en').find(item => item.slug === 'pileheads');
+    expect(project?.status).toBe('Active playtest product');
+    expect(project?.liveUrl).toBe('https://pileheads.com/play');
+    expect(project?.repositoryUrl).toBe('https://github.com/CartShift/pileheads');
+    expect(project?.hero?.caption).toContain('not a screenshot');
+    expect(getPortfolioShowcases('he').find(item => item.slug === 'pileheads')?.summary).toContain('54');
   });
 
   it('keeps in-development work explicit', () => {

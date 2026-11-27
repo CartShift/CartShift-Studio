@@ -837,6 +837,71 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
   );
 }
 
+function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
+  const hero = project.hero;
+  const back = project.gallery[0];
+
+  return (
+    <>
+      <section className="relative overflow-hidden bg-[#241b18] px-5 pb-16 pt-32 text-white sm:px-8 sm:pb-24 lg:px-12">
+        <div className="mx-auto grid max-w-[1680px] items-center gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+          <div>
+            <Label light>{project.number} · {copy(isHebrew, 'משחק פיזי ודיגיטלי', 'Physical-first game')}</Label>
+            <motion.h1 {...reveal} dir="ltr" className="mt-8 text-[15vw] font-black leading-[.85] tracking-[-.065em] text-[#f4d5a5] sm:text-[11vw] lg:text-[6.6vw]">PILEHEADS</motion.h1>
+            <p className="mt-8 max-w-xl text-xl leading-8 text-white/80 sm:text-2xl">{copy(isHebrew, 'אותו שולחן, גם כשכל שחקן נמצא במקום אחר.', 'One tabletop, even when everyone is somewhere else.')}</p>
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/65">{project.summary}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="https://pileheads.com/play" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#f4d5a5] px-5 py-3 text-sm font-semibold text-[#241b18]">{copy(isHebrew, 'למשחק בדפדפן', 'Play in browser')} <ArrowUpRight className="size-4" /></a>
+              <a href="https://pileheads.com/pilehead/gallery.html" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/30 px-5 py-3 text-sm text-white">{copy(isHebrew, 'גלריית הקלפים', 'Deck gallery')} <ArrowUpRight className="size-4" /></a>
+            </div>
+          </div>
+          {hero ? <motion.figure {...reveal} className="bg-[#f0d7b4] p-4 sm:p-8">
+            <Screen media={hero} onOpen={() => onOpen(hero)} eager mode="bare" />
+            <figcaption className="mt-4 text-sm leading-6 text-[#241b18]">{hero.caption}</figcaption>
+          </motion.figure> : null}
+        </div>
+      </section>
+      <ProjectSnapshot project={project} isHebrew={isHebrew} />
+      <section className="bg-[#f0d7b4] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+        <div className="mx-auto grid max-w-[1680px] items-center gap-12 lg:grid-cols-[1fr_.42fr] lg:gap-20">
+          <motion.div {...reveal}>
+            <Label>{copy(isHebrew, 'אתגר המוצר', 'The product challenge')}</Label>
+            <h2 className="mt-7 max-w-[13ch] text-[12vw] font-medium leading-[.86] tracking-[-.06em] sm:text-[7vw] lg:text-[5vw]">{copy(isHebrew, 'לשמור על הקצב של משחק אמיתי.', 'Keep the rhythm of a real card game.')}</h2>
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-black/70">{copy(isHebrew, 'המשחק משלב שלוש שכבות קלפים, פעולות מיוחדות והתערבויות מהירות מחוץ לתור. הסימולטור מאפשר לבדוק את החוקים, בעוד שעיצוב החפיסה הפיזית מכתיב חוויית משחק ברורה וטקטילית.', 'Three layers of cards, special actions and fast out-of-turn interventions make the rules deceptively complex. The simulator helps explore the rules while the physical deck informs a clear, tactile experience.')}</p>
+            <div className="mt-10 grid grid-cols-2 gap-4 border-t border-black/20 pt-6">
+              <div><p className="text-5xl font-medium tracking-tight">54</p><p className="mt-2 text-sm">{copy(isHebrew, 'קלפים בחפיסה', 'Cards in the deck')}</p></div>
+              <div><p className="text-5xl font-medium tracking-tight">2–5</p><p className="mt-2 text-sm">{copy(isHebrew, 'שחקנים', 'Players')}</p></div>
+            </div>
+          </motion.div>
+          {back ? <motion.figure {...reveal} className="mx-auto w-full max-w-[280px]">
+            <Screen media={back} onOpen={() => onOpen(back)} mode="bare" />
+            <figcaption className="mt-4 text-sm leading-6 text-black/65">{back.caption}</figcaption>
+          </motion.figure> : null}
+        </div>
+      </section>
+      <TechnicalEvidence isHebrew={isHebrew} dark
+        eyebrow={copy(isHebrew, 'ארכיטקטורת המשחק', 'Game architecture')}
+        title={copy(isHebrew, 'החוקים קובעים. האנימציה מציגה.', 'Rules decide. Motion tells the story.')}
+        body={copy(isHebrew, 'מנוע חוקים משותף מאמת מהלכים. בחדרים מקוונים השרת שומר את המצב ב-Neon PostgreSQL עם בקרת גרסאות, והלקוחות מקבלים תצוגות מוגבלות לפי שחקן ועדכוני WebSocket עם גיבוי HTTP.', 'A shared rules engine validates moves. Online rooms persist revisioned state in Neon PostgreSQL and return seat-specific views. WebSocket updates notify clients of changes, with HTTP polling as a fallback.')}
+        steps={['React tabletop', 'Room commands', 'Shared rules engine', 'Neon + room revisions', 'Private views + WebSocket']}
+      />
+      <EngineeringDecisions isHebrew={isHebrew} items={[
+        [copy(isHebrew, 'הוגנות לפני אנימציה', 'Fairness before effects'), copy(isHebrew, 'האנימציה מתארת אירוע שכבר אושר במנוע או בשרת ואינה קובעת את תוצאת המהלך.', 'Motion describes committed events; it never determines the outcome or priority of an action.')],
+        [copy(isHebrew, 'מידע פרטי לפי שחקן', 'Private by seat'), copy(isHebrew, 'השרת מחזיר לכל שחקן רק את המידע שהוא רשאי לראות ומשתמש בגרסאות חדר כדי להתמודד עם מהלכים מתנגשים.', 'Seat-specific responses protect hidden cards, while room revisions resolve competing requests.')],
+        [copy(isHebrew, 'חוקים שניתנים לשחזור', 'Reproducible rules'), copy(isHebrew, 'בוטים, סימולציות עם seed ובדיקות רגרסיה מאפשרים לשחזר מקרי קצה בלי להחליף בדיקות עם בני אדם.', 'Bots, seeded simulations and regression tests reproduce edge cases without replacing human playtests.')],
+      ]} />
+      <section className="bg-white px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1680px]">
+          <Label>{copy(isHebrew, 'סטטוס נוכחי', 'Current status')}</Label>
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-black/70">{copy(isHebrew, 'המוצר נמצא בשלב Playtest פעיל. בדיקות אוטומטיות תומכות בפיתוח, אך אינן תחליף לאימות משחק מרובה משתתפים במכשירים אמיתיים. אפליקציות native והשקה מסחרית עדיין אינן מוצגות כיכולות שהושלמו.', 'An active playtest product. Automated checks support development, but do not replace real-device multiplayer acceptance. Native apps and commercial release are not presented as completed work.')}</p>
+          <a href="https://github.com/CartShift/pileheads/blob/main/docs/CASE-STUDY.md" target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 font-semibold underline underline-offset-4">{copy(isHebrew, 'למסמך ההנדסי בריפו', 'Read the engineering case study')} <ArrowUpRight className="size-4" /></a>
+        </div>
+      </section>
+      <ProjectCredits project={project} isHebrew={isHebrew} tone="light" lead={copy(isHebrew, 'מוצר עצמאי שבניתי מהרעיון וחוקי המשחק ועד למערכת המולטיפלייר.', 'An independent product I built from the first game rules to the multiplayer system.')} />
+    </>
+  );
+}
+
 function ProjectCredits({ project, isHebrew, tone, lead }: { project: PortfolioShowcaseProject; isHebrew: boolean; tone: 'light' | 'dark'; lead: string }) {
   const dark = tone === 'dark';
   return (
@@ -945,6 +1010,7 @@ export default function ProjectShowcase({ project, nextProject, locale, projectB
       <SharedHeader project={project} locale={locale} isHebrew={isHebrew} />
 
       {project.slug === 'starlinker' ? <StarLinkerStory {...storyProps} /> : null}
+      {project.slug === 'pileheads' ? <PileheadsStory {...storyProps} /> : null}
       {project.slug === 'rightflow' ? <RightFlowStory {...storyProps} /> : null}
       {project.slug === 'ensemblis' ? <EnsemblisStory {...storyProps} /> : null}
       {project.slug === 'wakemyway' ? <WakeMyWayStory {...storyProps} /> : null}

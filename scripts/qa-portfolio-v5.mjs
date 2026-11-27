@@ -19,6 +19,8 @@ const cases = [
   { locale: 'he', page: '', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/pileheads', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/pileheads', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/wakemyway', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'work/rightflow', width: 390, height: 844, mobile: true },
   { locale: 'he', page: 'work/cartshift-studio', width: 1440, height: 900, mobile: false },
@@ -102,15 +104,15 @@ async function main() {
           await page.waitForSelector('.v5-immersive-title', { visible: true });
           assert(await page.$('a[href$="/yotam/work"]'), name + ': missing work link');
           assert(await page.$('a[href$="/yotam/about"]'), name + ': missing about link');
-          assert((await page.$$('.v5-editorial-project')).length === 5, name + ': expected five featured projects');
-          assert((await page.$$('.v5-editorial-project-visual img')).length === 5, name + ': missing product previews');
+          assert((await page.$$('.v5-editorial-project')).length === 6, name + ': expected six featured projects');
+          assert((await page.$$('.v5-editorial-project-visual img')).length === 6, name + ': missing product previews');
           assert(await page.$('a[href$="/yotam/work/starlinker"]'), name + ': missing canonical case study link');
           // Regression: global heading colors must never disappear against
           // editorial dark and light surfaces (also check WebKit text fill).
           const headlineContrasts = await page.evaluate(() => {
             const selectors = [
               ['#v5-editorial-work-title', '.v5-editorial-work'],
-              ...Array.from({ length: 5 }, (_, i) => [
+              ...Array.from({ length: 6 }, (_, i) => [
                 '.v5-editorial-project:nth-child(' + (i + 1) + ') .v5-editorial-project-story h3',
                 '.v5-editorial-work',
               ]),

@@ -49,6 +49,7 @@ export function guidedPortfolioAnswer(question: string, locale: AliveLocale): Al
     q.includes(project.slug.replace('-studio', ''))
   );
   const found = named ?? projects.find(project =>
+    (project.slug === 'pileheads' && /card game|multiplayer|tabletop|משחק|קלפים|מולטיפלייר/.test(q)) ||
     (project.slug === 'wakemyway' && /alarm|android|השכמה|שעון/.test(q)) ||
     (project.slug === 'rightflow' && /document|verification|pension|מסמכ|אימות|פנסי/.test(q)) ||
     (project.slug === 'starlinker' && /\b(ai|agent|graph|agents)\b|סוכן|בינה|ארכיטקטור|architecture/.test(q)) ||
