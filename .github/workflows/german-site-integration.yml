@@ -14,6 +14,8 @@ on:
       - 'messages/src/en/**'
       - 'scripts/check-german-parity.cjs'
       - 'scripts/ci/check-german-http.mjs'
+      - 'scripts/qa-portfolio-v5.mjs'
+      - 'scripts/capture-pileheads-evidence.mjs'
   workflow_dispatch:
 
 permissions:
@@ -79,6 +81,7 @@ jobs:
           fi
           node scripts/ci/check-german-http.mjs
           node scripts/ci/check-german-browser.mjs
+          PORTFOLIO_V5_BASE_URL=http://127.0.0.1:3210 V5_QA_WORK_ONLY=1 V5_QA_SCREENSHOTS=1 node scripts/qa-portfolio-v5.mjs
       - name: Upload anonymous Hebrew website visual QA captures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -86,6 +89,20 @@ jobs:
           name: cartshift-website-qa
           path: .artifacts/website-qa/*.png
           if-no-files-found: ignore
+          retention-days: 7
+      - name: Capture public PILEHEADS local bot gameplay evidence
+        if: always()
+        continue-on-error: true
+        run: node scripts/capture-pileheads-evidence.mjs
+      - name: Upload portfolio visual QA and product captures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portfolio-work-visual-evidence
+          path: |
+            tmp/yotam-qa/*.png
+            tmp/pileheads-evidence/*
+          if-no-files-found: warn
           retention-days: 7
       - name: Explain release restriction
         if: always()

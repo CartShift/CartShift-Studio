@@ -3,8 +3,8 @@
  * On-demand browser smoke checks for Portfolio V5.
  * Uses dependencies already included in CartShift. Does not deploy or mutate data.
  * Usage:
- *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-yotam.mjs
- *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-yotam.mjs
+ *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-portfolio-v5.mjs
+ *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-portfolio-v5.mjs
  */
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
@@ -20,6 +20,11 @@ const cases = [
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/starlinker', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/rightflow', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/wakemyway', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/cartshift-studio', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/ensemblis', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/pileheads', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work/pileheads', width: 390, height: 844, mobile: true },
@@ -51,7 +56,7 @@ async function main() {
   });
   const failures = [];
   try {
-    for (const test of cases) {
+    for (const test of cases.filter(test => process.env.V5_QA_WORK_ONLY !== '1' || test.page === 'work' || test.page.startsWith('work/'))) {
       const path = '/' + test.locale + '/yotam' + (test.page ? '/' + test.page : '');
       const name = test.locale + '-' + (test.page || 'home').replaceAll('/', '-') + '-' + (test.mobile ? 'mobile' : 'desktop');
       const page = await browser.newPage();
@@ -66,6 +71,15 @@ async function main() {
         assert(!(await page.$('meta[name="robots"][content*="noindex"]')), name + ': personal portfolio unexpectedly noindex');
         const canonical = await page.$eval('link[rel="canonical"]', element => element.getAttribute('href'));
         assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
+        if (test.page === 'work' || test.page.startsWith('work/')) {
+          await page.evaluate(async () => {
+            await document.fonts.ready;
+            for (const img of document.querySelectorAll('main img')) img.loading = 'eager';
+          });
+          await page.waitForFunction(() => Array.from(document.querySelectorAll('main img')).every(img => img.complete), { timeout: 15000 });
+          const broken = await page.evaluate(() => Array.from(document.querySelectorAll('main img')).filter(img => img.naturalWidth === 0).map(img => img.getAttribute('src')));
+          assert(broken.length === 0, name + ': broken evidence images: ' + broken.join(', '));
+        }
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page === 'work') {
@@ -200,7 +214,10 @@ async function main() {
           await page.click('.v5-motion-button');
           assert(await page.$eval('.v5-motion-button', button => button.getAttribute('aria-pressed') === 'false'), 'motion resume failed');
         }
-        if (screenshots) await page.screenshot({ path: output + '/' + name + '.png' });
+        if (screenshots) {
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.screenshot({ path: output + '/' + name + '.png', fullPage: test.page === 'work' || test.page.startsWith('work/') });
+        }
         if (name === 'en-home-desktop' && process.env.V5_QA_SKIP_MOTION !== '1') {
           await page.click('.v5-immersive-links a[href$="/work"]');
           const wipe = await page.$eval('.v5-transition-wipe', node =>
@@ -217,6 +234,7 @@ async function main() {
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));
         console.log('PASS ' + name + ' HTTP ' + response.status() + ' / width ' + width + 'px');
       } catch (error) {
+        if (screenshots) await page.screenshot({ path: output + '/' + name + '-failure.png', fullPage: true }).catch(() => null);
         failures.push({ page: name, error: error.message });
         console.error('FAIL ' + name + ': ' + error.message);
       } finally {
