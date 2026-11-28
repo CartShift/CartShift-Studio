@@ -43,6 +43,7 @@ type LocalizedProject = {
 
 export const portfolioShowcaseOrder = [
   'starlinker',
+  'pileheads',
   'rightflow',
   'wakemyway',
   'cartshift-studio',
@@ -54,6 +55,74 @@ const portfolioShowcaseRank = new Map<string, number>(
 );
 
 const projects: LocalizedProject[] = [
+  {
+    base: {
+      slug: 'pileheads',
+      number: '02',
+      title: 'PILEHEADS',
+      year: '2026',
+      updatedAt: '2026-11-28',
+      technologies: ['Next.js', 'React', 'TypeScript', 'Node.js', 'WebSockets', 'Neon PostgreSQL', 'Vercel'],
+      accent: '#a43b29',
+      accentSoft: '#f0d7b4',
+      liveUrl: 'https://pileheads.com/play',
+      repositoryUrl: 'https://github.com/CartShift/pileheads',
+      media: {
+        en: {
+          hero: {
+            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
+            alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
+            label: 'Original card artwork',
+            caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
+            aspect: 'wide',
+            contain: true,
+          },
+          gallery: [{
+            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            alt: 'PILEHEADS card back artwork from the game repository',
+            label: 'Card back',
+            caption: 'A card-back design from the physical and digital deck assets.',
+            aspect: 'portrait',
+            contain: true,
+          }],
+        },
+        he: {
+          hero: {
+            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
+            alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
+            label: 'איורי קלפים מקוריים',
+            caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
+            aspect: 'wide',
+            contain: true,
+          },
+          gallery: [{
+            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            alt: 'עיצוב גב קלף מתוך נכסי המשחק של PILEHEADS',
+            label: 'גב הקלף',
+            caption: 'עיצוב גב קלף מתוך נכסי החפיסה הפיזית והדיגיטלית.',
+            aspect: 'portrait',
+            contain: true,
+          }],
+        },
+      },
+    },
+    en: {
+      descriptor: 'Physical-first game · Real-time multiplayer',
+      status: 'Active playtest product',
+      summary: 'An original 54-card game and browser tabletop for 2–5 players, combining physical game design, bot opponents and private multiplayer around one deterministic rules engine.',
+      audience: 'Friends and card-game players who want to share a fast, tactical tabletop experience in person or online.',
+      role: 'Founder · Game design · Product & UX · Full-stack engineering',
+      highlights: ['Server-authoritative moves, revision control and private player views', 'Shared deterministic rules engine with bots and seeded simulations', 'Responsive React tabletop with event-driven motion and WebSocket updates'],
+    },
+    he: {
+      descriptor: 'משחק קלפים פיזי ודיגיטלי · מולטיפלייר בזמן אמת',
+      status: 'מוצר פעיל בשלב Playtest',
+      summary: 'משחק קלפים מקורי עם 54 קלפים ושולחן משחק בדפדפן ל-2–5 שחקנים, המשלב משחק פיזי, בוטים וחדרים פרטיים סביב מנוע חוקים דטרמיניסטי אחד.',
+      audience: 'לחברים ולחובבי משחקי קלפים שרוצים חוויית משחק מהירה וטקטית, פנים אל פנים או אונליין.',
+      role: 'Founder · עיצוב משחק · מוצר ו-UX · פיתוח Full-stack',
+      highlights: ['אימות מהלכים בשרת, בקרת גרסאות והגנה על מידע פרטי של שחקנים', 'מנוע חוקים דטרמיניסטי משותף עם בוטים וסימולציות שחזור', 'שולחן React רספונסיבי עם אנימציות מבוססות אירועים ועדכוני WebSocket'],
+    },
+  },
   {
     base: {
       slug: 'starlinker',
@@ -108,7 +177,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'rightflow',
-      number: '02',
+      number: '03',
       title: 'RightFlow',
       year: '2025-26',
       updatedAt: '2026-09-20',
@@ -179,7 +248,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'ensemblis',
-      number: '05',
+      number: '06',
       title: 'Ensemblis',
       year: '2026',
       updatedAt: '2026-09-20',
@@ -220,7 +289,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'wakemyway',
-      number: '03',
+      number: '04',
       title: 'WakeMyWay',
       year: '2026',
       updatedAt: '2026-09-20',
@@ -287,7 +356,7 @@ const projects: LocalizedProject[] = [
   {
     base: {
       slug: 'cartshift-studio',
-      number: '04',
+      number: '05',
       title: 'CartShift Studio',
       year: '2025-26',
       updatedAt: '2026-09-20',
