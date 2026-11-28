@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 
@@ -48,6 +50,16 @@ describe('personal portfolio showcase data', () => {
     expect(project?.repositoryUrl).toBe('https://github.com/CartShift/pileheads');
     expect(project?.hero?.caption).toContain('not a screenshot');
     expect(getPortfolioShowcases('he').find(item => item.slug === 'pileheads')?.summary).toContain('54');
+  });
+
+  it('serves every local portfolio media reference from the public directory', () => {
+    for (const locale of ['en', 'he'] as const) {
+      for (const project of getPortfolioShowcases(locale)) {
+        for (const media of [project.hero, ...project.gallery]) {
+          if (media?.src.startsWith('/')) expect(existsSync(join(process.cwd(), 'public', media.src.slice(1))), media.src).toBe(true);
+        }
+      }
+    }
   });
 
   it('keeps in-development work explicit', () => {

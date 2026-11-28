@@ -70,7 +70,7 @@ const projects: LocalizedProject[] = [
       media: {
         en: {
           hero: {
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
+            src: '/images/cv/portfolio/pileheads-deck.webp',
             alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
             label: 'Original card artwork',
             caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
@@ -78,7 +78,7 @@ const projects: LocalizedProject[] = [
             contain: true,
           },
           gallery: [{
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            src: '/images/cv/portfolio/pileheads-back.webp',
             alt: 'PILEHEADS card back artwork from the game repository',
             label: 'Card back',
             caption: 'A card-back design from the physical and digital deck assets.',
@@ -88,7 +88,7 @@ const projects: LocalizedProject[] = [
         },
         he: {
           hero: {
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
+            src: '/images/cv/portfolio/pileheads-deck.webp',
             alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
             label: 'איורי קלפים מקוריים',
             caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
@@ -96,7 +96,7 @@ const projects: LocalizedProject[] = [
             contain: true,
           },
           gallery: [{
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            src: '/images/cv/portfolio/pileheads-back.webp',
             alt: 'עיצוב גב קלף מתוך נכסי המשחק של PILEHEADS',
             label: 'גב הקלף',
             caption: 'עיצוב גב קלף מתוך נכסי החפיסה הפיזית והדיגיטלית.',
@@ -300,35 +300,35 @@ const projects: LocalizedProject[] = [
       media: {
         en: {
           hero: {
-            src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/tonight_ready.png',
-            alt: 'WakeMyWay ready state on Android',
-            label: 'Tonight',
-            caption: 'The night-before state prepares tomorrow without adding cognitive load.',
+            src: '/images/cv/portfolio/wakemyway-tonight_ready.png',
+            alt: 'WakeMyWay ready state on Android from the earlier visual regression baseline',
+            label: 'Tonight · earlier design',
+            caption: 'An earlier visual regression capture of the night-before state; not the latest redesign.',
             aspect: 'portrait',
             contain: true,
           },
           gallery: [
             {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/tonight_empty.png',
+              src: '/images/cv/portfolio/wakemyway-tonight_empty.png',
               alt: 'WakeMyWay empty Tonight screen',
               label: 'Night-before setup',
-              caption: 'A calm entry point for preparing the next wake session.',
+              caption: 'Earlier visual regression capture of the night-before setup.',
               aspect: 'portrait',
               contain: true,
             },
             {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/wake_setup_weekly.png',
+              src: '/images/cv/portfolio/wakemyway-wake_setup_weekly.png',
               alt: 'WakeMyWay weekly alarm setup',
               label: 'Schedule',
-              caption: 'Native schedule controls keep the critical alarm path explicit and predictable.',
+              caption: 'Earlier visual regression capture of native scheduling controls.',
               aspect: 'portrait',
               contain: true,
             },
             {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/wake_emerging.png',
+              src: '/images/cv/portfolio/wakemyway-wake_emerging.png',
               alt: 'WakeMyWay active wake screen',
               label: 'Active wake',
-              caption: 'The active wake experience combines voice, movement cues and a deliberately low-load interface.',
+              caption: 'Earlier visual regression capture of the active wake experience.',
               aspect: 'portrait',
               contain: true,
             },
