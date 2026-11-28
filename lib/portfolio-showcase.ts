@@ -54,6 +54,42 @@ const portfolioShowcaseRank = new Map<string, number>(
   portfolioShowcaseOrder.map((slug, index) => [slug, index])
 );
 
+const wakeQaScreens = [
+  { src: '/images/cv/portfolio/wake-tonight-with-navigation.webp',
+    en: { label: 'Tonight', alt: 'The next alarm and morning plan are visible together.' },
+    he: { label: 'הלילה', alt: 'השעון הבא ותוכנית הבוקר מופיעים יחד.' } },
+  { src: '/images/cv/portfolio/wake-tonight-empty.webp',
+    en: { label: 'Night-before setup', alt: 'The starting screen before an alarm is scheduled.' },
+    he: { label: 'הכנה ללילה', alt: 'מסך הפתיחה לפני תזמון שעון מעורר.' } },
+  { src: '/images/cv/portfolio/wake-alarm-editor-configured.webp',
+    en: { label: 'Weekly schedule', alt: 'The native alarm editor shows the time, repeat days, and wake sound.' },
+    he: { label: 'לוח השכמה שבועי', alt: 'עורך השעון מציג את השעה, ימי החזרה וצליל ההשכמה.' } },
+  { src: '/images/cv/portfolio/wake-wake-oriented.webp',
+    en: { label: 'Morning prompt', alt: 'The wake session shows a cue and the first action for the morning.' },
+    he: { label: 'הנחיית בוקר', alt: 'מסך ההשכמה מציג תזכורת ואת הפעולה הראשונה לבוקר.' } },
+  { src: '/images/cv/portfolio/wake-wake-complete.webp',
+    en: { label: 'Wake complete', alt: 'The completed wake session shows the morning start time.' },
+    he: { label: 'השכמה הושלמה', alt: 'מסך הסיום מציג את שעת תחילת הבוקר.' } },
+  { src: '/images/cv/portfolio/wake-alarms-overview.webp',
+    en: { label: 'Alarm list', alt: 'An overview of the demo alarms, schedules, and readiness.' },
+    he: { label: 'רשימת שעונים', alt: 'סקירה של שעוני הדוגמה, זמני החזרה ומצב המוכנות.' } },
+  { src: '/images/cv/portfolio/wake-insights-populated.webp',
+    en: { label: 'Morning check-in', alt: 'The insights view asks how the morning went and shows a planned adjustment.' },
+    he: { label: 'משוב בוקר', alt: 'מסך התובנות מבקש משוב על הבוקר ומציג התאמה מתוכננת.' } },
+  { src: '/images/cv/portfolio/wake-onboarding-first-run.webp',
+    en: { label: 'First launch', alt: 'The first-run introduction explains the alarm’s wake routine.' },
+    he: { label: 'הפעלה ראשונה', alt: 'מסך ההיכרות מסביר את שגרת ההשכמה.' } },
+];
+
+function wakeQaMedia(locale: PortfolioLocale) {
+  const [hero, ...gallery] = wakeQaScreens.map(({src, ...translations}): ShowcaseMedia => {
+    const { label, alt } = translations[locale];
+    const provenance = locale === 'he' ? 'צילום מגרסת בדיקה של האפליקציה.' : 'Captured from an Android QA build.';
+    return { src, label, alt, caption: `${alt} ${provenance}`, aspect: 'portrait', contain: true };
+  });
+  return { hero, gallery };
+}
+
 const projects: LocalizedProject[] = [
   {
     base: {
@@ -84,6 +120,13 @@ const projects: LocalizedProject[] = [
             caption: 'A card-back design from the physical and digital deck assets.',
             aspect: 'portrait',
             contain: true,
+          }, {
+            "src": "/images/cv/portfolio/pileheads-round-result.webp",
+            "label": "Round result",
+            "alt": "PILEHEADS exported results card after a two-player round",
+            "caption": "The game’s share card records a first-out finish after 65 moves.",
+            "aspect": "portrait",
+            "contain": true
           }],
         },
         he: {
@@ -102,6 +145,13 @@ const projects: LocalizedProject[] = [
             caption: 'עיצוב גב קלף מתוך נכסי החפיסה הפיזית והדיגיטלית.',
             aspect: 'portrait',
             contain: true,
+          }, {
+            "src": "/images/cv/portfolio/pileheads-round-result.webp",
+            "label": "תוצאת הסיבוב",
+            "alt": "כרטיס תוצאה מיוצא של PILEHEADS אחרי סיבוב לשני שחקנים",
+            "caption": "כרטיס השיתוף של המשחק מתעד ניצחון אחרי 65 מהלכים.",
+            "aspect": "portrait",
+            "contain": true
           }],
         },
       },
@@ -267,6 +317,17 @@ const projects: LocalizedProject[] = [
           },
           gallery: [],
         },
+        he: {
+          hero: {
+            src: '/images/cv/portfolio/ensemblis-editorial.svg',
+            alt: 'איור קונספט של Ensemblis עם תקליט ואלמנטים מעולם המוזיקה',
+            label: 'איור קונספט',
+            caption: 'כיוון חזותי למערכת שנמצאת בפיתוח.',
+            aspect: 'wide',
+            contain: true,
+          },
+          gallery: [],
+        },
       },
     },
     en: {
@@ -298,42 +359,8 @@ const projects: LocalizedProject[] = [
       accentSoft: '#ffd7c6',
       repositoryUrl: 'https://github.com/yotamon/WakeMyWay',
       media: {
-        en: {
-          hero: {
-            src: '/images/cv/portfolio/wakemyway-tonight_ready.png',
-            alt: 'WakeMyWay ready state on Android from the earlier visual regression baseline',
-            label: 'Tonight · earlier design',
-            caption: 'An earlier visual regression capture of the night-before state; not the latest redesign.',
-            aspect: 'portrait',
-            contain: true,
-          },
-          gallery: [
-            {
-              src: '/images/cv/portfolio/wakemyway-tonight_empty.png',
-              alt: 'WakeMyWay empty Tonight screen',
-              label: 'Night-before setup',
-              caption: 'Earlier visual regression capture of the night-before setup.',
-              aspect: 'portrait',
-              contain: true,
-            },
-            {
-              src: '/images/cv/portfolio/wakemyway-wake_setup_weekly.png',
-              alt: 'WakeMyWay weekly alarm setup',
-              label: 'Schedule',
-              caption: 'Earlier visual regression capture of native scheduling controls.',
-              aspect: 'portrait',
-              contain: true,
-            },
-            {
-              src: '/images/cv/portfolio/wakemyway-wake_emerging.png',
-              alt: 'WakeMyWay active wake screen',
-              label: 'Active wake',
-              caption: 'Earlier visual regression capture of the active wake experience.',
-              aspect: 'portrait',
-              contain: true,
-            },
-          ],
-        },
+        en: wakeQaMedia('en'),
+        he: wakeQaMedia('he'),
       },
     },
     en: {

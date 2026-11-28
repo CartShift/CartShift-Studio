@@ -63,6 +63,9 @@ async function main() {
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       page.setDefaultTimeout(8_000);
+      if (test.page === 'work' || test.page.startsWith('work/')) {
+        await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+      }
       await page.setViewport({ width: test.width, height: test.height, isMobile: test.mobile, hasTouch: test.mobile, deviceScaleFactor: 1 });
       try {
         const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -72,6 +75,8 @@ async function main() {
         const canonical = await page.$eval('link[rel="canonical"]', element => element.getAttribute('href'));
         assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
         if (test.page === 'work' || test.page.startsWith('work/')) {
+          const dir = await page.$eval('main', element => element.getAttribute('dir'));
+          assert(dir === (test.locale === 'he' ? 'rtl' : 'ltr'), name + ': wrong reading direction');
           await page.evaluate(async () => {
             await document.fonts.ready;
             for (const img of document.querySelectorAll('main img')) img.loading = 'eager';
@@ -83,9 +88,9 @@ async function main() {
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page === 'work') {
-          assert((await page.$('.work-exhibit')).length === 6, name + ': expected six product exhibits');
-          assert((await page.$('.work-exhibit--featured')).length === 2, name + ': expected two flagship products');
-          assert((await page.$('.work-exhibit-visual img')).length === 6, name + ': missing product evidence');
+          assert((await page.$$('.work-exhibit')).length === 6, name + ': expected six product exhibits');
+          assert((await page.$$('.work-exhibit--featured')).length === 2, name + ': expected two flagship products');
+          assert((await page.$$('.work-exhibit-visual .work-exhibit-image')).length === 6, name + ': missing product evidence');
           assert(await page.$('[data-work-project="pileheads"] a[href="https://pileheads.com/play"]'), name + ': missing direct play link');
         }
         if (test.page?.startsWith('work/')) {
@@ -94,8 +99,8 @@ async function main() {
           const storySlug = await page.$eval('main[data-project]', node => node.getAttribute('data-project'));
           assert(storySlug === test.page.split('/')[1], name + ': wrong project story: ' + storySlug);
           assert(await page.$('main[data-project] h1'), name + ': project headline missing');
-          assert(await page.$('main[data-project] img'), name + ': original project media missing');
-          assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
+          assert(await page.$('main[data-project] img'), name + ': project visual missing');
+          assert((await page.$$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
           assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
           if (['rightflow', 'wakemyway', 'cartshift-studio', 'ensemblis'].includes(storySlug)) {
             const proof = '[data-interactive-proof="' + storySlug + '"]';
@@ -108,7 +113,7 @@ async function main() {
           }
           if (storySlug === 'starlinker') {
             await page.click('[data-interactive-proof="starlinker"] button:nth-child(2)');
-            assert(await page.$('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');
+            assert(await page.waitForSelector('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');
           }
           if (storySlug === 'pileheads') {
             await page.click('[data-interactive-proof="pileheads"] [data-proof-action]');
