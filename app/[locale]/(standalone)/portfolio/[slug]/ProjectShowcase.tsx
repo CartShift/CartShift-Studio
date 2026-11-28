@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { AnimatePresence, motion, useReducedMotion, type MotionProps } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, X } from 'lucide-react';
 import type { PortfolioShowcaseProject, ShowcaseMedia } from '@/lib/portfolio-showcase';
+import { RightFlowProof, WakeMyWayProof, CartShiftProof, EnsemblisProof } from './ProjectProofs';
 
 type Props = {
   project: PortfolioShowcaseProject;
@@ -487,6 +488,8 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <RightFlowProof isHebrew={isHebrew} />
+
       <TechnicalEvidence
         isHebrew={isHebrew}
         eyebrow={copy(isHebrew, 'נתיב בדיקה', 'Review pipeline')}
@@ -540,7 +543,8 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
   );
 }
 
-function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
+function EnsemblisStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
+  const concept = project.hero;
   const phases = [
     [copy(isHebrew, 'להכין', 'Prepare'), copy(isHebrew, 'ריליס, נכסים, מסרים ולוח תוכן באותו קונטקסט.', 'Release, assets, messaging and content plan in one context.')],
     [copy(isHebrew, 'להוציא', 'Release'), copy(isHebrew, 'תפעול ההשקה וההפצה בלי לקפוץ בין כלים.', 'Run launch and distribution without hopping between tools.')],
@@ -611,6 +615,16 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
           </div>
         </motion.div>
       </section>
+
+      {concept && (
+        <section className="bg-[#1d1828] px-5 py-16 text-white sm:px-8 lg:px-12">
+          <figure className="mx-auto max-w-5xl">
+            <Screen media={concept} onOpen={() => onOpen(concept)} mode="bare" />
+            <figcaption className="mt-4 text-sm text-white/75">{concept.caption}</figcaption>
+          </figure>
+        </section>
+      )}
+      <EnsemblisProof isHebrew={isHebrew} />
 
       <TechnicalEvidence
         isHebrew={isHebrew}
@@ -707,6 +721,21 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <section className="bg-[#fff6ef] px-5 py-16 text-[#24130d] sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px]">
+          <h2 className="mb-8 text-3xl font-medium tracking-tight sm:text-5xl">{copy(isHebrew, 'עוד ממסכי האפליקציה', 'More from the Android app')}</h2>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+            {project.gallery.slice(3).map(media => (
+              <figure className="min-w-0" key={media.src}>
+                <Screen media={media} onOpen={() => onOpen(media)} mode="phone" />
+                <figcaption className="mt-3 text-sm leading-5">{media.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+      <WakeMyWayProof isHebrew={isHebrew} />
 
       <TechnicalEvidence
         isHebrew={isHebrew}
@@ -836,6 +865,8 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <CartShiftProof isHebrew={isHebrew} />
+
       <TechnicalEvidence
         isHebrew={isHebrew}
         eyebrow={copy(isHebrew, 'המערכת בפועל', 'Operational spine')}
@@ -890,7 +921,7 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
 
 function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
   const hero = project.hero;
-  const back = project.gallery[0];
+  const [back, result, opening, deck] = project.gallery;
 
   return (
     <>
@@ -930,6 +961,29 @@ function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </motion.figure> : null}
         </div>
       </section>
+      {result && (
+        <section className="bg-[#183b34] px-5 py-16 text-[#fff0ce] sm:px-8 lg:px-12">
+          <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1fr_.65fr] md:gap-16">
+            <div>
+              <h2 className="text-4xl font-black tracking-tight sm:text-6xl">{copy(isHebrew, 'איך נגמר הסיבוב?', 'How did the round end?')}</h2>
+              <p className="mt-5 max-w-md text-lg leading-7">{result.caption}</p>
+            </div>
+            <Screen media={result} onOpen={() => onOpen(result)} mode="bare" />
+          </div>
+        </section>
+      )}
+      {opening && deck && (
+        <section className="bg-[#f7ead2] px-5 py-16 text-[#241b18] sm:px-8 lg:px-12">
+          <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
+            {[opening, deck].map(media => (
+              <figure key={media.src} className="min-w-0">
+                <Screen media={media} onOpen={() => onOpen(media)} mode="bare" />
+                <figcaption className="mt-3 text-sm leading-6">{media.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
       <PileheadsProof isHebrew={isHebrew} />
       <TechnicalEvidence isHebrew={isHebrew} dark
         eyebrow={copy(isHebrew, 'ארכיטקטורת המשחק', 'Game architecture')}

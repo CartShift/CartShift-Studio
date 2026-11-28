@@ -16,6 +16,9 @@ const editorialCopy: Record<string, { en: string; he: string }> = {
 function Exhibit({ project, locale, featured }: { project: PortfolioShowcaseProject; locale: Props['locale']; featured: boolean }) {
   const he = locale === 'he';
   const href = '/' + locale + '/yotam/work/' + project.slug;
+  const companion = project.slug === 'wakemyway' ? project.gallery[2]
+    : project.slug === 'pileheads' ? project.gallery[1]
+    : undefined;
   return (
     <article className={'work-exhibit' + (featured ? ' work-exhibit--featured' : '')} data-work-project={project.slug}>
       <a href={href} className="work-exhibit-visual" aria-label={(he ? 'לסיפור הפרויקט: ' : 'Explore case study: ') + project.title}>
@@ -23,13 +26,14 @@ function Exhibit({ project, locale, featured }: { project: PortfolioShowcaseProj
           <span>{project.number} / {project.year}</span>
           <span>{project.hero?.label}</span>
         </div>
-        <div className="work-exhibit-stage">
+        <div className={'work-exhibit-stage' + (companion ? ' work-exhibit-stage--pair' : '')}>
           {project.hero ? (
             <Image src={project.hero.src} alt={project.hero.alt} fill
               unoptimized={/^https?:\/\//.test(project.hero.src)}
               sizes={featured ? '(max-width: 760px) 90vw, 55vw' : '(max-width: 760px) 90vw, 44vw'}
               className={'work-exhibit-image' + (project.hero.aspect === 'portrait' ? ' work-exhibit-image--portrait' : '')} />
           ) : <span className="work-exhibit-fallback">{project.title}</span>}
+          {companion && <Image src={companion.src} alt="" fill sizes="(max-width: 760px) 28vw, 18vw" className="work-exhibit-companion" />}
         </div>
         <div className="work-exhibit-visual-bottom">
           <span>{project.status}</span><ArrowUpRight aria-hidden="true" size={22} />

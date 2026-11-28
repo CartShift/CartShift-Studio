@@ -3,8 +3,8 @@
  * On-demand browser smoke checks for Portfolio V5.
  * Uses dependencies already included in CartShift. Does not deploy or mutate data.
  * Usage:
- *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-yotam.mjs
- *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-yotam.mjs
+ *   PORTFOLIO_V5_BASE_URL=https://cart-shift.com node scripts/qa-portfolio-v5.mjs
+ *   PORTFOLIO_V5_BASE_URL=http://localhost:3000 V5_QA_SCREENSHOTS=1 node scripts/qa-portfolio-v5.mjs
  */
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
@@ -20,6 +20,11 @@ const cases = [
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/starlinker', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/rightflow', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work/wakemyway', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/cartshift-studio', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work/ensemblis', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/pileheads', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work/pileheads', width: 390, height: 844, mobile: true },
@@ -51,13 +56,16 @@ async function main() {
   });
   const failures = [];
   try {
-    for (const test of cases) {
+    for (const test of cases.filter(test => process.env.V5_QA_WORK_ONLY !== '1' || test.page === 'work' || test.page.startsWith('work/'))) {
       const path = '/' + test.locale + '/yotam' + (test.page ? '/' + test.page : '');
       const name = test.locale + '-' + (test.page || 'home').replaceAll('/', '-') + '-' + (test.mobile ? 'mobile' : 'desktop');
       const page = await browser.newPage();
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       page.setDefaultTimeout(8_000);
+      if (test.page === 'work' || test.page.startsWith('work/')) {
+        await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+      }
       await page.setViewport({ width: test.width, height: test.height, isMobile: test.mobile, hasTouch: test.mobile, deviceScaleFactor: 1 });
       try {
         const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -66,12 +74,23 @@ async function main() {
         assert(!(await page.$('meta[name="robots"][content*="noindex"]')), name + ': personal portfolio unexpectedly noindex');
         const canonical = await page.$eval('link[rel="canonical"]', element => element.getAttribute('href'));
         assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
+        if (test.page === 'work' || test.page.startsWith('work/')) {
+          const dir = await page.$eval('main', element => element.getAttribute('dir'));
+          assert(dir === (test.locale === 'he' ? 'rtl' : 'ltr'), name + ': wrong reading direction');
+          await page.evaluate(async () => {
+            await document.fonts.ready;
+            for (const img of document.querySelectorAll('main img')) img.loading = 'eager';
+          });
+          await page.waitForFunction(() => Array.from(document.querySelectorAll('main img')).every(img => img.complete), { timeout: 15000 });
+          const broken = await page.evaluate(() => Array.from(document.querySelectorAll('main img')).filter(img => img.naturalWidth === 0).map(img => img.getAttribute('src')));
+          assert(broken.length === 0, name + ': broken evidence images: ' + broken.join(', '));
+        }
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
         if (test.page === 'work') {
-          assert((await page.$('.work-exhibit')).length === 6, name + ': expected six product exhibits');
-          assert((await page.$('.work-exhibit--featured')).length === 2, name + ': expected two flagship products');
-          assert((await page.$('.work-exhibit-visual img')).length === 6, name + ': missing product evidence');
+          assert((await page.$$('.work-exhibit')).length === 6, name + ': expected six product exhibits');
+          assert((await page.$$('.work-exhibit--featured')).length === 2, name + ': expected two flagship products');
+          assert((await page.$$('.work-exhibit-visual .work-exhibit-image')).length === 6, name + ': missing product evidence');
           assert(await page.$('[data-work-project="pileheads"] a[href="https://pileheads.com/play"]'), name + ': missing direct play link');
         }
         if (test.page?.startsWith('work/')) {
@@ -80,12 +99,21 @@ async function main() {
           const storySlug = await page.$eval('main[data-project]', node => node.getAttribute('data-project'));
           assert(storySlug === test.page.split('/')[1], name + ': wrong project story: ' + storySlug);
           assert(await page.$('main[data-project] h1'), name + ': project headline missing');
-          assert(await page.$('main[data-project] img'), name + ': original project media missing');
-          assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
+          assert(await page.$('main[data-project] img'), name + ': project visual missing');
+          assert((await page.$$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
           assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
+          if (['rightflow', 'wakemyway', 'cartshift-studio', 'ensemblis'].includes(storySlug)) {
+            const proof = '[data-interactive-proof="' + storySlug + '"]';
+            assert(await page.$(proof), name + ': missing interactive illustration');
+            await page.click(proof + ' [data-proof-action]');
+            if (storySlug === 'rightflow') assert(await page.$(proof + ' [data-proof-action]:disabled'), name + ': comparison did not run');
+            if (storySlug === 'wakemyway') assert(await page.$(proof + ' [data-proof-action][aria-pressed="true"]'), name + ': network switch failed');
+            if (storySlug === 'cartshift-studio') assert(await page.$(proof + ' li:nth-child(2)[aria-current="step"]'), name + ': workflow did not advance');
+            if (storySlug === 'ensemblis') assert(await page.$(proof + ' [role="progressbar"][aria-valuenow="1"]'), name + ': checklist progress failed');
+          }
           if (storySlug === 'starlinker') {
             await page.click('[data-interactive-proof="starlinker"] button:nth-child(2)');
-            assert(await page.$('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');
+            assert(await page.waitForSelector('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');
           }
           if (storySlug === 'pileheads') {
             await page.click('[data-interactive-proof="pileheads"] [data-proof-action]');
@@ -191,7 +219,10 @@ async function main() {
           await page.click('.v5-motion-button');
           assert(await page.$eval('.v5-motion-button', button => button.getAttribute('aria-pressed') === 'false'), 'motion resume failed');
         }
-        if (screenshots) await page.screenshot({ path: output + '/' + name + '.png' });
+        if (screenshots) {
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.screenshot({ path: output + '/' + name + '.png', fullPage: test.page === 'work' || test.page.startsWith('work/') });
+        }
         if (name === 'en-home-desktop' && process.env.V5_QA_SKIP_MOTION !== '1') {
           await page.click('.v5-immersive-links a[href$="/work"]');
           const wipe = await page.$eval('.v5-transition-wipe', node =>
@@ -208,6 +239,7 @@ async function main() {
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));
         console.log('PASS ' + name + ' HTTP ' + response.status() + ' / width ' + width + 'px');
       } catch (error) {
+        if (screenshots) await page.screenshot({ path: output + '/' + name + '-failure.png', fullPage: true }).catch(() => null);
         failures.push({ page: name, error: error.message });
         console.error('FAIL ' + name + ': ' + error.message);
       } finally {

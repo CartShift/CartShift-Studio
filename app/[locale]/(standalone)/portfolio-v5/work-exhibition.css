@@ -62,3 +62,18 @@
 @media(max-width:900px) { .work-exhibit--featured,.work-exhibit--featured:nth-child(even) { grid-template-columns:1fr; gap:0; } .work-exhibit--featured:nth-child(even) .work-exhibit-visual,.work-exhibit--featured:nth-child(even) .work-exhibit-story { grid-column:auto; grid-row:auto; } .work-exhibit--featured .work-exhibit-visual { aspect-ratio:1.4; } .work-exhibition-intro-grid { grid-template-columns:1fr; align-items:start; } .work-exhibition-intro-copy { max-width:500px; } }
 @media(max-width:600px) { .work-exhibition-grid { grid-template-columns:1fr; } .work-exhibition-eyebrow,.work-exhibition-index { font-size:9px; gap:12px; } .work-exhibition-index span:last-child { text-align:end; max-width:52%; } .work-exhibition-intro h1 { font-size:clamp(50px,13vw,78px); } .work-exhibition-section-head { align-items:start; flex-direction:column; gap:10px; } .work-exhibit--featured .work-exhibit-visual { aspect-ratio:1.15; } .work-exhibit-story { padding-bottom:10px; } }
 @media(prefers-reduced-motion:reduce) { .work-exhibit-image { transition:none; } .work-exhibit-visual:hover .work-exhibit-image { transform:none; } }
+
+/* Pair each lead image with a second, recognizable product state. */
+.work-exhibit-stage--pair .work-exhibit-image {
+  padding-inline-end: 24%;
+  filter: drop-shadow(0 12px 18px rgb(0 0 0 / 24%));
+}
+.work-exhibit-companion {
+  object-fit: contain;
+  padding-block: 13% 1%;
+  padding-inline-start: 68%;
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 32%));
+  pointer-events: none;
+}
+[data-work-project="wakemyway"] .work-exhibit-stage--pair .work-exhibit-image { padding-inline: 6% 42%; }
+[data-work-project="wakemyway"] .work-exhibit-companion { padding-inline: 45% 8%; }

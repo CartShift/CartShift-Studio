@@ -32,15 +32,16 @@ describe('featured portfolio case study', () => {
   });
 
   it('keeps the same project actions accessible in Hebrew', () => {
+    const hebrewProject = getPortfolioShowcases('he').find(item => item.slug === 'starlinker')!;
     const html = renderToStaticMarkup(
-      createElement(FeaturedShowcase, { project, locale: 'he', isHebrew: true })
+      createElement(FeaturedShowcase, { project: hebrewProject, locale: 'he', isHebrew: true })
     );
 
     expect(html).toContain('עבודה נבחרת');
     expect(html).toContain('הצצה למוצר');
     expect(html).toContain('href="/he/portfolio/starlinker"');
     expect(html).toContain('aria-labelledby="yotam-featured-title"');
-    expect(html).toContain('alt="StarLinker visual planning workspace"');
+    expect(html).toContain(`alt="${hebrewProject.hero!.alt}"`);
   });
 
   it('protects dark text contrast and a visual-first mobile layout from theme styles', () => {

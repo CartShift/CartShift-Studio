@@ -54,6 +54,42 @@ const portfolioShowcaseRank = new Map<string, number>(
   portfolioShowcaseOrder.map((slug, index) => [slug, index])
 );
 
+const wakeQaScreens = [
+  { src: '/images/cv/portfolio/wake-tonight-with-navigation.webp',
+    en: { label: 'Tonight', alt: 'The next alarm and morning plan are visible together.' },
+    he: { label: 'הלילה', alt: 'השעון הבא ותוכנית הבוקר מופיעים יחד.' } },
+  { src: '/images/cv/portfolio/wake-tonight-empty.webp',
+    en: { label: 'Night-before setup', alt: 'The starting screen before an alarm is scheduled.' },
+    he: { label: 'הכנה ללילה', alt: 'מסך הפתיחה לפני תזמון שעון מעורר.' } },
+  { src: '/images/cv/portfolio/wake-alarm-editor-configured.webp',
+    en: { label: 'Weekly schedule', alt: 'The native alarm editor shows the time, repeat days, and wake sound.' },
+    he: { label: 'לוח השכמה שבועי', alt: 'עורך השעון מציג את השעה, ימי החזרה וצליל ההשכמה.' } },
+  { src: '/images/cv/portfolio/wake-wake-oriented.webp',
+    en: { label: 'Morning prompt', alt: 'The wake session shows a cue and the first action for the morning.' },
+    he: { label: 'הנחיית בוקר', alt: 'מסך ההשכמה מציג תזכורת ואת הפעולה הראשונה לבוקר.' } },
+  { src: '/images/cv/portfolio/wake-wake-complete.webp',
+    en: { label: 'Wake complete', alt: 'The completed wake session shows the morning start time.' },
+    he: { label: 'השכמה הושלמה', alt: 'מסך הסיום מציג את שעת תחילת הבוקר.' } },
+  { src: '/images/cv/portfolio/wake-alarms-overview.webp',
+    en: { label: 'Alarm list', alt: 'An overview of the demo alarms, schedules, and readiness.' },
+    he: { label: 'רשימת שעונים', alt: 'סקירה של שעוני הדוגמה, זמני החזרה ומצב המוכנות.' } },
+  { src: '/images/cv/portfolio/wake-insights-populated.webp',
+    en: { label: 'Morning check-in', alt: 'The insights view asks how the morning went and shows a planned adjustment.' },
+    he: { label: 'משוב בוקר', alt: 'מסך התובנות מבקש משוב על הבוקר ומציג התאמה מתוכננת.' } },
+  { src: '/images/cv/portfolio/wake-onboarding-first-run.webp',
+    en: { label: 'First launch', alt: 'The first-run introduction explains the alarm’s wake routine.' },
+    he: { label: 'הפעלה ראשונה', alt: 'מסך ההיכרות מסביר את שגרת ההשכמה.' } },
+];
+
+function wakeQaMedia(locale: PortfolioLocale) {
+  const [hero, ...gallery] = wakeQaScreens.map(({src, ...translations}): ShowcaseMedia => {
+    const { label, alt } = translations[locale];
+    const provenance = locale === 'he' ? 'צילום מגרסת בדיקה של האפליקציה.' : 'Captured from an Android QA build.';
+    return { src, label, alt, caption: `${alt} ${provenance}`, aspect: 'portrait', contain: true };
+  });
+  return { hero, gallery };
+}
+
 const projects: LocalizedProject[] = [
   {
     base: {
@@ -70,37 +106,79 @@ const projects: LocalizedProject[] = [
       media: {
         en: {
           hero: {
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
-            alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
-            label: 'Original card artwork',
-            caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
+            src: '/images/cv/portfolio/pileheads-tabletop.webp',
+            alt: 'PILEHEADS tabletop after the player picks up the pile',
+            label: 'Browser tabletop',
+            caption: 'The live browser game during a local two-player match against a bot.',
             aspect: 'wide',
             contain: true,
           },
           gallery: [{
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            src: '/images/cv/portfolio/pileheads-back.webp',
             alt: 'PILEHEADS card back artwork from the game repository',
             label: 'Card back',
             caption: 'A card-back design from the physical and digital deck assets.',
             aspect: 'portrait',
             contain: true,
+          }, {
+            "src": "/images/cv/portfolio/pileheads-round-result.webp",
+            "label": "Round result",
+            "alt": "PILEHEADS exported results card after a two-player round",
+            "caption": "The game’s share card records a first-out finish after 65 moves.",
+            "aspect": "portrait",
+            "contain": true
+          }, {
+            src: '/images/cv/portfolio/pileheads-opening.webp',
+            alt: 'PILEHEADS opening turns with three cards in hand',
+            label: 'Opening turns',
+            caption: 'Early in the round, the player has three cards in hand and the shared pile is in play.',
+            aspect: 'wide',
+            contain: true,
+          }, {
+            src: '/images/cv/portfolio/pileheads-deck.webp',
+            alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
+            label: 'Original card artwork',
+            caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
+            aspect: 'wide',
+            contain: true,
           }],
         },
         he: {
           hero: {
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-characters.webp',
-            alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
-            label: 'איורי קלפים מקוריים',
-            caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
+            src: '/images/cv/portfolio/pileheads-tabletop.webp',
+            alt: 'שולחן PILEHEADS אחרי איסוף הערימה',
+            label: 'שולחן המשחק בדפדפן',
+            caption: 'משחק מקומי בדפדפן לשני שחקנים מול בוט.',
             aspect: 'wide',
             contain: true,
           },
           gallery: [{
-            src: 'https://raw.githubusercontent.com/CartShift/pileheads/main/dist/pilehead/assets/stack-back-v2.webp',
+            src: '/images/cv/portfolio/pileheads-back.webp',
             alt: 'עיצוב גב קלף מתוך נכסי המשחק של PILEHEADS',
             label: 'גב הקלף',
             caption: 'עיצוב גב קלף מתוך נכסי החפיסה הפיזית והדיגיטלית.',
             aspect: 'portrait',
+            contain: true,
+          }, {
+            "src": "/images/cv/portfolio/pileheads-round-result.webp",
+            "label": "תוצאת הסיבוב",
+            "alt": "כרטיס תוצאה מיוצא של PILEHEADS אחרי סיבוב לשני שחקנים",
+            "caption": "כרטיס השיתוף של המשחק מתעד ניצחון אחרי 65 מהלכים.",
+            "aspect": "portrait",
+            "contain": true
+          }, {
+            src: '/images/cv/portfolio/pileheads-opening.webp',
+            alt: 'תחילת סיבוב ב-PILEHEADS עם שלושה קלפים ביד',
+            label: 'תחילת הסיבוב',
+            caption: 'בתחילת הסיבוב לשחקן יש שלושה קלפים ביד והערימה המשותפת כבר במשחק.',
+            aspect: 'wide',
+            contain: true,
+          }, {
+            src: '/images/cv/portfolio/pileheads-deck.webp',
+            alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
+            label: 'איורי קלפים מקוריים',
+            caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
+            aspect: 'wide',
             contain: true,
           }],
         },
@@ -135,26 +213,36 @@ const projects: LocalizedProject[] = [
       accentSoft: '#d8d3ff',
       liveUrl: 'https://starlinker.io',
       media: {
-        en: {
-          hero: {
-            src: '/images/cv/portfolio/starlinker-en-light.png',
-            alt: 'StarLinker visual planning workspace',
-            label: 'Workspace',
-            caption: 'A connected visual workspace for goals, projects, tasks, habits and notes.',
+        en: { hero: {
+            src: '/images/cv/portfolio/starlinker-graph-demo.webp',
+            alt: 'StarLinker public graph demo linking a feedback note and onboarding task to a Friday meeting',
+            label: 'Interactive graph demo',
+            caption: 'The public demo traces a fictional blocker and explains the next action through linked evidence.',
             aspect: 'wide',
             contain: true,
-          },
-          gallery: [
-            {
-              src: '/images/cv/portfolio/starlinker-en-dark.png',
-              alt: 'StarLinker dark workspace interface',
-              label: 'Dark workspace',
-              caption: 'The same planning environment remains clear and focused across themes.',
-              aspect: 'wide',
-              contain: true,
-            },
-          ],
-        },
+          }, gallery: [{
+            src: '/images/cv/portfolio/starlinker-en-dark.png',
+            alt: 'An earlier StarLinker website showing a graph preview in dark mode',
+            label: 'Earlier public site',
+            caption: 'The previous public site introduced the visual planning model.',
+            aspect: 'wide',
+            contain: true,
+          }] },
+        he: { hero: {
+            src: '/images/cv/portfolio/starlinker-graph-demo.webp',
+            alt: 'הדגמת StarLinker שמקשרת משוב ומשימת קליטה לפגישת יום שישי',
+            label: 'הדגמת המפה האינטראקטיבית',
+            caption: 'ההדגמה הציבורית מציגה חסימה בתרחיש דוגמה ומסבירה את הפעולה הבאה לפי הקשרים במפה.',
+            aspect: 'wide',
+            contain: true,
+          }, gallery: [{
+            src: '/images/cv/portfolio/starlinker-en-dark.png',
+            alt: 'גרסה קודמת של האתר הציבורי של StarLinker עם תצוגה מקדימה של מפה במצב כהה',
+            label: 'האתר הציבורי הקודם',
+            caption: 'האתר הציבורי הקודם הציג את מודל התכנון הוויזואלי.',
+            aspect: 'wide',
+            contain: true,
+          }] },
       },
     },
     en: {
@@ -267,6 +355,17 @@ const projects: LocalizedProject[] = [
           },
           gallery: [],
         },
+        he: {
+          hero: {
+            src: '/images/cv/portfolio/ensemblis-editorial.svg',
+            alt: 'איור קונספט של Ensemblis עם תקליט ואלמנטים מעולם המוזיקה',
+            label: 'איור קונספט',
+            caption: 'כיוון חזותי למערכת שנמצאת בפיתוח.',
+            aspect: 'wide',
+            contain: true,
+          },
+          gallery: [],
+        },
       },
     },
     en: {
@@ -298,42 +397,8 @@ const projects: LocalizedProject[] = [
       accentSoft: '#ffd7c6',
       repositoryUrl: 'https://github.com/yotamon/WakeMyWay',
       media: {
-        en: {
-          hero: {
-            src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/tonight_ready.png',
-            alt: 'WakeMyWay ready state on Android',
-            label: 'Tonight',
-            caption: 'The night-before state prepares tomorrow without adding cognitive load.',
-            aspect: 'portrait',
-            contain: true,
-          },
-          gallery: [
-            {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/tonight_empty.png',
-              alt: 'WakeMyWay empty Tonight screen',
-              label: 'Night-before setup',
-              caption: 'A calm entry point for preparing the next wake session.',
-              aspect: 'portrait',
-              contain: true,
-            },
-            {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/wake_setup_weekly.png',
-              alt: 'WakeMyWay weekly alarm setup',
-              label: 'Schedule',
-              caption: 'Native schedule controls keep the critical alarm path explicit and predictable.',
-              aspect: 'portrait',
-              contain: true,
-            },
-            {
-              src: 'https://raw.githubusercontent.com/yotamon/WakeMyWay/main/apps/android/app/src/test/screenshots/wake_emerging.png',
-              alt: 'WakeMyWay active wake screen',
-              label: 'Active wake',
-              caption: 'The active wake experience combines voice, movement cues and a deliberately low-load interface.',
-              aspect: 'portrait',
-              contain: true,
-            },
-          ],
-        },
+        en: wakeQaMedia('en'),
+        he: wakeQaMedia('he'),
       },
     },
     en: {
