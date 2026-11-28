@@ -43,12 +43,13 @@ describe('personal portfolio showcase data', () => {
     expect(ensemblis?.status).toBe('Product in development');
   });
 
-  it('exposes PILEHEADS as a playable project with honest playtest status and original artwork', () => {
+  it('exposes PILEHEADS as a playable project with honest playtest status and tabletop evidence', () => {
     const project = getPortfolioShowcases('en').find(item => item.slug === 'pileheads');
     expect(project?.status).toBe('Active playtest product');
     expect(project?.liveUrl).toBe('https://pileheads.com/play');
     expect(project?.repositoryUrl).toBe('https://github.com/CartShift/pileheads');
-    expect(project?.hero?.caption).toContain('not a screenshot');
+    expect(project?.hero?.src).toContain('pileheads-tabletop.webp');
+    expect(project?.gallery.some(media => media.src.endsWith('/pileheads-deck.webp'))).toBe(true);
     expect(getPortfolioShowcases('he').find(item => item.slug === 'pileheads')?.summary).toContain('54');
   });
 

@@ -6,3 +6,5 @@
 
 - WakeMyWay web assets: eight visually reviewed captures from the October 2026 Sunroom Club Android QA pack. Original PNGs are preserved in that pack. The portfolio serves WebP derivatives and identifies the QA build in captions. Screens with the account holder’s name were excluded.
 - PILEHEADS round result: the game's exported share card for a two-player round. The portfolio serves a WebP derivative and displays it separately from the original deck artwork.
+
+- Live web captures: two desktop states from a local PILEHEADS bot match and StarLinker’s public interactive dependency demo with fictional project data. WebP copies crop surrounding margins. The corresponding original JPEGs are in the live capture archive.

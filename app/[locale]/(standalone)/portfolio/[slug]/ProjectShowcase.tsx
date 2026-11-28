@@ -921,7 +921,7 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
 
 function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
   const hero = project.hero;
-  const [back, result] = project.gallery;
+  const [back, result, opening, deck] = project.gallery;
 
   return (
     <>
@@ -969,6 +969,18 @@ function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
               <p className="mt-5 max-w-md text-lg leading-7">{result.caption}</p>
             </div>
             <Screen media={result} onOpen={() => onOpen(result)} mode="bare" />
+          </div>
+        </section>
+      )}
+      {opening && deck && (
+        <section className="bg-[#f7ead2] px-5 py-16 text-[#241b18] sm:px-8 lg:px-12">
+          <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
+            {[opening, deck].map(media => (
+              <figure key={media.src} className="min-w-0">
+                <Screen media={media} onOpen={() => onOpen(media)} mode="bare" />
+                <figcaption className="mt-3 text-sm leading-6">{media.caption}</figcaption>
+              </figure>
+            ))}
           </div>
         </section>
       )}

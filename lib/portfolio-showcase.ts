@@ -106,10 +106,10 @@ const projects: LocalizedProject[] = [
       media: {
         en: {
           hero: {
-            src: '/images/cv/portfolio/pileheads-deck.webp',
-            alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
-            label: 'Original card artwork',
-            caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
+            src: '/images/cv/portfolio/pileheads-tabletop.webp',
+            alt: 'PILEHEADS tabletop after the player picks up the pile',
+            label: 'Browser tabletop',
+            caption: 'The live browser game during a local two-player match against a bot.',
             aspect: 'wide',
             contain: true,
           },
@@ -127,14 +127,28 @@ const projects: LocalizedProject[] = [
             "caption": "The game’s share card records a first-out finish after 65 moves.",
             "aspect": "portrait",
             "contain": true
+          }, {
+            src: '/images/cv/portfolio/pileheads-opening.webp',
+            alt: 'PILEHEADS opening turns with three cards in hand',
+            label: 'Opening turns',
+            caption: 'Early in the round, the player has three cards in hand and the shared pile is in play.',
+            aspect: 'wide',
+            contain: true,
+          }, {
+            src: '/images/cv/portfolio/pileheads-deck.webp',
+            alt: 'Original PILEHEADS illustrated card faces arranged in a deck sprite sheet',
+            label: 'Original card artwork',
+            caption: 'Actual illustrated deck assets from the game, not a screenshot of the browser tabletop.',
+            aspect: 'wide',
+            contain: true,
           }],
         },
         he: {
           hero: {
-            src: '/images/cv/portfolio/pileheads-deck.webp',
-            alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
-            label: 'איורי קלפים מקוריים',
-            caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
+            src: '/images/cv/portfolio/pileheads-tabletop.webp',
+            alt: 'שולחן PILEHEADS אחרי איסוף הערימה',
+            label: 'שולחן המשחק בדפדפן',
+            caption: 'משחק מקומי בדפדפן לשני שחקנים מול בוט.',
             aspect: 'wide',
             contain: true,
           },
@@ -152,6 +166,20 @@ const projects: LocalizedProject[] = [
             "caption": "כרטיס השיתוף של המשחק מתעד ניצחון אחרי 65 מהלכים.",
             "aspect": "portrait",
             "contain": true
+          }, {
+            src: '/images/cv/portfolio/pileheads-opening.webp',
+            alt: 'תחילת סיבוב ב-PILEHEADS עם שלושה קלפים ביד',
+            label: 'תחילת הסיבוב',
+            caption: 'בתחילת הסיבוב לשחקן יש שלושה קלפים ביד והערימה המשותפת כבר במשחק.',
+            aspect: 'wide',
+            contain: true,
+          }, {
+            src: '/images/cv/portfolio/pileheads-deck.webp',
+            alt: 'איורי הקלפים המקוריים של PILEHEADS מסודרים בגיליון אחד',
+            label: 'איורי קלפים מקוריים',
+            caption: 'גרפיקות אמיתיות של חפיסת המשחק, ולא צילום מסך של ממשק המשחק בדפדפן.',
+            aspect: 'wide',
+            contain: true,
           }],
         },
       },
@@ -185,26 +213,36 @@ const projects: LocalizedProject[] = [
       accentSoft: '#d8d3ff',
       liveUrl: 'https://starlinker.io',
       media: {
-        en: {
-          hero: {
-            src: '/images/cv/portfolio/starlinker-en-light.png',
-            alt: 'StarLinker visual planning workspace',
-            label: 'Workspace',
-            caption: 'A connected visual workspace for goals, projects, tasks, habits and notes.',
+        en: { hero: {
+            src: '/images/cv/portfolio/starlinker-graph-demo.webp',
+            alt: 'StarLinker public graph demo linking a feedback note and onboarding task to a Friday meeting',
+            label: 'Interactive graph demo',
+            caption: 'The public demo traces a fictional blocker and explains the next action through linked evidence.',
             aspect: 'wide',
             contain: true,
-          },
-          gallery: [
-            {
-              src: '/images/cv/portfolio/starlinker-en-dark.png',
-              alt: 'StarLinker dark workspace interface',
-              label: 'Dark workspace',
-              caption: 'The same planning environment remains clear and focused across themes.',
-              aspect: 'wide',
-              contain: true,
-            },
-          ],
-        },
+          }, gallery: [{
+            src: '/images/cv/portfolio/starlinker-en-dark.png',
+            alt: 'An earlier StarLinker website showing a graph preview in dark mode',
+            label: 'Earlier public site',
+            caption: 'The previous public site introduced the visual planning model.',
+            aspect: 'wide',
+            contain: true,
+          }] },
+        he: { hero: {
+            src: '/images/cv/portfolio/starlinker-graph-demo.webp',
+            alt: 'הדגמת StarLinker שמקשרת משוב ומשימת קליטה לפגישת יום שישי',
+            label: 'הדגמת המפה האינטראקטיבית',
+            caption: 'ההדגמה הציבורית מציגה חסימה בתרחיש דוגמה ומסבירה את הפעולה הבאה לפי הקשרים במפה.',
+            aspect: 'wide',
+            contain: true,
+          }, gallery: [{
+            src: '/images/cv/portfolio/starlinker-en-dark.png',
+            alt: 'גרסה קודמת של האתר הציבורי של StarLinker עם תצוגה מקדימה של מפה במצב כהה',
+            label: 'האתר הציבורי הקודם',
+            caption: 'האתר הציבורי הקודם הציג את מודל התכנון הוויזואלי.',
+            aspect: 'wide',
+            contain: true,
+          }] },
       },
     },
     en: {
