@@ -83,6 +83,15 @@ async function main() {
           assert(await page.$('main[data-project] img'), name + ': original project media missing');
           assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
           assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
+          if (['rightflow', 'wakemyway', 'cartshift-studio', 'ensemblis'].includes(storySlug)) {
+            const proof = '[data-interactive-proof="' + storySlug + '"]';
+            assert(await page.$(proof), name + ': missing interactive illustration');
+            await page.click(proof + ' [data-proof-action]');
+            if (storySlug === 'rightflow') assert(await page.$(proof + ' [data-proof-action]:disabled'), name + ': comparison did not run');
+            if (storySlug === 'wakemyway') assert(await page.$(proof + ' [data-proof-action][aria-pressed="true"]'), name + ': network switch failed');
+            if (storySlug === 'cartshift-studio') assert(await page.$(proof + ' li:nth-child(2)[aria-current="step"]'), name + ': workflow did not advance');
+            if (storySlug === 'ensemblis') assert(await page.$(proof + ' [role="progressbar"][aria-valuenow="1"]'), name + ': checklist progress failed');
+          }
           if (storySlug === 'starlinker') {
             await page.click('[data-interactive-proof="starlinker"] button:nth-child(2)');
             assert(await page.$('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');

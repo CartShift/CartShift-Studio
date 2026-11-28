@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { AnimatePresence, motion, useReducedMotion, type MotionProps } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, X } from 'lucide-react';
 import type { PortfolioShowcaseProject, ShowcaseMedia } from '@/lib/portfolio-showcase';
+import { RightFlowProof, WakeMyWayProof, CartShiftProof, EnsemblisProof } from './ProjectProofs';
 
 type Props = {
   project: PortfolioShowcaseProject;
@@ -487,6 +488,8 @@ function RightFlowStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
         </section>
       ) : null}
 
+      <RightFlowProof isHebrew={isHebrew} />
+
       <TechnicalEvidence
         isHebrew={isHebrew}
         eyebrow={copy(isHebrew, 'נתיב בדיקה', 'Review pipeline')}
@@ -612,6 +615,8 @@ function EnsemblisStory({ project, isHebrew, reveal }: StoryProps) {
         </motion.div>
       </section>
 
+      <EnsemblisProof isHebrew={isHebrew} />
+
       <TechnicalEvidence
         isHebrew={isHebrew}
         eyebrow={copy(isHebrew, 'גבול המוצר', 'Product boundary')}
@@ -707,6 +712,8 @@ function WakeMyWayStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <WakeMyWayProof isHebrew={isHebrew} />
 
       <TechnicalEvidence
         isHebrew={isHebrew}
@@ -835,6 +842,8 @@ function CartShiftStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <CartShiftProof isHebrew={isHebrew} />
 
       <TechnicalEvidence
         isHebrew={isHebrew}
