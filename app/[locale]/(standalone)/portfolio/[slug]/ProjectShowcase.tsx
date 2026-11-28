@@ -234,6 +234,55 @@ function SharedHeader({ project, locale, isHebrew }: { project: PortfolioShowcas
   );
 }
 
+function StarLinkerProof({ isHebrew }: { isHebrew: boolean }) {
+  const [selected, setSelected] = useState(0);
+  const nodes = [
+    { label: copy(isHebrew, 'מטרה', 'Goal'), name: copy(isHebrew, 'להשיק מוצר', 'Launch a product'), text: copy(isHebrew, 'המטרה מספקת הקשר לפרויקטים ולמשימות שמקדמים אותה.', 'A goal provides context for the projects and tasks that move it forward.') },
+    { label: copy(isHebrew, 'פרויקט', 'Project'), name: copy(isHebrew, 'גרסת בטא', 'Beta release'), text: copy(isHebrew, 'פרויקט מחבר בין המטרה לבין העבודה שאפשר לבצע בפועל.', 'A project connects the goal to concrete work.') },
+    { label: copy(isHebrew, 'משימה', 'Task'), name: copy(isHebrew, 'בדיקת משתמשים', 'User testing'), text: copy(isHebrew, 'משימה נשארת קשורה לפרויקט ולמטרה במקום להפוך לפריט מבודד ברשימה.', 'A task stays connected to its project and goal instead of becoming an isolated list item.') },
+  ];
+  return <section data-interactive-proof="starlinker" className="bg-[#e1dcfa] px-5 py-16 sm:px-8 sm:py-24 lg:px-12">
+    <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[.65fr_1fr] lg:items-center">
+      <div>
+        <Label>{copy(isHebrew, 'המחשה אינטראקטיבית · לא ממשק חי', 'Interactive illustration · not live product UI')}</Label>
+        <h2 className="mt-6 max-w-[14ch] text-4xl font-medium tracking-tight sm:text-6xl">{copy(isHebrew, 'כל פעולה שייכת להקשר.', 'Every action has context.')}</h2>
+        <p className="mt-5 max-w-lg text-base leading-7 text-black/70">{copy(isHebrew, 'בחרו ישות כדי להבין כיצד מטרה, פרויקט ומשימה מתחברים. זוהי המחשה מפושטת של מודל הגרף.', 'Select a node to explore how goals, projects and tasks relate. This is a simplified illustration of the graph model.')}</p>
+      </div>
+      <div className="bg-[#25213c] p-5 text-white sm:p-8">
+        <div className="grid gap-3 sm:grid-cols-3">
+          {nodes.map((node, index) => <button key={node.label} type="button" aria-pressed={selected === index} onClick={() => setSelected(index)} className={'min-h-28 border p-4 text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ' + (selected === index ? 'border-[#c9bafa] bg-[#534789]' : 'border-white/30 bg-white/5')}>
+            <span className="block text-xs text-[#d9d0ff]">{node.label}</span><span className="mt-4 block text-lg font-semibold">{node.name}</span>
+          </button>)}
+        </div>
+        <p className="mt-5 min-h-20 border-t border-white/25 pt-4 text-base leading-7 text-white/85" aria-live="polite">{nodes[selected].text}</p>
+      </div>
+    </div>
+  </section>;
+}
+
+function PileheadsProof({ isHebrew }: { isHebrew: boolean }) {
+  const [played, setPlayed] = useState(false);
+  return <section data-interactive-proof="pileheads" className="bg-[#e9d8b8] px-5 py-16 sm:px-8 sm:py-24 lg:px-12">
+    <div className="mx-auto grid max-w-[1680px] gap-10 lg:grid-cols-[.65fr_1fr] lg:items-center">
+      <div>
+        <Label>{copy(isHebrew, 'המחשת חוק · לא משחק מלא', 'Rule illustration · not a full game')}</Label>
+        <h2 className="mt-6 max-w-[14ch] text-4xl font-medium tracking-tight sm:text-6xl">{copy(isHebrew, 'ארבעה קלפים. הערימה נשרפת.', 'Four of a kind. Burn the pile.')}</h2>
+        <p className="mt-5 max-w-lg text-base leading-7 text-black/70">{copy(isHebrew, 'הניחו את הקלף הרביעי כדי לראות חוק אחד בפעולה. במשחק המלא מנוע החוקים מאמת את המהלך לפני שהאנימציה מציגה אותו.', 'Play the fourth matching card to see one rule in action. In the full game, the rules engine validates the move before motion renders the result.')}</p>
+      </div>
+      <div className="bg-[#34251d] p-5 text-white sm:p-8">
+        <div className="flex min-h-32 flex-wrap items-center justify-center gap-2 sm:gap-4" aria-label={copy(isHebrew, 'ערימת קלפים', 'Card pile')}>
+          {played ? <span className="text-xl font-semibold text-[#f4d5a5]">{copy(isHebrew, 'הערימה נשרפה', 'Pile burned')}</span> : [0,1,2].map(n => <span key={n} className="grid h-24 w-16 place-items-center rounded-md border-2 border-[#b45a40] bg-[#f7e6c6] text-4xl font-black text-[#34251d] sm:h-32 sm:w-24">7</span>)}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3 border-t border-white/25 pt-5">
+          <button type="button" data-proof-action onClick={() => setPlayed(true)} disabled={played} className="min-h-11 rounded-full bg-[#f4d5a5] px-5 py-3 text-sm font-bold text-[#34251d] disabled:opacity-50">{copy(isHebrew, 'לשחק 7', 'Play 7')}</button>
+          <button type="button" onClick={() => setPlayed(false)} disabled={!played} className="min-h-11 rounded-full border border-white/40 px-5 py-3 text-sm text-white disabled:opacity-50">{copy(isHebrew, 'איפוס', 'Reset')}</button>
+        </div>
+        <p className="mt-4 min-h-12 text-sm leading-6 text-white/85" aria-live="polite">{played ? copy(isHebrew, 'ארבעה קלפים זהים רצופים השלימו את התנאי לשריפת הערימה.', 'Four consecutive matching cards completed the condition for burning the pile.') : copy(isHebrew, 'שלושה קלפים זהים בראש הערימה. נסו להוסיף את הרביעי.', 'Three matching cards are on top of the pile. Try adding the fourth.')}</p>
+      </div>
+    </div>
+  </section>;
+}
+
 function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
   const hero = project.hero;
   const dark = project.gallery[0];
@@ -308,6 +357,8 @@ function StarLinkerStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </div>
         </section>
       ) : null}
+
+      <StarLinkerProof isHebrew={isHebrew} />
 
       <TechnicalEvidence
         isHebrew={isHebrew}
@@ -879,6 +930,7 @@ function PileheadsStory({ project, isHebrew, reveal, onOpen }: StoryProps) {
           </motion.figure> : null}
         </div>
       </section>
+      <PileheadsProof isHebrew={isHebrew} />
       <TechnicalEvidence isHebrew={isHebrew} dark
         eyebrow={copy(isHebrew, 'ארכיטקטורת המשחק', 'Game architecture')}
         title={copy(isHebrew, 'החוקים קובעים. האנימציה מציגה.', 'Rules decide. Motion tells the story.')}
