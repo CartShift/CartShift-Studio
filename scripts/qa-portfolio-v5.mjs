@@ -18,6 +18,8 @@ const cases = [
   { locale: 'en', page: '', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: '', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work', width: 390, height: 844, mobile: true },
+  { locale: 'en', page: 'work', width: 1440, height: 900, mobile: false },
+  { locale: 'he', page: 'work', width: 1440, height: 900, mobile: false },
   { locale: 'en', page: 'work/starlinker', width: 390, height: 844, mobile: true },
   { locale: 'en', page: 'work/pileheads', width: 1440, height: 900, mobile: false },
   { locale: 'he', page: 'work/pileheads', width: 390, height: 844, mobile: true },
@@ -66,6 +68,12 @@ async function main() {
         assert(canonical?.endsWith(path), name + ': wrong canonical URL ' + canonical);
         const width = await page.evaluate(() => document.documentElement.scrollWidth);
         assert(width <= test.width + 1, name + ': horizontal overflow ' + width + ' > ' + test.width);
+        if (test.page === 'work') {
+          assert((await page.$('.work-exhibit')).length === 6, name + ': expected six product exhibits');
+          assert((await page.$('.work-exhibit--featured')).length === 2, name + ': expected two flagship products');
+          assert((await page.$('.work-exhibit-visual img')).length === 6, name + ': missing product evidence');
+          assert(await page.$('[data-work-project="pileheads"] a[href="https://pileheads.com/play"]'), name + ': missing direct play link');
+        }
         if (test.page?.startsWith('work/')) {
           const story = await page.$('main[data-project]');
           assert(story, name + ': bespoke project story not rendered');
@@ -75,6 +83,14 @@ async function main() {
           assert(await page.$('main[data-project] img'), name + ': original project media missing');
           assert((await page.$('main[data-project] > section')).length >= 4, name + ': incomplete unique story sections');
           assert(!(await page.$('.v5-case-study')), name + ': generic replacement template should not render');
+          if (storySlug === 'starlinker') {
+            await page.click('[data-interactive-proof="starlinker"] button:nth-child(2)');
+            assert(await page.$('[data-interactive-proof="starlinker"] button:nth-child(2)[aria-pressed="true"]'), name + ': graph illustration failed');
+          }
+          if (storySlug === 'pileheads') {
+            await page.click('[data-interactive-proof="pileheads"] [data-proof-action]');
+            assert(await page.$('[data-interactive-proof="pileheads"] [data-proof-action]:disabled'), name + ': rule illustration failed');
+          }
         }
         if (test.page === 'about') {
           const portrait = await page.$('.v5-about-portrait-image');
@@ -185,8 +201,8 @@ async function main() {
             { timeout: 20_000 });
           await page.waitForFunction(() => document.querySelector('.v5-transition-wipe')
             ?.classList.contains('v5-transition-wipe--idle'), { timeout: 5_000 });
-          await page.waitForSelector('.v5-work-row', { timeout: 8_000 });
-          assert((await page.evaluate(() => document.querySelectorAll('.v5-work-row').length)) > 0,
+          await page.waitForSelector('.work-exhibit', { timeout: 8_000 });
+          assert((await page.evaluate(() => document.querySelectorAll('.work-exhibit').length)) > 0,
             'portfolio page transition did not reveal the destination');
         }
         assert(errors.length === 0, name + ': uncaught errors: ' + errors.join(', '));

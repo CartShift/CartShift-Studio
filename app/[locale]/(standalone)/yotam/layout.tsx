@@ -8,6 +8,7 @@ import '../portfolio-v5/yotam-alive.css';
 import '../portfolio-v5/yotam-alive-labs.css';
 import '../portfolio-v5/yotam-alive-widget.css';
 import '../portfolio-v5/portfolio-v5-about-portrait.css';
+import '../portfolio-v5/work-exhibition.css';
 import PortfolioMotion from '../portfolio-v5/PortfolioMotion';
 import AliveExperience from '../portfolio-v5/AliveExperience';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';

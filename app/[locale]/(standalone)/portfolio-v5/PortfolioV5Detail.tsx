@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { getPortfolioShowcases } from '@/lib/portfolio-showcase';
 import { translations, type PortfolioV5Locale } from './v5-copy';
 import V5Navigation from './V5Navigation';
+import WorkExhibition from './WorkExhibition';
 
 type Kind = 'work' | 'about' | 'contact';
 type Props = { locale: PortfolioV5Locale; kind: Kind; email: string };
@@ -19,46 +20,7 @@ export default function PortfolioV5Detail({ locale, kind, email }: Props) {
       </a>
       <V5Navigation locale={locale} section={kind} />
       <div id="v5-content" className="v5-subpage-main" tabIndex={-1}>
-        {kind === 'work' && (
-          <>
-            <section className="v5-inner-hero v5-shell">
-              <div className="v5-inner-heading">
-                <span className="v5-section-kicker">{t.workEyebrow}</span>
-                <h1>{isHebrew ? 'עבודות.' : 'Work.'}<sup aria-label={isHebrew ? projects.length + ' פרויקטים' : projects.length + ' projects'}>{projects.length.toString().padStart(2, '0')}</sup></h1>
-                <p>{t.workLead}</p>
-              </div>
-            </section>
-            <section className="v5-list-section v5-shell" aria-label={t.work}>
-              <div className="v5-list-caption">
-                <span>{isHebrew ? 'נבחרים' : 'Selected projects'}</span>
-                <span>{isHebrew ? 'לחצו לצפייה' : 'Click to explore'}</span>
-              </div>
-              <div className="v5-work-list">
-                {projects.map((project, index) => (
-                  <a href={homeHref + '/work/' + project.slug} className="v5-work-row" key={project.slug}>
-                    <span className="v5-work-count">{(index + 1).toString().padStart(2, '0')}</span>
-                    <div>
-                      <h2>{project.title}</h2>
-                      <p>{project.descriptor}</p>
-                    </div>
-                    <span className={'v5-work-row-preview v5-work-row-preview--' + (index % 4)} aria-hidden="true">
-                      {project.hero ? (
-                        <Image src={project.hero.src} alt="" fill
-                          unoptimized={/^https?:\/\//.test(project.hero.src)}
-                          sizes="(max-width: 680px) 90vw, (max-width: 1100px) 45vw, 60vw"
-                          className="v5-work-row-image" />
-                      ) : (
-                        <span className="v5-work-row-fallback">{project.title.slice(0, 2)}<span aria-hidden="true">✳</span></span>
-                      )}
-                    </span>
-                    <span className="v5-work-year">{project.year}</span>
-                    <span className="v5-work-row-arrow" aria-hidden="true">↗</span>
-                  </a>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
+        {kind === 'work' && <WorkExhibition projects={projects} locale={locale} />}
 
         {kind === 'about' && (
           <section className="v5-inner-about v5-shell">
